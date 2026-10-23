@@ -20,6 +20,11 @@ SITES = [
     ]),
 ]
 
+# そのまま置いた HTML（build.py では作らない。ファイルは手で置く）
+EXTRA = {
+    "九段南計画解体工事": [("kudan-3d.html", "🔄 3Dモデル 地下解体の作業手順（指で回せます）")],
+}
+
 HEAD = """<!DOCTYPE html>
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -53,6 +58,9 @@ for site, docs in SITES:
         n = page_count(key)
         label = name + (f"（{n}枚）" if n > 1 else "")
         out.append(f'<a class="btn" href="{key}.html">📄 {html.escape(label)}</a>')
+    # 画像にしない資料（3Dモデルなど、そのまま置いた HTML）
+    for href, label in EXTRA.get(site, []):
+        out.append(f'<a class="btn" href="{href}">{html.escape(label)}</a>')
 
         pg = [HEAD.format(title=f"{name}｜{site}"), f"<header>{html.escape(name)}</header>",
               f'<p class="note">{html.escape(site)}<br>指で広げると拡大できます。</p>', RETURN]
