@@ -47,8 +47,13 @@ div.ret{{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid 
 RETURN = ('<div class="ret"><b>見終わったら</b><br>'
           '画面の一番左上の <b>✕</b> をタッチすると Notion に戻ります</div>')
 
+def pages(key):
+    # img/ の「キー-番号.svg / .jpg」をページ順に返す（render.py が作る）
+    files = [f for f in (ROOT / "img").glob(f"{key}-*.*") if f.suffix in (".svg", ".jpg")]
+    return sorted(files, key=lambda f: int(f.stem.rsplit("-", 1)[1]))
+
 def page_count(key):
-    return len(list((ROOT / "img").glob(f"{key}-*.jpg")))
+    return len(pages(key))
 
 out = [HEAD.format(title="各現場の資料"), "<header>各現場の資料（菊建興業）</header>",
        '<p class="note">資料をタッチ → 画像を指で広げると拡大できます。</p>', RETURN]
@@ -58,17 +63,16 @@ for site, docs in SITES:
         n = page_count(key)
         label = name + (f"（{n}枚）" if n > 1 else "")
         out.append(f'<a class="btn" href="{key}.html">📄 {html.escape(label)}</a>')
-    # 画像にしない資料（3Dモデルなど、そのまま置いた HTML）
-    for href, label in EXTRA.get(site, []):
-        out.append(f'<a class="btn" href="{href}">{html.escape(label)}</a>')
 
         pg = [HEAD.format(title=f"{name}｜{site}"), f"<header>{html.escape(name)}</header>",
               f'<p class="note">{html.escape(site)}<br>指で広げると拡大できます。</p>', RETURN]
-        for i in range(1, n + 1):
-            src = f"img/{key}-{i}.jpg"
-            pg.append(f'<img src="{src}" alt="{html.escape(name)} {i}ページ" loading="lazy">')
+        for i, f in enumerate(pages(key), 1):
+            pg.append(f'<img src="img/{f.name}" alt="{html.escape(name)} {i}ページ" loading="lazy">')
         pg.append(RETURN + '</body></html>')
         (ROOT / f"{key}.html").write_text("\n".join(pg), encoding="utf-8")
+    # 画像にしない資料（3Dモデルなど、そのまま置いた HTML）
+    for href, label in EXTRA.get(site, []):
+        out.append(f'<a class="btn" href="{href}">{html.escape(label)}</a>')
 out.append("</body></html>")
 (ROOT / "index.html").write_text("\n".join(out), encoding="utf-8")
 print("ok")
