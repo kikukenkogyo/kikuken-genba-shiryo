@@ -38,10 +38,9 @@ div.ret{{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid 
 </style></head><body>
 """
 
-# Notion への戻り方（資料はスマホのブラウザで開くので、迷わないように上と下に出す）
-RETURN = ('<div class="ret"><b>見終わったら Notion に戻る</b><br>'
-          'iPhone：画面の一番左上の「◀ Notion」をタッチ<br>'
-          'Android：画面の下の「戻る」（◁）をタッチ</div>')
+# Notion への戻り方（Notion アプリの中に開く画面なので、左上の ✕ で閉じる。iPhone で確認 2026-10-23）
+RETURN = ('<div class="ret"><b>見終わったら</b><br>'
+          '画面の一番左上の <b>✕</b> をタッチすると Notion に戻ります</div>')
 
 def page_count(key):
     return len(list((ROOT / "img").glob(f"{key}-*.jpg")))
