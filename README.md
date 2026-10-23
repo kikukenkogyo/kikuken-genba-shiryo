@@ -8,3 +8,4 @@
 - 3Dモデル（HTML）は `mitsumori-teian/scripts/publish_3d.py` で載せる（部品を中に入れる・extra.json に足す・build・push・公開の確認まで自動）。手で足すときは extra.json に書いて `python build.py`
 - 社外秘の金額などは載せない（URLを知っていれば誰でも見られる）
 - 動画は `video/` に mp4（スマホ用に 960×540・crf30 で軽くする。ffmpeg）を置き、`build.py` の VIDEOS に足す → `python build.py`
+- アイコン：apple-touch-icon.png（180）・icon-192/512.png・favicon.png。元は「計画図＋3D」の案E（2026-10-23 酒井さん選択）
