@@ -31,9 +31,12 @@ for _site in EXTRA:
     if _site not in [s_ for s_, _ in SITES]: SITES.append((_site, []))
 
 # 動画（video/ に mp4 を置く。スマホ用に 960×540 へ軽くしたもの）。ページは build.py が作る
-VIDEOS = {
-    "九段南計画解体工事": [("kudan-video", "video/kudan-sagyo.mp4", "🎬 動画 地下解体の作業手順（約7分・ナレーション付き）")],
-}
+VIDEOS = {}
+# 動画は videos.json に書く（publish_3d.py --video が自動で足す）。{"現場名": [["ページのキー", "video/….mp4", "表示名"], ...]}
+_vj = ROOT / "videos.json"
+for _site, _items in (json.loads(_vj.read_text(encoding="utf-8")) if _vj.exists() else {}).items():
+    VIDEOS.setdefault(_site, []).extend(tuple(i) for i in _items)
+    if _site not in [s_ for s_, _ in SITES]: SITES.append((_site, []))
 
 HEAD = """<!DOCTYPE html>
 <html lang="ja"><head><meta charset="utf-8">
