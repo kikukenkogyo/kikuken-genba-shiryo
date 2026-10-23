@@ -1,5 +1,16 @@
 {
  "九段南計画解体工事": [
-  ["kudan-video", "video/kudan-sagyo.mp4", "🎬 動画 地下解体の作業手順（約7分・ナレーション付き）"]
+  [
+   "kudan-video",
+   "video/kudan-sagyo.mp4",
+   "🎬 動画 地下解体の作業手順（約7分・ナレーション付き）"
+  ]
+ ],
+ "第一矢来ビル解体工事": [
+  [
+   "yarai-video",
+   "video/yarai-sagyo.mp4",
+   "🎬 動画 解体手順（ナレーション付き）"
+  ]
  ]
 }
