@@ -1,6 +1,6 @@
 # 各現場の資料ページを作る（img/ の画像から index.html と資料ごとのページを生成）
 # 資料を足すときは SITES に足して、img/ に「キー-ページ番号.jpg」を置いてから python build.py
-import pathlib, html
+import pathlib, html, json
 
 ROOT = pathlib.Path(__file__).parent
 SITES = [
@@ -21,9 +21,14 @@ SITES = [
 ]
 
 # そのまま置いた HTML（build.py では作らない。ファイルは手で置く）
-EXTRA = {
-    "九段南計画解体工事": [("kudan-3d.html", "🔄 3Dモデル 地下解体の作業手順（指で回せます）")],
-}
+EXTRA = {}
+# 3Dモデルなどは extra.json に書く（mitsumori-teian/scripts/publish_3d.py が自動で足す）。{"現場名": [["ファイル.html", "表示名"], ...]}
+_ej = ROOT / "extra.json"
+for _site, _items in (json.loads(_ej.read_text(encoding="utf-8")) if _ej.exists() else {}).items():
+    EXTRA.setdefault(_site, []).extend(tuple(i) for i in _items)
+# 図面の資料がまだ無く、3Dだけある現場も一覧に出す
+for _site in EXTRA:
+    if _site not in [s_ for s_, _ in SITES]: SITES.append((_site, []))
 
 # 動画（video/ に mp4 を置く。スマホ用に 960×540 へ軽くしたもの）。ページは build.py が作る
 VIDEOS = {
