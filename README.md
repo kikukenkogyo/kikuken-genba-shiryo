@@ -7,3 +7,4 @@
   - 線の多い CAD 図面（施工計画図など）は jpg（長い辺 7200px）。svg だと1ページ20MB超になりスマホで重い
 - 3Dモデルなど HTML はそのまま置き、`build.py` の EXTRA に足す
 - 社外秘の金額などは載せない（URLを知っていれば誰でも見られる）
+- 動画は `video/` に mp4（スマホ用に 960×540・crf30 で軽くする。ffmpeg）を置き、`build.py` の VIDEOS に足す → `python build.py`

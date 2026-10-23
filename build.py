@@ -25,6 +25,11 @@ EXTRA = {
     "九段南計画解体工事": [("kudan-3d.html", "🔄 3Dモデル 地下解体の作業手順（指で回せます）")],
 }
 
+# 動画（video/ に mp4 を置く。スマホ用に 960×540 へ軽くしたもの）。ページは build.py が作る
+VIDEOS = {
+    "九段南計画解体工事": [("kudan-video", "video/kudan-sagyo.mp4", "🎬 動画 地下解体の作業手順（約7分・ナレーション付き）")],
+}
+
 HEAD = """<!DOCTYPE html>
 <html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -73,6 +78,13 @@ for site, docs in SITES:
     # 画像にしない資料（3Dモデルなど、そのまま置いた HTML）
     for href, label in EXTRA.get(site, []):
         out.append(f'<a class="btn" href="{href}">{html.escape(label)}</a>')
+    for key, src, label in VIDEOS.get(site, []):
+        out.append(f'<a class="btn" href="{key}.html">{html.escape(label)}</a>')
+        pg = [HEAD.format(title=f"{label}｜{site}"), f"<header>{html.escape(label[2:])}</header>",
+              f'<p class="note">{html.escape(site)}<br>▶をタッチすると再生します。音が出ます。</p>', RETURN,
+              f'<video src="{src}" controls playsinline preload="metadata" style="display:block;width:100%;height:auto;background:#000"></video>',
+              RETURN + '</body></html>']
+        (ROOT / f"{key}.html").write_text("\n".join(pg), encoding="utf-8")
 out.append("</body></html>")
 (ROOT / "index.html").write_text("\n".join(out), encoding="utf-8")
 print("ok")
