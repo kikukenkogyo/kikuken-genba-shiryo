@@ -29,14 +29,14 @@
  ],
  "福住4階建建物解体工事": [
   [
-   "fukuzumi-yamadome-jpile-video",
-   "video/fukuzumi-yamadome-jpile-sagyo.mp4",
-   "🎬 動画 東側 地中障害撤去の山留め（参考：Jパイル案）（ナレーション付き）"
-  ],
-  [
    "fukuzumi-yamadome-video",
    "video/fukuzumi-yamadome-sagyo.mp4",
    "🎬 動画 東側 地中障害撤去の山留め（ご提案：H鋼案）（ナレーション付き）"
+  ],
+  [
+   "fukuzumi-yamadome-jpile-video",
+   "video/fukuzumi-yamadome-jpile-sagyo.mp4",
+   "🎬 動画 東側 地中障害撤去の山留め（参考：Jパイル案）（ナレーション付き）"
   ]
  ]
 }
