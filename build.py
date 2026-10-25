@@ -25,6 +25,8 @@ SITES = [
 # （2026-10-25 酒井さん：決まっていない仕事が職人さんに見えると混乱する）。一覧に出すときはここに足す
 INDEX_SITES = [s for s, _ in SITES]
 INDEX_LINKS = {"kudan-3d.html"}
+# 酒井さん専用の一覧（見積段階の3D・動画も含めて全部。iPad のホーム画面用）。名前は推測されにくくしてある
+ALL_INDEX = "sakai-c9521c84.html"
 
 # そのまま置いた HTML（build.py では作らない。ファイルは手で置く）
 EXTRA = {}
@@ -81,13 +83,18 @@ def page_count(key):
 
 out = [HEAD.format(title="各現場の資料"), "<header>各現場の資料（菊建興業）</header>",
        '<p class="note">資料をタッチ → 画像を指で広げると拡大できます。</p>', RETURN]
+allout = [HEAD.format(title="全部の資料（酒井さん用）"), "<header>全部の資料（酒井さん用・見積段階も含む）</header>",
+          '<p class="note">この一覧は酒井さん専用です。URL を人に送らないでください。</p>']
 for site, docs in SITES:
     links = []  # 一覧に出すボタン（INDEX_SITES / INDEX_LINKS にあるものだけ）
+    all_links = []  # 酒井さん専用の一覧（全部）
     for key, name in docs:
         n = page_count(key)
         label = name + (f"（{n}枚）" if n > 1 else "")
+        b = f'<a class="btn" href="{key}.html">📄 {html.escape(label)}</a>'
+        all_links.append(b)
         if site in INDEX_SITES:
-            links.append(f'<a class="btn" href="{key}.html">📄 {html.escape(label)}</a>')
+            links.append(b)
 
         pg = [HEAD.format(title=f"{name}｜{site}"), f"<header>{html.escape(name)}</header>",
               f'<p class="note">{html.escape(site)}<br>指で広げると拡大できます。</p>', RETURN]
@@ -97,11 +104,15 @@ for site, docs in SITES:
         (ROOT / f"{key}.html").write_text("\n".join(pg), encoding="utf-8")
     # 画像にしない資料（3Dモデルなど、そのまま置いた HTML）
     for href, label in EXTRA.get(site, []):
+        b = f'<a class="btn" href="{href}">{html.escape(label)}</a>'
+        all_links.append(b)
         if href in INDEX_LINKS:
-            links.append(f'<a class="btn" href="{href}">{html.escape(label)}</a>')
+            links.append(b)
     for key, src, label in VIDEOS.get(site, []):
+        b = f'<a class="btn" href="{key}.html">{html.escape(label)}</a>'
+        all_links.append(b)
         if f"{key}.html" in INDEX_LINKS:
-            links.append(f'<a class="btn" href="{key}.html">{html.escape(label)}</a>')
+            links.append(b)
         pg = [HEAD.format(title=f"{label}｜{site}"), f"<header>{html.escape(label[2:])}</header>",
               f'<p class="note">{html.escape(site)}<br>▶をタッチすると再生します。音が出ます。</p>', RETURN,
               f'<video src="{src}" controls playsinline preload="metadata" style="display:block;width:100%;height:auto;background:#000"></video>',
@@ -110,6 +121,11 @@ for site, docs in SITES:
     if links:
         out.append(f"<h2>{html.escape(site)}</h2>")
         out.extend(links)
+    if all_links:
+        allout.append(f"<h2>{html.escape(site)}</h2>")
+        allout.extend(all_links)
 out.append("</body></html>")
 (ROOT / "index.html").write_text("\n".join(out), encoding="utf-8")
+allout.append("</body></html>")
+(ROOT / ALL_INDEX).write_text("\n".join(allout), encoding="utf-8")
 print("ok")
