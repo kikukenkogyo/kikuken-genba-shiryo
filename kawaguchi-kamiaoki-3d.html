@@ -30,6 +30,7 @@
          background:rgba(20,22,26,.78); color:#fff; border-radius:12px; padding:12px 18px; text-align:center; pointer-events:none;
          opacity:0; transition:opacity .5s; }
   #cap.show { opacity:1; }
+  #co { position:fixed; left:0; top:0; width:100vw; height:100vh; pointer-events:none; z-index:6; }   /* 引き出し線の札（CALLOUT） */
   #inset { position:fixed; top:12px; right:12px; width:min(46vw, 560px); z-index:15; display:none; pointer-events:none; filter:drop-shadow(0 2px 6px rgba(0,0,0,.35)); }   /* 手順ごとの説明図（steps[i].inset）川口 2026-10-25 */
   #cap, #player { z-index:20; }   /* 操作パネルより手前に出す */
   #cap .t { font-size:15px; color:#ffd43b; font-weight:bold; margin-bottom:4px; }
@@ -47,6 +48,7 @@
 <div id="view"></div>
 <div id="cap"><div class="t" id="capT"></div><div class="c" id="capC"></div></div>
 <img id="inset" alt="">
+<canvas id="co"></canvas>
 <div id="player">
   <button id="pPrev" title="前の手順">⏮</button><button id="pPlay" title="自動再生／一時停止">▶ 自動再生</button><button id="pNext" title="次の手順">⏭</button>
   <select id="pSpeed" title="1手順あたりの時間"><option value="4">はやい</option><option value="6" selected>ふつう</option><option value="9">ゆっくり</option></select>
@@ -1178,6 +1180,7 @@ for (const l of D.lines) {
   grp(l.group).add(new THREE.Line(g, new THREE.LineBasicMaterial({color:l.color})));
   colors[l.group] = colors[l.group] || l.color;
 }
+const LBL = [];   // 札（引き出し線の表示に使う）
 for (const t of D.labels) {
   // 文字の長さに合わせてラベルの幅を決める（長い文字が見切れないように）
   const k = 4, font = `bold ${26*k}px "Yu Gothic UI", Meiryo, sans-serif`;
@@ -1194,6 +1197,7 @@ for (const t of D.labels) {
   } else sp.scale.set((tw / (48*k)) * 1.0*(t.size||1), 1.0*(t.size||1), 1);
   sp.position.copy(V(t.x, t.y, t.z)); sp.renderOrder = 999;   // 札は半透明の面より後に描き、隠れないようにする（川口 2026-10-25）
   (t.group ? grp(t.group) : scene).add(sp);
+  LBL.push({sp, t});
 }
 // 表示の切り替え
 const box = document.getElementById('layers'), chk = {};
@@ -1281,6 +1285,83 @@ document.getElementById('pPrev').onclick = () => { if (cur > 0) { step(cur - 1);
 addEventListener('keydown', e => { if (e.key === ' ') { e.preventDefault(); pPlay.click(); } if (e.key === 'ArrowRight') document.getElementById('pNext').click(); if (e.key === 'ArrowLeft') document.getElementById('pPrev').click(); });
 if (!steps.length) document.getElementById('player').style.display = 'none';
 if (location.hash === '#auto') setTimeout(play, 800);          // ファイル名の後ろに #auto を付けて開くと自動で始まる
+// ---- 引き出し線の札（CALLOUT）: 札を絵の外側（画面の左右）に並べ、指している所へ線を引く（川口 2026-10-25）----
+// window.CALLOUT = true で有効（動画・説明資料の撮影で使う）。CALLOUT_BOTTOM＝下にあける高さ（字幕の分）、CALLOUT_SKIP＝線を引かずに省くグループ
+window.CALLOUT = !!D.callouts; window.CALLOUT_BOTTOM = 150; window.CALLOUT_SKIP = D.calloutSkip || ['道路'];
+const coCv = document.getElementById('co'), coCx = coCv.getContext('2d');
+function isVis(o){ for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; }
+function drawCallouts(){
+  const dpr = devicePixelRatio || 1, W = innerWidth, H = innerHeight;
+  if (coCv.width !== Math.round(W * dpr)) { coCv.width = Math.round(W * dpr); coCv.height = Math.round(H * dpr); }
+  coCx.setTransform(dpr, 0, 0, dpr, 0, 0); coCx.clearRect(0, 0, W, H);
+  for (const L of LBL) L.sp.material.visible = !window.CALLOUT;
+  if (!window.CALLOUT) return;
+  const FS = 14, LH = 19, PAD = 6, MAXW = Math.min(270, W * 0.22), M = 12;
+  coCx.font = `bold ${FS}px "Yu Gothic UI", Meiryo, sans-serif`;
+  const ins = document.getElementById('inset'); const insB = (ins && ins.style.display === 'block') ? ins.getBoundingClientRect().bottom + 8 : M;
+  const items = [];
+  for (const L of LBL) {
+    if (!isVis(L.sp) || (window.CALLOUT_SKIP||[]).includes(L.t.group)) continue;
+    const v = L.sp.getWorldPosition(new THREE.Vector3()).project(cam);
+    if (v.z > 1 || Math.abs(v.x) > 0.97 || Math.abs(v.y) > 0.97) continue;
+    const ax = (v.x + 1) / 2 * W, ay = (1 - v.y) / 2 * H;
+    const lines = []; let ln = '';
+    for (const ch of L.t.text) { if (coCx.measureText(ln + ch).width > MAXW - 2 * PAD && ln) { lines.push(ln); ln = ''; } ln += ch; }
+    if (ln) lines.push(ln);
+    const bw = Math.max(...lines.map(x => coCx.measureText(x).width)) + 2 * PAD, bh = lines.length * LH + 2 * PAD - 4;
+    items.push({ax, ay, lines, bw, bh, t: L.t, side: ax < W / 2 ? 'L' : 'R'});
+  }
+  const top = {L: M, R: insB}, bot = H - window.CALLOUT_BOTTOM;
+  const need = sd => items.filter(o => o.side === sd).reduce((a, o) => a + o.bh + 6, 0);
+  for (let g = 0; g < 40; g++) {                       // 片側に入りきらないときは、真ん中に近いものから反対側へ
+    const nL = need('L'), nR = need('R'), aL = bot - top.L, aR = bot - top.R;
+    if (nL > aL && nR + 30 < aR) { const c = items.filter(o => o.side === 'L').sort((a, b) => b.ax - a.ax)[0]; c.side = 'R'; }
+    else if (nR > aR && nL + 30 < aL) { const c = items.filter(o => o.side === 'R').sort((a, b) => a.ax - b.ax)[0]; c.side = 'L'; }
+    else break;
+  }
+  for (const sd of ['L', 'R']) {
+    const col = items.filter(o => o.side === sd).sort((a, b) => a.ay - b.ay);
+    let y = top[sd];
+    for (const o of col) { o.y = Math.max(y, Math.min(o.ay - o.bh / 2, bot - o.bh)); y = o.y + o.bh + 6; }
+    let lim = bot;
+    for (let k = col.length - 1; k >= 0; k--) { const o = col[k]; if (o.y + o.bh > lim) o.y = lim - o.bh; lim = o.y - 6; }
+    for (const o of col) {
+      o.x = sd === 'L' ? M : W - M - o.bw;
+      const ex = sd === 'L' ? o.x + o.bw : o.x, ey = o.y + o.bh / 2;
+      coCx.strokeStyle = 'rgba(52,58,64,.85)'; coCx.lineWidth = 1.6;
+      coCx.beginPath(); coCx.moveTo(ex, ey); coCx.lineTo(o.ax, o.ay); coCx.stroke();
+      coCx.fillStyle = o.t.bg || '#343a40'; coCx.beginPath(); coCx.arc(o.ax, o.ay, 3.5, 0, 7); coCx.fill();
+      coCx.fillStyle = o.t.bg || '#ffffff'; coCx.fillRect(o.x, o.y, o.bw, o.bh);
+      if (!o.t.bg) { coCx.strokeStyle = '#343a40'; coCx.lineWidth = 1; coCx.strokeRect(o.x + .5, o.y + .5, o.bw - 1, o.bh - 1); }
+      coCx.fillStyle = o.t.bg ? (o.t.color || '#ffffff') : '#1f2933'; coCx.textBaseline = 'top';
+      o.lines.forEach((x, k) => coCx.fillText(x, o.x + PAD, o.y + PAD + k * LH));
+    }
+  }
+}
+window.drawCallouts = drawCallouts;
+// 絵（見えている物）が画面の中央の帯に収まるよう、視点を引いて中央へ寄せる。左右の白い所に札を並べるため（CALLOUT 用）
+window.fitForCallout = function(fracW = 0.5, topPx = 30, botPx = null){
+  const W = innerWidth, H = innerHeight; botPx = botPx ?? (window.CALLOUT_BOTTOM + 10);
+  const bb = new THREE.Box3(), tmp = new THREE.Box3();
+  for (const n in groups) { const g = groups[n]; if (!isVis(g) || (window.CALLOUT_SKIP||[]).includes(n)) continue;   // 道路など外へ長く伸びる物は大きさの計算に入れない
+    g.traverse(o => { if (o.isMesh && o.visible) { tmp.setFromObject(o); if (!tmp.isEmpty()) bb.union(tmp); } }); }
+  if (bb.isEmpty()) return;
+  const pts = []; for (const x of [bb.min.x, bb.max.x]) for (const y of [bb.min.y, bb.max.y]) for (const z of [bb.min.z, bb.max.z]) pts.push(new THREE.Vector3(x, y, z));
+  for (let it = 0; it < 12; it++) {
+    cam.updateMatrixWorld(); let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+    for (const p of pts) { const v = p.clone().project(cam); const sx = (v.x + 1) / 2 * W, sy = (1 - v.y) / 2 * H; x0 = Math.min(x0, sx); x1 = Math.max(x1, sx); y0 = Math.min(y0, sy); y1 = Math.max(y1, sy); }
+    const aw = W * fracW, ah = H - topPx - botPx, k = Math.max((x1 - x0) / aw, (y1 - y0) / ah);
+    const dx = (x0 + x1) / 2 - W / 2, dy = (y0 + y1) / 2 - (topPx + (H - botPx)) / 2;
+    if (Math.abs(k - 1) < 0.02 && Math.abs(dx) < 4 && Math.abs(dy) < 4) break;
+    const dist = cam.position.distanceTo(ctl.target), wpp = 2 * dist * Math.tan(cam.fov * Math.PI / 360) / H;
+    const right = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0), up = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 1);
+    const pan = right.multiplyScalar(dx * wpp).add(up.multiplyScalar(-dy * wpp));
+    cam.position.add(pan); ctl.target.add(pan);
+    cam.position.sub(ctl.target).multiplyScalar(Math.min(Math.max(k, 0.5), 2.5)).add(ctl.target);
+    cam.lookAt(ctl.target);
+  }
+  ctl.update();
+};
 (function loop(){
   requestAnimationFrame(loop);
   if (tween) {
@@ -1289,7 +1370,7 @@ if (location.hash === '#auto') setTimeout(play, 800);          // ファイル�
     if (a >= 1) tween = null;
   }
   if (playing) prog.style.width = Math.min(100, (performance.now() - tStart) / tDur * 100) + '%';
-  ctl.update(); ren.render(scene, cam);
+  ctl.update(); ren.render(scene, cam); drawCallouts();
 })();
 </script>
 </body>
