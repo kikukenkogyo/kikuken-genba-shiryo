@@ -53,6 +53,7 @@
   <button id="pPrev" title="前の手順">⏮</button><button id="pPlay" title="自動再生／一時停止">▶ 自動再生</button><button id="pNext" title="次の手順">⏭</button>
   <select id="pSpeed" title="1手順あたりの時間"><option value="4">はやい</option><option value="6" selected>ふつう</option><option value="9">ゆっくり</option></select>
   <div id="prog"><i></i></div>
+  <button id="pLbl" title="説明の札（注釈）を消す／出す（キー L）">🏷 札を消す</button>
 </div>
 <div id="panel">
   <button id="hide" title="パネルをたたむ">－</button>
@@ -1294,8 +1295,8 @@ function drawCallouts(){
   const dpr = devicePixelRatio || 1, W = innerWidth, H = innerHeight;
   if (coCv.width !== Math.round(W * dpr)) { coCv.width = Math.round(W * dpr); coCv.height = Math.round(H * dpr); }
   coCx.setTransform(dpr, 0, 0, dpr, 0, 0); coCx.clearRect(0, 0, W, H);
-  for (const L of LBL) L.sp.material.visible = !window.CALLOUT;
-  if (!window.CALLOUT) return;
+  for (const L of LBL) L.sp.material.visible = !window.CALLOUT && !window.HIDE_LABELS;
+  if (!window.CALLOUT || window.HIDE_LABELS) return;
   const FS = 14, LH = 19, PAD = 6, MAXW = Math.min(270, W * 0.22), M = 12;
   coCx.font = `bold ${FS}px "Yu Gothic UI", Meiryo, sans-serif`;
   const ins = document.getElementById('inset'); const insB = (ins && ins.style.display === 'block') ? ins.getBoundingClientRect().bottom + 8 : M;
@@ -1339,6 +1340,12 @@ function drawCallouts(){
   }
 }
 window.drawCallouts = drawCallouts;
+// 札（注釈）を消すボタン: 絵だけを大きく見せて説明したいとき（川口 2026-10-25）
+window.HIDE_LABELS = false;
+const pLbl = document.getElementById('pLbl');
+function toggleLabels(){ window.HIDE_LABELS = !window.HIDE_LABELS; pLbl.textContent = window.HIDE_LABELS ? '🏷 札を出す' : '🏷 札を消す'; pLbl.classList.toggle('on', window.HIDE_LABELS); }
+pLbl.onclick = toggleLabels;
+addEventListener('keydown', e => { if ((e.key === 'l' || e.key === 'L') && !e.ctrlKey && !e.metaKey) toggleLabels(); });
 // 絵（見えている物）が画面の中央の帯に収まるよう、視点を引いて中央へ寄せる。左右の白い所に札を並べるため（CALLOUT 用）
 window.fitForCallout = function(fracW = 0.5, topPx = 30, botPx = null){
   const W = innerWidth, H = innerHeight; botPx = botPx ?? (window.CALLOUT_BOTTOM + 10);
