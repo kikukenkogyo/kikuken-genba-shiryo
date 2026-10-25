@@ -85,8 +85,7 @@ out = [HEAD.format(title="各現場の資料"), "<header>各現場の資料（�
        '<p class="note">資料をタッチ → 画像を指で広げると拡大できます。</p>', RETURN]
 # ホーム画面に追加したとき、この一覧が開くように manifest を外す（iPhone は manifest があると start_url＝入口の一覧を開いてしまう。2026-10-25 確認）
 # manifest が無ければ、iPhone は開いているページの URL をそのまま登録する
-allout = [HEAD.format(title="全部の資料（酒井さん用）").replace('<link rel="manifest" href="manifest.json">
-', "").replace('content="現場資料"', 'content="全部の資料"'), "<header>全部の資料（酒井さん用・見積段階も含む）</header>",
+allout = [HEAD.format(title="全部の資料（酒井さん用）").replace('<link rel="manifest" href="manifest.json">', "").replace('content="現場資料"', 'content="全部の資料"'), "<header>全部の資料（酒井さん用・見積段階も含む）</header>",
           '<p class="note">この一覧は酒井さん専用です。URL を人に送らないでください。</p>']
 for site, docs in SITES:
     links = []  # 一覧に出すボタン（INDEX_SITES / INDEX_LINKS にあるものだけ）
