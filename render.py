@@ -6,7 +6,7 @@ import pathlib, fitz
 
 ROOT = pathlib.Path(__file__).parent
 DESK = pathlib.Path.home() / "OneDrive" / "Desktop"
-KUDAN = DESK / "AI作業場" / "九段南_既存地下3Dモデル" / "スマホ公開用" / "データ便から取得_20261022修正版"
+KUDAN = DESK / "AI作業場" / "九段南_既存地下3Dモデル" / "元請様提出資料_20261022" / "説明資料一式（元請様へそのまま出せるもの）"   # 2026-10-26 重機を新しい形にした版（前はデータ便から取得した10/22版）
 
 def kudan(prefix):
     return next(KUDAN.rglob(f"{prefix}_*.pdf"))
