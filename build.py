@@ -20,6 +20,12 @@ SITES = [
     ]),
 ]
 
+# 一覧ページ（index.html）に出すのは、菊建ページ（Notion「各現場の資料」）に載せている資料だけ。
+# 見積段階・提案用の3D/動画（extra.json・videos.json で足されるもの）は、ページは作るが一覧には出さない
+# （2026-10-25 酒井さん：決まっていない仕事が職人さんに見えると混乱する）。一覧に出すときはここに足す
+INDEX_SITES = [s for s, _ in SITES]
+INDEX_LINKS = {"kudan-3d.html"}
+
 # そのまま置いた HTML（build.py では作らない。ファイルは手で置く）
 EXTRA = {}
 # 3Dモデルなどは extra.json に書く（mitsumori-teian/scripts/publish_3d.py が自動で足す）。{"現場名": [["ファイル.html", "表示名"], ...]}
@@ -76,11 +82,12 @@ def page_count(key):
 out = [HEAD.format(title="各現場の資料"), "<header>各現場の資料（菊建興業）</header>",
        '<p class="note">資料をタッチ → 画像を指で広げると拡大できます。</p>', RETURN]
 for site, docs in SITES:
-    out.append(f"<h2>{html.escape(site)}</h2>")
+    links = []  # 一覧に出すボタン（INDEX_SITES / INDEX_LINKS にあるものだけ）
     for key, name in docs:
         n = page_count(key)
         label = name + (f"（{n}枚）" if n > 1 else "")
-        out.append(f'<a class="btn" href="{key}.html">📄 {html.escape(label)}</a>')
+        if site in INDEX_SITES:
+            links.append(f'<a class="btn" href="{key}.html">📄 {html.escape(label)}</a>')
 
         pg = [HEAD.format(title=f"{name}｜{site}"), f"<header>{html.escape(name)}</header>",
               f'<p class="note">{html.escape(site)}<br>指で広げると拡大できます。</p>', RETURN]
@@ -90,14 +97,19 @@ for site, docs in SITES:
         (ROOT / f"{key}.html").write_text("\n".join(pg), encoding="utf-8")
     # 画像にしない資料（3Dモデルなど、そのまま置いた HTML）
     for href, label in EXTRA.get(site, []):
-        out.append(f'<a class="btn" href="{href}">{html.escape(label)}</a>')
+        if href in INDEX_LINKS:
+            links.append(f'<a class="btn" href="{href}">{html.escape(label)}</a>')
     for key, src, label in VIDEOS.get(site, []):
-        out.append(f'<a class="btn" href="{key}.html">{html.escape(label)}</a>')
+        if f"{key}.html" in INDEX_LINKS:
+            links.append(f'<a class="btn" href="{key}.html">{html.escape(label)}</a>')
         pg = [HEAD.format(title=f"{label}｜{site}"), f"<header>{html.escape(label[2:])}</header>",
               f'<p class="note">{html.escape(site)}<br>▶をタッチすると再生します。音が出ます。</p>', RETURN,
               f'<video src="{src}" controls playsinline preload="metadata" style="display:block;width:100%;height:auto;background:#000"></video>',
               RETURN + '</body></html>']
         (ROOT / f"{key}.html").write_text("\n".join(pg), encoding="utf-8")
+    if links:
+        out.append(f"<h2>{html.escape(site)}</h2>")
+        out.extend(links)
 out.append("</body></html>")
 (ROOT / "index.html").write_text("\n".join(out), encoding="utf-8")
 print("ok")
