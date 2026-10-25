@@ -83,7 +83,8 @@ def page_count(key):
 
 out = [HEAD.format(title="各現場の資料"), "<header>各現場の資料（菊建興業）</header>",
        '<p class="note">資料をタッチ → 画像を指で広げると拡大できます。</p>', RETURN]
-allout = [HEAD.format(title="全部の資料（酒井さん用）"), "<header>全部の資料（酒井さん用・見積段階も含む）</header>",
+# ホーム画面に追加したとき、この一覧が開くように専用の manifest を使う（共通の manifest は入口の一覧を開く）
+allout = [HEAD.format(title="全部の資料（酒井さん用）").replace("manifest.json", "manifest-sakai.json").replace('content="現場資料"', 'content="全部の資料"'), "<header>全部の資料（酒井さん用・見積段階も含む）</header>",
           '<p class="note">この一覧は酒井さん専用です。URL を人に送らないでください。</p>']
 for site, docs in SITES:
     links = []  # 一覧に出すボタン（INDEX_SITES / INDEX_LINKS にあるものだけ）
