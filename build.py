@@ -63,7 +63,7 @@ div.ret{{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid 
 
 # Notion への戻り方（Notion アプリの中に開く画面なので、左上の ✕ で閉じる。iPhone で確認 2026-10-23）
 RETURN = ('<div class="ret"><b>見終わったら</b><br>'
-          '画面の一番左上の <b>✕</b> をタッチすると Notion に戻ります</div>')
+          '画面の一番左上の <b>✕</b> をタッチすると菊建ページに戻ります</div>')
 
 def pages(key):
     # img/ の「キー-番号.svg / .jpg」をページ順に返す（render.py が作る）
