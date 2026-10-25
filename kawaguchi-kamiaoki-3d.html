@@ -30,7 +30,7 @@
          background:rgba(20,22,26,.78); color:#fff; border-radius:12px; padding:12px 18px; text-align:center; pointer-events:none;
          opacity:0; transition:opacity .5s; }
   #cap.show { opacity:1; }
-  #co { position:fixed; left:0; top:0; width:100vw; height:100vh; pointer-events:none; z-index:6; }   /* 引き出し線の札（CALLOUT） */
+  #co { position:fixed; left:0; top:0; width:100vw; height:100vh; pointer-events:none; z-index:6; }   /* 引き出し線の説明ラベル（CALLOUT） */
   #inset { position:fixed; top:12px; right:12px; width:min(46vw, 560px); z-index:15; display:none; pointer-events:none; filter:drop-shadow(0 2px 6px rgba(0,0,0,.35)); }   /* 手順ごとの説明図（steps[i].inset）川口 2026-10-25 */
   #cap, #player { z-index:20; }   /* 操作パネルより手前に出す */
   #cap .t { font-size:15px; color:#ffd43b; font-weight:bold; margin-bottom:4px; }
@@ -53,7 +53,7 @@
   <button id="pPrev" title="前の手順">⏮</button><button id="pPlay" title="自動再生／一時停止">▶ 自動再生</button><button id="pNext" title="次の手順">⏭</button>
   <select id="pSpeed" title="1手順あたりの時間"><option value="4">はやい</option><option value="6" selected>ふつう</option><option value="9">ゆっくり</option></select>
   <div id="prog"><i></i></div>
-  <button id="pLbl" title="説明の札（注釈）を消す／出す（キー L）">🏷 札を消す</button>
+  <button id="pLbl" title="説明ラベルを消す／出す（キー L）">🏷 説明ラベルを消す</button>
 </div>
 <div id="panel">
   <button id="hide" title="パネルをたたむ">－</button>
@@ -1181,7 +1181,7 @@ for (const l of D.lines) {
   grp(l.group).add(new THREE.Line(g, new THREE.LineBasicMaterial({color:l.color})));
   colors[l.group] = colors[l.group] || l.color;
 }
-const LBL = [];   // 札（引き出し線の表示に使う）
+const LBL = [];   // 説明ラベル（引き出し線の表示に使う）
 for (const t of D.labels) {
   // 文字の長さに合わせてラベルの幅を決める（長い文字が見切れないように）
   const k = 4, font = `bold ${26*k}px "Yu Gothic UI", Meiryo, sans-serif`;
@@ -1192,11 +1192,11 @@ for (const t of D.labels) {
   if (t.bg) { c.fillStyle = t.bg; c.fillRect(0, 0, tw, 48*k); }           // 注意書きなど: 背景色つき（例 bg:'#e03131', color:'#fff'）
   c.fillStyle = t.color || (dark ? '#ffffff' : '#1f2933'); c.fillText(t.text, 6*k, 24*k);
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv), depthTest:false, sizeAttenuation:!D.labelPx}));
-  if (D.labelPx) {   // 札を画面上で一定の大きさ（文字の高さ約 labelPx ピクセル×size/0.8）にする。遠くから見ても読める（川口 2026-10-25）
+  if (D.labelPx) {   // 説明ラベルを画面上で一定の大きさ（文字の高さ約 labelPx ピクセル×size/0.8）にする。遠くから見ても読める（川口 2026-10-25）
     const hpx = D.labelPx * Math.max(t.size||1, 0.75) / 0.8, sy = hpx * 2 / innerHeight * Math.tan(cam.fov * Math.PI / 360) * (48/26);
     sp.scale.set((tw / (48*k)) * sy, sy, 1);
   } else sp.scale.set((tw / (48*k)) * 1.0*(t.size||1), 1.0*(t.size||1), 1);
-  sp.position.copy(V(t.x, t.y, t.z)); sp.renderOrder = 999;   // 札は半透明の面より後に描き、隠れないようにする（川口 2026-10-25）
+  sp.position.copy(V(t.x, t.y, t.z)); sp.renderOrder = 999;   // 説明ラベルは半透明の面より後に描き、隠れないようにする（川口 2026-10-25）
   (t.group ? grp(t.group) : scene).add(sp);
   LBL.push({sp, t});
 }
@@ -1286,7 +1286,7 @@ document.getElementById('pPrev').onclick = () => { if (cur > 0) { step(cur - 1);
 addEventListener('keydown', e => { if (e.key === ' ') { e.preventDefault(); pPlay.click(); } if (e.key === 'ArrowRight') document.getElementById('pNext').click(); if (e.key === 'ArrowLeft') document.getElementById('pPrev').click(); });
 if (!steps.length) document.getElementById('player').style.display = 'none';
 if (location.hash === '#auto') setTimeout(play, 800);          // ファイル名の後ろに #auto を付けて開くと自動で始まる
-// ---- 引き出し線の札（CALLOUT）: 札を絵の外側（画面の左右）に並べ、指している所へ線を引く（川口 2026-10-25）----
+// ---- 引き出し線の説明ラベル（CALLOUT）: 説明ラベルを絵の外側（画面の左右）に並べ、指している所へ線を引く（川口 2026-10-25）----
 // window.CALLOUT = true で有効（動画・説明資料の撮影で使う）。CALLOUT_BOTTOM＝下にあける高さ（字幕の分）、CALLOUT_SKIP＝線を引かずに省くグループ
 window.CALLOUT = !!D.callouts; window.CALLOUT_BOTTOM = 150; window.CALLOUT_SKIP = D.calloutSkip || ['道路'];
 const coCv = document.getElementById('co'), coCx = coCv.getContext('2d');
@@ -1303,8 +1303,8 @@ function drawCallouts(){
   const items = [];
   for (const L of LBL) {
     if (!isVis(L.sp) || (window.CALLOUT_SKIP||[]).includes(L.t.group)) continue;
-    // 線の先の点: t.anchor（指す物の位置 [x,y,z] mm）があればそこ、無ければ札の位置。t.note は物を指さない説明（線なし）
-    const wp = L.t.anchor ? L.sp.parent.localToWorld(V(...L.t.anchor)) : L.sp.getWorldPosition(new THREE.Vector3());   // 札と同じ親（グループ）の座標で
+    // 線の先の点: t.anchor（指す物の位置 [x,y,z] mm）があればそこ、無ければ説明ラベルの位置。t.note は物を指さない説明（線なし）
+    const wp = L.t.anchor ? L.sp.parent.localToWorld(V(...L.t.anchor)) : L.sp.getWorldPosition(new THREE.Vector3());   // 説明ラベルと同じ親（グループ）の座標で
     const v = wp.clone().project(cam);
     if (!L.t.note && (v.z > 1 || Math.abs(v.x) > 0.97 || Math.abs(v.y) > 0.97)) continue;
     const ax = L.t.note ? 0 : (v.x + 1) / 2 * W, ay = L.t.note ? -1 : (1 - v.y) / 2 * H;
@@ -1345,13 +1345,13 @@ function drawCallouts(){
   }
 }
 window.drawCallouts = drawCallouts;
-// 札（注釈）を消すボタン: 絵だけを大きく見せて説明したいとき（川口 2026-10-25）
+// 説明ラベルを消すボタン: 絵だけを大きく見せて説明したいとき（川口 2026-10-25）
 window.HIDE_LABELS = false;
 const pLbl = document.getElementById('pLbl');
-function toggleLabels(){ window.HIDE_LABELS = !window.HIDE_LABELS; pLbl.textContent = window.HIDE_LABELS ? '🏷 札を出す' : '🏷 札を消す'; pLbl.classList.toggle('on', window.HIDE_LABELS); }
+function toggleLabels(){ window.HIDE_LABELS = !window.HIDE_LABELS; pLbl.textContent = window.HIDE_LABELS ? '🏷 説明ラベルを出す' : '🏷 説明ラベルを消す'; pLbl.classList.toggle('on', window.HIDE_LABELS); }
 pLbl.onclick = toggleLabels;
 addEventListener('keydown', e => { if ((e.key === 'l' || e.key === 'L') && !e.ctrlKey && !e.metaKey) toggleLabels(); });
-// 絵（見えている物）が画面の中央の帯に収まるよう、視点を引いて中央へ寄せる。左右の白い所に札を並べるため（CALLOUT 用）
+// 絵（見えている物）が画面の中央の帯に収まるよう、視点を引いて中央へ寄せる。左右の白い所に説明ラベルを並べるため（CALLOUT 用）
 window.fitForCallout = function(fracW = 0.5, topPx = 30, botPx = null){
   const W = innerWidth, H = innerHeight; botPx = botPx ?? (window.CALLOUT_BOTTOM + 10);
   const bb = new THREE.Box3(), tmp = new THREE.Box3();
