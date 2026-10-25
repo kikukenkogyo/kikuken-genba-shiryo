@@ -1314,7 +1314,7 @@ function drawCallouts(){
   const PB = window.CALLOUT_PIC || {x0: W * 0.23, x1: W * 0.77, y0: 30, y1: H - window.CALLOUT_BOTTOM};
   function measure(FS){
     const LH = Math.round(FS * 1.35), PAD = Math.round(FS * 0.45);
-    const MAXW = TB ? Math.min(W * 0.3, 330) : Math.max(120, Math.min(270, PB.x0 - M - 14));
+    const MAXW = TB ? Math.min(W * 0.3, 330) : Math.max(120, Math.min(270, Math.min(PB.x0, W - PB.x1) - M - 30));   // 絵との間を30pxあける
     coCx.font = `bold ${FS}px "Yu Gothic UI", Meiryo, sans-serif`;
     return pts.map(p => {
       const lines = []; let ln = '';
