@@ -28,6 +28,15 @@ INDEX_LINKS = {"kudan-3d.html"}
 # 酒井さん専用の一覧（見積段階の3D・動画も含めて全部。iPad のホーム画面用）。名前は推測されにくくしてある
 ALL_INDEX = "sakai-c9521c84.html"
 
+# 説明資料の PDF（ステップ図・フロー図・0工程表・足場計画図など）は docs.json に書く（mitsumori-teian/scripts/publish_docs.py が自動で足す 2026-10-26）
+#   {"現場名": [["キー", "表示名"], ...]}。画像は img/ の「キー-番号.svg/jpg」
+_dj = ROOT / "docs.json"
+for _site, _items in (json.loads(_dj.read_text(encoding="utf-8")) if _dj.exists() else {}).items():
+    _s = next((x for x in SITES if x[0] == _site), None)
+    if _s is None: SITES.append((_site, [])); _s = SITES[-1]
+    _have = {k for k, _ in _s[1]}
+    _s[1].extend(tuple(i) for i in _items if i[0] not in _have)
+
 # そのまま置いた HTML（build.py では作らない。ファイルは手で置く）
 EXTRA = {}
 # 3Dモデルなどは extra.json に書く（mitsumori-teian/scripts/publish_3d.py が自動で足す）。{"現場名": [["ファイル.html", "表示名"], ...]}
