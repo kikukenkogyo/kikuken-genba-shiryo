@@ -1277,5 +1277,19 @@ if (location.hash === '#auto') setTimeout(play, 800);          // ファイル�
   ctl.update(); ren.render(scene, cam);
 })();
 </script>
+<script>
+// 説明ラベルを消す／出すボタン（あとから付けたもの。add_label_toggle.py 2026-10-25）
+(function(){
+  if (document.getElementById('pLbl')) return;
+  const b = document.createElement('button'); b.id = 'pLbl'; b.title = '説明ラベルを消す／出す（キー L）'; b.textContent = '🏷 説明ラベルを消す';
+  const pl = document.getElementById('player');
+  if (pl) pl.appendChild(b); else { b.style.cssText = 'position:fixed;right:12px;bottom:12px;z-index:30;padding:6px 12px;border-radius:16px'; document.body.appendChild(b); }
+  let hid = false;
+  function tg(){ hid = !hid; scene.traverse(o => { if (o.isSprite) o.visible = !hid; });
+    b.textContent = hid ? '🏷 説明ラベルを出す' : '🏷 説明ラベルを消す'; b.classList.toggle('on', hid); }
+  b.onclick = tg;
+  addEventListener('keydown', e => { if ((e.key === 'l' || e.key === 'L') && !e.ctrlKey && !e.metaKey) tg(); });
+})();
+</script>
 </body>
 </html>
