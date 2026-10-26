@@ -21,6 +21,7 @@ SOURCES = {
     "kudan-step":       (kudan("04"), "svg"),
     "hokima-annai":     (DESK / "現場/進行中現場/都営保木間第５アパート/現場案内図（JKK保木間第５アパート）.pdf", "svg"),
     "hokima-sekou":     (DESK / "現場/進行中現場/都営保木間第５アパート/施工計画図　保木間第5アパート.pdf", "jpg"),
+    "kinuta-koutei":    (DESK / "現場/進行中現場/立駐（世田谷区砧）/工程表（世田谷区砧立駐　10.28着工）.pdf", "svg"),
 }
 JPG_LONG_SIDE = 7200
 
