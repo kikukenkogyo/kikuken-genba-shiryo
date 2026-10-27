@@ -27,7 +27,9 @@ SITES = [
 # 見積段階・提案用の3D/動画（extra.json・videos.json で足されるもの）は、ページは作るが一覧には出さない
 # （2026-10-25 酒井さん：決まっていない仕事が職人さんに見えると混乱する）。一覧に出すときはここに足す
 INDEX_SITES = [s for s, _ in SITES]
-INDEX_LINKS = {"kudan-3d.html"}
+INDEX_LINKS = {"kudan-3d.html", "kinuta-rittyu-3d.html", "kinuta-rittyu-video.html"}
+# 現場ごとの「LINEで送る用」のページ（その現場の資料だけを並べる。元請様・協力会社さんにも送れる）。{"ファイル名": "現場名"}
+SHARE_PAGES = {"kinuta-rittyu.html": "（仮称）世田谷区砧6-25 自走式立体駐車場解体工事"}  # 2026-10-27 酒井さん
 # 酒井さん専用の一覧（見積段階の3D・動画も含めて全部。iPad のホーム画面用）。名前は推測されにくくしてある
 ALL_INDEX = "sakai-c9521c84.html"
 
@@ -138,6 +140,17 @@ for site, docs in SITES:
     if all_links:
         allout.append(f"<h2>{html.escape(site)}</h2>")
         allout.extend(all_links)
+for _fn, _site in SHARE_PAGES.items():
+    _b = []
+    for site, docs in SITES:
+        if site != _site: continue
+        for key, name in docs:
+            n = page_count(key)
+            _b.append(f'<a class="btn" href="{key}.html">📄 {html.escape(name + (f"（{n}枚）" if n > 1 else ""))}</a>')
+        _b += [f'<a class="btn" href="{h}">{html.escape(l)}</a>' for h, l in EXTRA.get(site, [])]
+        _b += [f'<a class="btn" href="{k}.html">{html.escape(l)}</a>' for k, _, l in VIDEOS.get(site, [])]
+    (ROOT / _fn).write_text("\n".join([HEAD.format(title=_site).replace('<link rel="manifest" href="manifest.json">', ""),
+        f"<header>{html.escape(_site)}</header>", '<p class="note">資料をタッチすると開きます。図面は指で広げると拡大できます。3Dモデルは指で回せます。</p>'] + _b + ["</body></html>"]), encoding="utf-8")
 out.append("</body></html>")
 (ROOT / "index.html").write_text("\n".join(out), encoding="utf-8")
 allout.append("</body></html>")
