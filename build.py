@@ -32,6 +32,9 @@ INDEX_LINKS = {"kudan-3d.html", "kinuta-rittyu-3d.html", "kinuta-rittyu-video.ht
 SHARE_PAGES = {"kinuta-rittyu.html": "（仮称）世田谷区砧6-25 自走式立体駐車場解体工事"}  # 2026-10-27 酒井さん
 # 酒井さん専用の一覧（見積段階の3D・動画も含めて全部。iPad のホーム画面用）。名前は推測されにくくしてある
 ALL_INDEX = "sakai-c9521c84.html"
+# 酒井さん専用の一覧は「受注した工事」と「見積段階」に分けて出す（2026-10-29 酒井さん）。受注したら、ここに現場名を足す
+# （菊建ページ＝Notion に載せている現場は受注した工事。それ以外は見積段階として下に出る）
+UKEOI_SITES = set(INDEX_SITES)
 
 # 説明資料の PDF（ステップ図・フロー図・0工程表・足場計画図など）は docs.json に書く（mitsumori-teian/scripts/publish_docs.py が自動で足す 2026-10-26）
 #   {"現場名": [["キー", "表示名"], ...]}。画像は img/ の「キー-番号.svg/jpg」
@@ -78,6 +81,8 @@ a.btn{{display:block;margin:8px 16px;padding:16px;background:#fff;border-radius:
   color:#222;text-decoration:none;font-size:17px;box-shadow:0 1px 3px rgba(0,0,0,.15)}}
 p.note{{margin:10px 16px;font-size:14px;color:#555}}
 img{{display:block;width:100%;height:auto;margin:0 0 12px;background:#fff}}
+h2.grp{{margin:22px 12px 6px;padding:8px 12px;background:#e4007f;color:#fff;border-radius:8px;font-size:16px}}
+h2.grp.mitsu{{background:#6c757d}}
 details.site{{margin:8px 12px;background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.15)}}
 details.site>summary{{list-style:none;cursor:pointer;padding:16px 44px 16px 16px;font-size:17px;font-weight:bold;position:relative}}
 details.site>summary::-webkit-details-marker{{display:none}}
@@ -109,6 +114,7 @@ out = [HEAD.format(title="各現場の資料"), "<header>各現場の資料（�
 # manifest が無ければ、iPhone は開いているページの URL をそのまま登録する
 allout = [HEAD.format(title="全部の資料（見積段階も含む）").replace('<link rel="manifest" href="manifest.json">', "").replace('content="現場資料"', 'content="全部の資料"'), "<header>全部の資料（見積段階も含む）</header>",
           '<p class="note">見積段階の資料も入っています。URL を社外の人に送らないでください。<br>現場名をタッチすると資料が出ます。</p>']
+all_uke, all_mitsu = [], []
 for site, docs in SITES:
     links = []  # 一覧に出すボタン（INDEX_SITES / INDEX_LINKS にあるものだけ）
     all_links = []  # 酒井さん専用の一覧（全部）
@@ -147,8 +153,9 @@ for site, docs in SITES:
         out.append(f'<details class="site"><summary>{html.escape(site)}</summary><div>')
         out.extend(links); out.append("</div></details>")
     if all_links:
-        allout.append(f'<details class="site"><summary>{html.escape(site)}</summary><div>')
-        allout.extend(all_links); allout.append("</div></details>")
+        grp = all_uke if site in UKEOI_SITES else all_mitsu
+        grp.append(f'<details class="site"><summary>{html.escape(site)}</summary><div>')
+        grp.extend(all_links); grp.append("</div></details>")
 for _fn, _site in SHARE_PAGES.items():
     _b = []
     for site, docs in SITES:
@@ -162,6 +169,7 @@ for _fn, _site in SHARE_PAGES.items():
         f"<header>{html.escape(_site)}</header>", '<p class="note">資料をタッチすると開きます。図面は指で広げると拡大できます。3Dモデルは指で回せます。</p>'] + _b + ["</body></html>"]), encoding="utf-8")
 out.append("</body></html>")
 (ROOT / "index.html").write_text("\n".join(out), encoding="utf-8")
+allout += ['<h2 class="grp">🏗 受注した工事</h2>'] + all_uke + ['<h2 class="grp mitsu">📝 見積段階</h2>'] + all_mitsu
 allout.append("</body></html>")
 (ROOT / ALL_INDEX).write_text("\n".join(allout), encoding="utf-8")
 print("ok")
