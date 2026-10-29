@@ -152,5 +152,35 @@
    "honmoku-doc5",
    "0.45m3吊り降ろし検討書（65tラフター）"
   ]
+ ],
+ "渋谷区東3-15-8（小澤ビル）": [
+  [
+   "shibuya-higashi-doc1",
+   "解体の流れ（説明資料）"
+  ],
+  [
+   "shibuya-higashi-doc2",
+   "作業フロー図"
+  ],
+  [
+   "shibuya-higashi-doc3",
+   "0工程表"
+  ],
+  [
+   "shibuya-higashi-doc4",
+   "0.45重機 揚重検討書"
+  ],
+  [
+   "shibuya-higashi-doc5",
+   "重機揚重計画図（パターン1・今の計画）"
+  ],
+  [
+   "shibuya-higashi-doc6",
+   "重機揚重計画図（パターン2・埋設物がある場合）"
+  ],
+  [
+   "shibuya-higashi-doc7",
+   "仮設計画図（平面・立面4面・断面2方向）"
+  ]
  ]
 }
