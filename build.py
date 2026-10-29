@@ -78,6 +78,14 @@ a.btn{{display:block;margin:8px 16px;padding:16px;background:#fff;border-radius:
   color:#222;text-decoration:none;font-size:17px;box-shadow:0 1px 3px rgba(0,0,0,.15)}}
 p.note{{margin:10px 16px;font-size:14px;color:#555}}
 img{{display:block;width:100%;height:auto;margin:0 0 12px;background:#fff}}
+details.site{{margin:8px 12px;background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.15)}}
+details.site>summary{{list-style:none;cursor:pointer;padding:16px 44px 16px 16px;font-size:17px;font-weight:bold;position:relative}}
+details.site>summary::-webkit-details-marker{{display:none}}
+details.site>summary::after{{content:"▼";position:absolute;right:16px;top:50%;transform:translateY(-50%) rotate(-90deg);color:#e4007f;font-size:14px;transition:transform .15s}}
+details.site[open]>summary::after{{transform:translateY(-50%)}}
+details.site[open]>summary{{border-bottom:1px solid #eee;color:#e4007f}}
+details.site a.btn{{margin:8px 10px;background:#fafafa}}
+details.site>div{{padding:2px 0 8px}}
 div.ret{{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #f0b400;
   border-radius:10px;font-size:15px;line-height:1.6}}
 </style></head><body>
@@ -96,11 +104,11 @@ def page_count(key):
     return len(pages(key))
 
 out = [HEAD.format(title="各現場の資料"), "<header>各現場の資料（菊建興業）</header>",
-       '<p class="note">資料をタッチ → 画像を指で広げると拡大できます。</p>', RETURN]
+       '<p class="note">現場名をタッチすると資料が出ます → 資料をタッチ → 画像を指で広げると拡大できます。</p>', RETURN]
 # ホーム画面に追加したとき、この一覧が開くように manifest を外す（iPhone は manifest があると start_url＝入口の一覧を開いてしまう。2026-10-25 確認）
 # manifest が無ければ、iPhone は開いているページの URL をそのまま登録する
 allout = [HEAD.format(title="全部の資料（見積段階も含む）").replace('<link rel="manifest" href="manifest.json">', "").replace('content="現場資料"', 'content="全部の資料"'), "<header>全部の資料（見積段階も含む）</header>",
-          '<p class="note">見積段階の資料も入っています。URL を社外の人に送らないでください。</p>']
+          '<p class="note">見積段階の資料も入っています。URL を社外の人に送らないでください。<br>現場名をタッチすると資料が出ます。</p>']
 for site, docs in SITES:
     links = []  # 一覧に出すボタン（INDEX_SITES / INDEX_LINKS にあるものだけ）
     all_links = []  # 酒井さん専用の一覧（全部）
@@ -134,12 +142,13 @@ for site, docs in SITES:
               f'<video src="{src}" controls playsinline preload="metadata" style="display:block;width:100%;height:auto;background:#000"></video>',
               RETURN + '</body></html>']
         (ROOT / f"{key}.html").write_text("\n".join(pg), encoding="utf-8")
+    # 現場名のトグル（タッチで開くと資料が並ぶ）。現場が増えて一覧が長くなったため（2026-10-29 酒井さん）
     if links:
-        out.append(f"<h2>{html.escape(site)}</h2>")
-        out.extend(links)
+        out.append(f'<details class="site"><summary>{html.escape(site)}</summary><div>')
+        out.extend(links); out.append("</div></details>")
     if all_links:
-        allout.append(f"<h2>{html.escape(site)}</h2>")
-        allout.extend(all_links)
+        allout.append(f'<details class="site"><summary>{html.escape(site)}</summary><div>')
+        allout.extend(all_links); allout.append("</div></details>")
 for _fn, _site in SHARE_PAGES.items():
     _b = []
     for site, docs in SITES:

@@ -16,17 +16,26 @@ a.btn{display:block;margin:8px 16px;padding:16px;background:#fff;border-radius:1
   color:#222;text-decoration:none;font-size:17px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
 p.note{margin:10px 16px;font-size:14px;color:#555}
 img{display:block;width:100%;height:auto;margin:0 0 12px;background:#fff}
+details.site{margin:8px 12px;background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+details.site>summary{list-style:none;cursor:pointer;padding:16px 44px 16px 16px;font-size:17px;font-weight:bold;position:relative}
+details.site>summary::-webkit-details-marker{display:none}
+details.site>summary::after{content:"▼";position:absolute;right:16px;top:50%;transform:translateY(-50%) rotate(-90deg);color:#e4007f;font-size:14px;transition:transform .15s}
+details.site[open]>summary::after{transform:translateY(-50%)}
+details.site[open]>summary{border-bottom:1px solid #eee;color:#e4007f}
+details.site a.btn{margin:8px 10px;background:#fafafa}
+details.site>div{padding:2px 0 8px}
 div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #f0b400;
   border-radius:10px;font-size:15px;line-height:1.6}
 </style></head><body>
 
 <header>全部の資料（見積段階も含む）</header>
-<p class="note">見積段階の資料も入っています。URL を社外の人に送らないでください。</p>
-<h2>江東区福住4階建建物解体工事</h2>
+<p class="note">見積段階の資料も入っています。URL を社外の人に送らないでください。<br>現場名をタッチすると資料が出ます。</p>
+<details class="site"><summary>江東区福住4階建建物解体工事</summary><div>
 <a class="btn" href="fukuzumi-koutei.html">📄 工程表</a>
 <a class="btn" href="fukuzumi-kasetsu.html">📄 仮設計画図（修正版）（5枚）</a>
 <a class="btn" href="fukuzumi-sekou.html">📄 施工計画図（11枚）</a>
-<h2>九段南計画解体工事</h2>
+</div></details>
+<details class="site"><summary>九段南計画解体工事</summary><div>
 <a class="btn" href="kudan-koutei.html">📄 工程表（地下解体）</a>
 <a class="btn" href="kudan-flow.html">📄 作業フロー図（地下解体）</a>
 <a class="btn" href="kudan-step.html">📄 解体の流れ・ステップ図（地下解体）（6枚）</a>
@@ -34,10 +43,12 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="kudan-3d-trial.html">🧪 試作 3Dモデル 新しい重機の形（指で回せます）</a>
 <a class="btn" href="kudan-video.html">🎬 動画 地下解体の作業手順（ナレーション付き）</a>
 <a class="btn" href="kudan-anim-trial.html">🎬 動画（試作）重機が動く 全編（約6.7分）</a>
-<h2>都営保木間第５アパート除却工事</h2>
+</div></details>
+<details class="site"><summary>都営保木間第５アパート除却工事</summary><div>
 <a class="btn" href="hokima-annai.html">📄 現場案内図</a>
 <a class="btn" href="hokima-sekou.html">📄 施工計画図（6枚）</a>
-<h2>（仮称）世田谷区砧6-25 自走式立体駐車場解体工事</h2>
+</div></details>
+<details class="site"><summary>（仮称）世田谷区砧6-25 自走式立体駐車場解体工事</summary><div>
 <a class="btn" href="kinuta-koutei.html">📄 工程表（10/28着工）</a>
 <a class="btn" href="kinuta-rittyu-doc1.html">📄 解体の流れ（ステップ図）（4枚）</a>
 <a class="btn" href="kinuta-rittyu-doc2.html">📄 工程表（カレンダー形式）</a>
@@ -47,7 +58,8 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="kinuta-rittyu-doc6.html">📄 通行経路図（通行禁止道路通行許可申請用）</a>
 <a class="btn" href="kinuta-rittyu-3d.html">🔄 3Dモデル 解体の流れ（指で回せます）</a>
 <a class="btn" href="kinuta-rittyu-video.html">🎬 動画 解体の流れ（ナレーション付き）</a>
-<h2>川口市上青木西 日本通運川口中央倉庫解体工事</h2>
+</div></details>
+<details class="site"><summary>川口市上青木西 日本通運川口中央倉庫解体工事</summary><div>
 <a class="btn" href="kawaguchi-kamiaoki-doc1.html">📄 解体の流れ（ステップ図）（3枚）</a>
 <a class="btn" href="kawaguchi-kamiaoki-doc2.html">📄 作業フロー図</a>
 <a class="btn" href="kawaguchi-kamiaoki-doc3.html">📄 0工程表</a>
@@ -57,7 +69,8 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="kawaguchi-kamiaoki-3d-trial.html">🧪 試作 3Dモデル 新しい重機の形（指で回せます）</a>
 <a class="btn" href="kawaguchi-kamiaoki-video.html">🎬 動画 解体の手順（ナレーション付き）</a>
 <a class="btn" href="kawaguchi-kamiaoki-anim-trial.html">🎬 動画（試作）重機が動く 全編（約4.2分）</a>
-<h2>白子川（その139）既設護岸撤去（東大泉）</h2>
+</div></details>
+<details class="site"><summary>白子川（その139）既設護岸撤去（東大泉）</summary><div>
 <a class="btn" href="oizumi-doc1.html">📄 施工の流れ（ステップ図）（4枚）</a>
 <a class="btn" href="oizumi-doc2.html">📄 0工程表（実働48日）</a>
 <a class="btn" href="oizumi-doc3.html">📄 作業フロー図</a>
@@ -69,7 +82,8 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="oizumi-3d-trial.html">🧪 試作 3Dモデル 新しい重機の形（指で回せます）</a>
 <a class="btn" href="oizumi-video.html">🎬 動画 護岸撤去の作業ステップ（ナレーション付き）</a>
 <a class="btn" href="oizumi-anim-trial.html">🎬 動画（試作）重機が動く 全編（約4分）</a>
-<h2>福住4階建建物解体工事</h2>
+</div></details>
+<details class="site"><summary>福住4階建建物解体工事</summary><div>
 <a class="btn" href="fukuzumi-yamadome-doc1.html">📄 東側 地中障害撤去（山留め）施工の流れ（2枚）</a>
 <a class="btn" href="fukuzumi-yamadome-doc2.html">📄 東側 地中障害撤去（山留め）作業フロー図</a>
 <a class="btn" href="fukuzumi-yamadome-doc3.html">📄 東側 地中障害撤去（山留め）0工程表</a>
@@ -81,7 +95,8 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="fukuzumi-yamadome-jpile-video.html">🎬 動画 東側 地中障害撤去の山留め（参考：Jパイル案）（ナレーション付き）</a>
 <a class="btn" href="fukuzumi-yamadome-anim-trial.html">🎬 動画（試作）重機が動く 全編（約4.2分）</a>
 <a class="btn" href="fukuzumi-yamadome-jpile-anim-trial.html">🎬 動画（試作）重機が動く 全編（約3分）</a>
-<h2>第一矢来ビル解体工事</h2>
+</div></details>
+<details class="site"><summary>第一矢来ビル解体工事</summary><div>
 <a class="btn" href="yarai-doc1.html">📄 解体の流れ（ステップ図）（2枚）</a>
 <a class="btn" href="yarai-doc2.html">📄 作業フロー図</a>
 <a class="btn" href="yarai-doc3.html">📄 0工程表</a>
@@ -91,7 +106,8 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="yarai-3d-trial.html">🧪 試作 3Dモデル 新しい重機の形（指で回せます）</a>
 <a class="btn" href="yarai-video.html">🎬 動画 解体手順（ナレーション付き）</a>
 <a class="btn" href="yarai-anim-trial.html">🎬 動画（試作）重機が動く 全編（約3分）</a>
-<h2>日本橋馬喰町1-10-2 解体工事</h2>
+</div></details>
+<details class="site"><summary>日本橋馬喰町1-10-2 解体工事</summary><div>
 <a class="btn" href="bakuro-doc1.html">📄 解体の流れ（ステップ図）（2枚）</a>
 <a class="btn" href="bakuro-doc2.html">📄 作業フロー図</a>
 <a class="btn" href="bakuro-doc3.html">📄 0工程表</a>
@@ -100,7 +116,8 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="bakuro-3d-trial.html">🧪 試作 3Dモデル 新しい重機の形（指で回せます）</a>
 <a class="btn" href="bakuro-video.html">🎬 動画 解体手順（ナレーション付き）</a>
 <a class="btn" href="bakuro-anim-trial.html">🎬 動画（試作）重機が動く 全編（約3.5分）</a>
-<h2>本牧工場 700ton地下受水槽解体工事</h2>
+</div></details>
+<details class="site"><summary>本牧工場 700ton地下受水槽解体工事</summary><div>
 <a class="btn" href="honmoku-doc1.html">📄 解体手順の説明（4枚）</a>
 <a class="btn" href="honmoku-doc2.html">📄 0工程表（実働17日）</a>
 <a class="btn" href="honmoku-doc3.html">📄 作業フロー図</a>
@@ -108,7 +125,8 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="honmoku-doc5.html">📄 0.45m3吊り降ろし検討書（65tラフター）（4枚）</a>
 <a class="btn" href="honmoku-3d.html">🔄 3Dモデル 地下受水槽の解体手順（指で回せます）</a>
 <a class="btn" href="honmoku-video.html">🎬 動画 地下受水槽の解体手順（ナレーション付き）</a>
-<h2>渋谷区東3-15-8（小澤ビル）</h2>
+</div></details>
+<details class="site"><summary>渋谷区東3-15-8（小澤ビル）</summary><div>
 <a class="btn" href="shibuya-higashi-doc1.html">📄 解体の流れ（説明資料）（5枚）</a>
 <a class="btn" href="shibuya-higashi-doc2.html">📄 作業フロー図</a>
 <a class="btn" href="shibuya-higashi-doc3.html">📄 0工程表</a>
@@ -118,6 +136,8 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="shibuya-higashi-doc7.html">📄 仮設計画図（平面・立面4面・断面2方向）（4枚）</a>
 <a class="btn" href="shibuya-higashi-3d.html">🔄 3Dモデル 解体手順（指で回せます）</a>
 <a class="btn" href="shibuya-higashi-video.html">🎬 動画 解体手順（ナレーション付き）</a>
-<h2>大田区上池台5丁目</h2>
+</div></details>
+<details class="site"><summary>大田区上池台5丁目</summary><div>
 <a class="btn" href="kamiikedai5-3d.html">🔄 3Dモデル 解体の手順（指で回せます）</a>
+</div></details>
 </body></html>
