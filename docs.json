@@ -260,5 +260,23 @@
    "natsumidai-doc4",
    "仮設計画図（平面）"
   ]
+ ],
+ "大田区上池台5丁目": [
+  [
+   "kamiikedai5-doc1",
+   "解体の流れ（ステップ図）"
+  ],
+  [
+   "kamiikedai5-doc2",
+   "作業フロー図"
+  ],
+  [
+   "kamiikedai5-doc3",
+   "0工程表"
+  ],
+  [
+   "kamiikedai5-doc4",
+   "総合仮設計画図"
+  ]
  ]
 }
