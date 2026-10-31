@@ -27,7 +27,8 @@ SITES = [
 # 見積段階・提案用の3D/動画（extra.json・videos.json で足されるもの）は、ページは作るが一覧には出さない
 # （2026-10-25 酒井さん：決まっていない仕事が職人さんに見えると混乱する）。一覧に出すときはここに足す
 INDEX_SITES = [s for s, _ in SITES]
-INDEX_LINKS = {"kudan-3d.html", "kinuta-rittyu-3d.html", "kinuta-rittyu-video.html"}
+INDEX_LINKS = {"kudan-3d.html", "kinuta-rittyu-3d.html", "kinuta-rittyu-video.html",
+               "tvtokyo-abe.html"}  # 2026-10-31 酒井さん：テレ東の動画は職人さん用の一覧にも出す
 # 現場ごとの「LINEで送る用」のページ（その現場の資料だけを並べる。元請様・協力会社さんにも送れる）。{"ファイル名": "現場名"}
 SHARE_PAGES = {"kinuta-rittyu.html": "（仮称）世田谷区砧6-25 自走式立体駐車場解体工事"}  # 2026-10-27 酒井さん
 # 酒井さん専用の一覧（見積段階の3D・動画も含めて全部。iPad のホーム画面用）。名前は推測されにくくしてある
