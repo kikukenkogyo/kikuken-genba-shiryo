@@ -283,6 +283,14 @@ out.append("</body></html>")
 (ROOT / "index.html").write_text("\n".join(out), encoding="utf-8")
 _st = ROOT / "status.json"
 STATUS = json.loads(_st.read_text(encoding="utf-8")) if _st.exists() else {}
+# python build.py --touch 現場名 … 資料を載せた現場の札を更新（publish_docs.py / publish_3d.py が呼ぶ）
+#   札が無い現場 →「作成中」で足す。作成中の現場 → 日付を今日にして一番上へ。提出済み・進行中・過去の札は替えない
+import sys, datetime
+if "--touch" in sys.argv:
+    _site = sys.argv[sys.argv.index("--touch") + 1]
+    _o = STATUS.setdefault(_site, {"status": "sakusei"})
+    if _o["status"] == "sakusei": _o["updated"] = datetime.date.today().isoformat()
+    _st.write_text(json.dumps(STATUS, ensure_ascii=False, indent=1), encoding="utf-8")
 allout += [SAKAI_TOP, '<div id="pool" hidden>'] + all_mitsu + ["</div>",
            "<script>const STATUS0=" + json.dumps(STATUS, ensure_ascii=False) + ";</script>", SAKAI_JS]
 allout.append("</body></html>")
