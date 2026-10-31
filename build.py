@@ -100,6 +100,116 @@ div.ret{{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid 
 RETURN = ('<div class="ret"><b>見終わったら</b><br>'
           '画面の一番左上の <b>✕</b> をタッチすると菊建ページに戻ります</div>')
 
+# 酒井さん専用の一覧の上の部分（検索・4つの段）と、札を替えるボタンの動き（2026-10-31 酒井さん）
+#   段: sakusei=📝資料作成中 / shinkou=🏗進行中の工事 / teishutsu=📤見積提出済み / kako=📁過去の資料
+#   札は status.json。{"現場名": {"status": "sakusei", "updated": "2026-10-31", "date": "提出日"}}
+#   status.json に無い現場は「作成中」に出る（新しく載せた見積の資料）
+#   ボタンで替えると GitHub の status.json を直接書き換える（鍵＝このリポジトリだけ書ける Fine-grained token を iPad に1回入れる）
+SAKAI_TOP = """<style>
+#q{display:block;box-sizing:border-box;width:calc(100% - 24px);margin:10px 12px;padding:12px 14px;font-size:17px;border:2px solid #e4007f;border-radius:10px}
+details.grp{margin:14px 0 0}
+details.grp>summary{list-style:none;cursor:pointer;margin:8px 12px 6px;padding:10px 14px;background:#e4007f;color:#fff;border-radius:8px;font-size:16px;font-weight:bold}
+details.grp>summary::-webkit-details-marker{display:none}
+details.grp>summary::before{content:"▶ ";font-size:12px}
+details.grp[open]>summary::before{content:"▼ "}
+details.grp.shinkou>summary{background:#d35400}
+details.grp.teishutsu>summary{background:#2e86c1}
+details.grp.kako>summary{background:#6c757d}
+details.grp p.empty{margin:4px 16px;color:#888;font-size:14px}
+span.day{font-weight:normal;font-size:13px;color:#2e86c1;margin-left:8px}
+div.ops{display:flex;flex-wrap:wrap;gap:6px;margin:8px 10px}
+div.ops button{flex:1 1 22%;padding:10px 4px;font-size:14px;border:1px solid #ccc;border-radius:8px;background:#fff;color:#333}
+div.ops button.on{background:#e4007f;color:#fff;border-color:#e4007f;font-weight:bold}
+div.ops button.ask{flex-basis:100%;background:#fff4d6;border-color:#f0b400}
+details.cfg{margin:30px 12px;font-size:14px;color:#555}
+details.cfg input{width:100%;box-sizing:border-box;padding:10px;font-size:15px;margin:6px 0}
+details.cfg button{padding:10px 16px;font-size:15px;margin-right:8px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:12px 18px;border-radius:10px;font-size:15px;display:none;z-index:9}
+</style>
+<input id="q" type="search" placeholder="🔍 現場名でさがす（例：福住）">
+<details class="grp sakusei" open><summary>📝 資料作成中 <span class="n"></span></summary><div class="box"></div></details>
+<details class="grp shinkou" open><summary>🏗 進行中の工事 <span class="n"></span></summary><div class="box"></div></details>
+<details class="grp teishutsu"><summary>📤 見積提出済み・返事待ち <span class="n"></span></summary><div class="box"></div></details>
+<details class="grp kako"><summary>📁 過去の資料（終わった工事・取れなかった見積） <span class="n"></span></summary><div class="box"></div></details>
+<details class="cfg"><summary>⚙ 札を替えるボタンの設定（最初の1回だけ）</summary>
+<p>GitHub の鍵（github_pat_ で始まる文字）を貼り付けて「保存」を押してください。鍵はこの iPad の中にだけ残ります。</p>
+<input id="tok" type="password" placeholder="github_pat_…" autocomplete="off">
+<button id="tokSave">保存</button><button id="tokDel">鍵を消す</button>
+<p id="tokState"></p></details>
+<div id="toast"></div>
+"""
+SAKAI_JS = r"""<script>
+const API='https://api.github.com/repos/kikukenkogyo/kikuken-genba-shiryo/contents/status.json';
+const LABEL={sakusei:'作成中',shinkou:'進行中',teishutsu:'提出済み',kako:'過去'};
+let ST=STATUS0;
+const tok=()=>localStorage.getItem('ghtok')||'';
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',3000);}
+function md(d){if(!d)return'';const p=d.split('-');return (+p[1])+'/'+(+p[2]);}
+function render(){
+  const els=[...document.querySelectorAll('details.site[data-site]')];
+  const st=s=>(ST[s]&&ST[s].status)||'sakusei';
+  els.sort((a,b)=>{const x=ST[a.dataset.site]||{},y=ST[b.dataset.site]||{};
+    return ((y.date||y.updated||'')).localeCompare(x.date||x.updated||'');});
+  for(const k in LABEL){document.querySelector('details.grp.'+k+' .box').innerHTML='';}
+  for(const el of els){
+    const s=el.dataset.site,k=st(s),info=ST[s]||{};
+    el.querySelector('span.day').textContent=(k==='teishutsu'&&info.date)?md(info.date)+' 提出':'';
+    const ops=el.querySelector('div.ops');ops.innerHTML='';
+    for(const kk in LABEL){const b=document.createElement('button');b.textContent=LABEL[kk];if(kk===k)b.className='on';
+      b.onclick=()=>{if(kk!==k)save(s,kk);};ops.appendChild(b);}
+    const a=document.createElement('button');a.className='ask';a.textContent='📋 Claudeに頼む（現場名をコピー）';
+    a.onclick=()=>copy('【'+s+'】の続き：');ops.appendChild(a);
+    document.querySelector('details.grp.'+k+' .box').appendChild(el);
+  }
+  for(const k in LABEL){const g=document.querySelector('details.grp.'+k),n=g.querySelectorAll('details.site').length;
+    g.querySelector('span.n').textContent='（'+n+'）';
+    if(!n)g.querySelector('.box').innerHTML='<p class="empty">ありません</p>';}
+  filter();
+}
+function filter(){
+  const q=document.getElementById('q').value.trim();
+  for(const el of document.querySelectorAll('details.site[data-site]'))el.style.display=(!q||el.dataset.site.includes(q))?'':'none';
+  if(q)for(const g of document.querySelectorAll('details.grp'))g.open=true;
+}
+function copy(t){
+  const done=()=>toast('コピーしました。Claudeのアプリに貼り付けて、続きを話してください');
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(done,()=>fb());else fb();
+  function fb(){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();document.execCommand('copy');x.remove();done();}
+}
+const dec=b=>new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\n/g,'')),c=>c.charCodeAt(0)));
+function enc(s){const u=new TextEncoder().encode(s);let r='';for(const c of u)r+=String.fromCharCode(c);return btoa(r);}
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+async function save(site,k){
+  if(!tok()){alert('最初に、ページの一番下の「⚙ 札を替えるボタンの設定」で鍵を入れてください');return;}
+  toast('「'+LABEL[k]+'」に替えています…');
+  const H={Authorization:'Bearer '+tok(),Accept:'application/vnd.github+json'};
+  for(let i=0;i<3;i++){
+    const r=await fetch(API+'?t='+Date.now(),{headers:H,cache:'no-store'});
+    if(!r.ok){alert('GitHub に入れませんでした（'+r.status+'）。鍵が正しいか確かめてください');return;}
+    const j=await r.json(),obj=JSON.parse(dec(j.content));
+    const o=Object.assign({},obj[site]||{});o.status=k;o.updated=today();
+    if(k==='teishutsu'&&!o.date)o.date=today();
+    obj[site]=o;
+    const p=await fetch(API,{method:'PUT',headers:H,body:JSON.stringify({message:'札を替える：'+site+' → '+LABEL[k]+'（iPad）',content:enc(JSON.stringify(obj,null,1)),sha:j.sha})});
+    if(p.ok){ST=obj;render();toast('「'+site+'」を「'+LABEL[k]+'」に移しました');return;}
+    if(p.status!==409&&p.status!==422){alert('書き換えできませんでした（'+p.status+'）');return;}
+  }
+  alert('ほかの書き換えとぶつかりました。少し待ってもう一度押してください');
+}
+async function load(){
+  try{
+    if(tok()){const r=await fetch(API+'?t='+Date.now(),{headers:{Authorization:'Bearer '+tok()},cache:'no-store'});
+      if(r.ok){ST=JSON.parse(dec((await r.json()).content));render();return;}}
+    const r=await fetch('status.json?t='+Date.now(),{cache:'no-store'});if(r.ok){ST=await r.json();render();}
+  }catch(e){}
+}
+function tokState(){document.getElementById('tokState').textContent=tok()?'✅ 鍵が入っています（ボタンが使えます）':'まだ鍵が入っていません';}
+document.getElementById('tokSave').onclick=()=>{const v=document.getElementById('tok').value.trim();if(v){localStorage.setItem('ghtok',v);document.getElementById('tok').value='';tokState();toast('鍵を保存しました');load();}};
+document.getElementById('tokDel').onclick=()=>{localStorage.removeItem('ghtok');tokState();toast('鍵を消しました');};
+document.getElementById('q').oninput=filter;
+tokState();render();load();
+</script>"""
+
 def pages(key):
     # img/ の「キー-番号.svg / .jpg」をページ順に返す（render.py が作る）
     files = [f for f in (ROOT / "img").glob(f"{key}-*.*") if f.suffix in (".svg", ".jpg")]
@@ -153,9 +263,11 @@ for site, docs in SITES:
         out.append(f'<details class="site"><summary>{html.escape(site)}</summary><div>')
         out.extend(links); out.append("</div></details>")
     if all_links:
-        grp = all_uke if site in UKEOI_SITES else all_mitsu
-        grp.append(f'<details class="site"><summary>{html.escape(site)}</summary><div>')
-        grp.extend(all_links); grp.append("</div></details>")
+        # 酒井さん専用の一覧は、status.json の札（作成中／進行中／提出済み／過去）で並べ分ける（2026-10-31 酒井さん）
+        # 並べ分けはページを開いたときに JS がやる（iPad のボタンで札を替えたら、すぐ並び替わるように）
+        all_mitsu.append(f'<details class="site" data-site="{html.escape(site)}"><summary>{html.escape(site)}<span class="day"></span></summary><div>'
+                         '<div class="ops"></div>')
+        all_mitsu.extend(all_links); all_mitsu.append("</div></details>")
 for _fn, _site in SHARE_PAGES.items():
     _b = []
     for site, docs in SITES:
@@ -169,7 +281,10 @@ for _fn, _site in SHARE_PAGES.items():
         f"<header>{html.escape(_site)}</header>", '<p class="note">資料をタッチすると開きます。図面は指で広げると拡大できます。3Dモデルは指で回せます。</p>'] + _b + ["</body></html>"]), encoding="utf-8")
 out.append("</body></html>")
 (ROOT / "index.html").write_text("\n".join(out), encoding="utf-8")
-allout += ['<h2 class="grp">🏗 受注した工事</h2>'] + all_uke + ['<h2 class="grp mitsu">📝 見積段階</h2>'] + all_mitsu
+_st = ROOT / "status.json"
+STATUS = json.loads(_st.read_text(encoding="utf-8")) if _st.exists() else {}
+allout += [SAKAI_TOP, '<div id="pool" hidden>'] + all_mitsu + ["</div>",
+           "<script>const STATUS0=" + json.dumps(STATUS, ensure_ascii=False) + ";</script>", SAKAI_JS]
 allout.append("</body></html>")
 (ROOT / ALL_INDEX).write_text("\n".join(allout), encoding="utf-8")
 print("ok")

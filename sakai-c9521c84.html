@@ -32,13 +32,46 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 
 <header>全部の資料（見積段階も含む）</header>
 <p class="note">見積段階の資料も入っています。URL を社外の人に送らないでください。<br>現場名をタッチすると資料が出ます。</p>
-<h2 class="grp">🏗 受注した工事</h2>
-<details class="site"><summary>江東区福住4階建建物解体工事</summary><div>
+<style>
+#q{display:block;box-sizing:border-box;width:calc(100% - 24px);margin:10px 12px;padding:12px 14px;font-size:17px;border:2px solid #e4007f;border-radius:10px}
+details.grp{margin:14px 0 0}
+details.grp>summary{list-style:none;cursor:pointer;margin:8px 12px 6px;padding:10px 14px;background:#e4007f;color:#fff;border-radius:8px;font-size:16px;font-weight:bold}
+details.grp>summary::-webkit-details-marker{display:none}
+details.grp>summary::before{content:"▶ ";font-size:12px}
+details.grp[open]>summary::before{content:"▼ "}
+details.grp.shinkou>summary{background:#d35400}
+details.grp.teishutsu>summary{background:#2e86c1}
+details.grp.kako>summary{background:#6c757d}
+details.grp p.empty{margin:4px 16px;color:#888;font-size:14px}
+span.day{font-weight:normal;font-size:13px;color:#2e86c1;margin-left:8px}
+div.ops{display:flex;flex-wrap:wrap;gap:6px;margin:8px 10px}
+div.ops button{flex:1 1 22%;padding:10px 4px;font-size:14px;border:1px solid #ccc;border-radius:8px;background:#fff;color:#333}
+div.ops button.on{background:#e4007f;color:#fff;border-color:#e4007f;font-weight:bold}
+div.ops button.ask{flex-basis:100%;background:#fff4d6;border-color:#f0b400}
+details.cfg{margin:30px 12px;font-size:14px;color:#555}
+details.cfg input{width:100%;box-sizing:border-box;padding:10px;font-size:15px;margin:6px 0}
+details.cfg button{padding:10px 16px;font-size:15px;margin-right:8px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:12px 18px;border-radius:10px;font-size:15px;display:none;z-index:9}
+</style>
+<input id="q" type="search" placeholder="🔍 現場名でさがす（例：福住）">
+<details class="grp sakusei" open><summary>📝 資料作成中 <span class="n"></span></summary><div class="box"></div></details>
+<details class="grp shinkou" open><summary>🏗 進行中の工事 <span class="n"></span></summary><div class="box"></div></details>
+<details class="grp teishutsu"><summary>📤 見積提出済み・返事待ち <span class="n"></span></summary><div class="box"></div></details>
+<details class="grp kako"><summary>📁 過去の資料（終わった工事・取れなかった見積） <span class="n"></span></summary><div class="box"></div></details>
+<details class="cfg"><summary>⚙ 札を替えるボタンの設定（最初の1回だけ）</summary>
+<p>GitHub の鍵（github_pat_ で始まる文字）を貼り付けて「保存」を押してください。鍵はこの iPad の中にだけ残ります。</p>
+<input id="tok" type="password" placeholder="github_pat_…" autocomplete="off">
+<button id="tokSave">保存</button><button id="tokDel">鍵を消す</button>
+<p id="tokState"></p></details>
+<div id="toast"></div>
+
+<div id="pool" hidden>
+<details class="site" data-site="江東区福住4階建建物解体工事"><summary>江東区福住4階建建物解体工事<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="fukuzumi-koutei.html">📄 工程表</a>
 <a class="btn" href="fukuzumi-kasetsu.html">📄 仮設計画図（修正版）（5枚）</a>
 <a class="btn" href="fukuzumi-sekou.html">📄 施工計画図（11枚）</a>
 </div></details>
-<details class="site"><summary>九段南計画解体工事</summary><div>
+<details class="site" data-site="九段南計画解体工事"><summary>九段南計画解体工事<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="kudan-koutei.html">📄 工程表（地下解体）</a>
 <a class="btn" href="kudan-flow.html">📄 作業フロー図（地下解体）</a>
 <a class="btn" href="kudan-step.html">📄 解体の流れ・ステップ図（地下解体）（6枚）</a>
@@ -48,11 +81,11 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="kudan-video.html">🎬 動画 地下解体の作業手順（ナレーション付き）</a>
 <a class="btn" href="kudan-anim-trial.html">🎬 動画（試作）重機が動く 全編（約6.7分）</a>
 </div></details>
-<details class="site"><summary>都営保木間第５アパート除却工事</summary><div>
+<details class="site" data-site="都営保木間第５アパート除却工事"><summary>都営保木間第５アパート除却工事<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="hokima-annai.html">📄 現場案内図</a>
 <a class="btn" href="hokima-sekou.html">📄 施工計画図（6枚）</a>
 </div></details>
-<details class="site"><summary>（仮称）世田谷区砧6-25 自走式立体駐車場解体工事</summary><div>
+<details class="site" data-site="（仮称）世田谷区砧6-25 自走式立体駐車場解体工事"><summary>（仮称）世田谷区砧6-25 自走式立体駐車場解体工事<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="kinuta-koutei.html">📄 工程表（10/28着工）</a>
 <a class="btn" href="kinuta-rittyu-doc1.html">📄 解体の流れ（ステップ図）（4枚）</a>
 <a class="btn" href="kinuta-rittyu-doc2.html">📄 工程表（カレンダー形式）</a>
@@ -63,8 +96,7 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="kinuta-rittyu-3d.html">🔄 3Dモデル 解体の流れ（指で回せます）</a>
 <a class="btn" href="kinuta-rittyu-video.html">🎬 動画 解体の流れ（ナレーション付き）</a>
 </div></details>
-<h2 class="grp mitsu">📝 見積段階</h2>
-<details class="site"><summary>川口市上青木西 日本通運川口中央倉庫解体工事</summary><div>
+<details class="site" data-site="川口市上青木西 日本通運川口中央倉庫解体工事"><summary>川口市上青木西 日本通運川口中央倉庫解体工事<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="kawaguchi-kamiaoki-doc1.html">📄 解体の流れ（ステップ図）（3枚）</a>
 <a class="btn" href="kawaguchi-kamiaoki-doc2.html">📄 作業フロー図</a>
 <a class="btn" href="kawaguchi-kamiaoki-doc3.html">📄 0工程表</a>
@@ -75,7 +107,7 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="kawaguchi-kamiaoki-video.html">🎬 動画 解体の手順（ナレーション付き）</a>
 <a class="btn" href="kawaguchi-kamiaoki-anim-trial.html">🎬 動画（試作）重機が動く 全編（約4.2分）</a>
 </div></details>
-<details class="site"><summary>白子川（その139）既設護岸撤去（東大泉）</summary><div>
+<details class="site" data-site="白子川（その139）既設護岸撤去（東大泉）"><summary>白子川（その139）既設護岸撤去（東大泉）<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="oizumi-doc1.html">📄 施工の流れ（ステップ図）（4枚）</a>
 <a class="btn" href="oizumi-doc2.html">📄 0工程表（実働48日）</a>
 <a class="btn" href="oizumi-doc3.html">📄 作業フロー図</a>
@@ -88,7 +120,7 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="oizumi-video.html">🎬 動画 護岸撤去の作業ステップ（ナレーション付き）</a>
 <a class="btn" href="oizumi-anim-trial.html">🎬 動画（試作）重機が動く 全編（約4分）</a>
 </div></details>
-<details class="site"><summary>福住4階建建物解体工事</summary><div>
+<details class="site" data-site="福住4階建建物解体工事"><summary>福住4階建建物解体工事<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="fukuzumi-yamadome-doc1.html">📄 東側 地中障害撤去（山留め）施工の流れ（2枚）</a>
 <a class="btn" href="fukuzumi-yamadome-doc2.html">📄 東側 地中障害撤去（山留め）作業フロー図</a>
 <a class="btn" href="fukuzumi-yamadome-doc3.html">📄 東側 地中障害撤去（山留め）0工程表</a>
@@ -101,7 +133,7 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="fukuzumi-yamadome-anim-trial.html">🎬 動画（試作）重機が動く 全編（約4.2分）</a>
 <a class="btn" href="fukuzumi-yamadome-jpile-anim-trial.html">🎬 動画（試作）重機が動く 全編（約3分）</a>
 </div></details>
-<details class="site"><summary>第一矢来ビル解体工事</summary><div>
+<details class="site" data-site="第一矢来ビル解体工事"><summary>第一矢来ビル解体工事<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="yarai-doc1.html">📄 解体の流れ（ステップ図）（2枚）</a>
 <a class="btn" href="yarai-doc2.html">📄 作業フロー図</a>
 <a class="btn" href="yarai-doc3.html">📄 0工程表</a>
@@ -112,7 +144,7 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="yarai-video.html">🎬 動画 解体手順（ナレーション付き）</a>
 <a class="btn" href="yarai-anim-trial.html">🎬 動画（試作）重機が動く 全編（約3分）</a>
 </div></details>
-<details class="site"><summary>日本橋馬喰町1-10-2 解体工事</summary><div>
+<details class="site" data-site="日本橋馬喰町1-10-2 解体工事"><summary>日本橋馬喰町1-10-2 解体工事<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="bakuro-doc1.html">📄 解体の流れ（ステップ図）（2枚）</a>
 <a class="btn" href="bakuro-doc2.html">📄 作業フロー図</a>
 <a class="btn" href="bakuro-doc3.html">📄 0工程表</a>
@@ -122,7 +154,7 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="bakuro-video.html">🎬 動画 解体手順（ナレーション付き）</a>
 <a class="btn" href="bakuro-anim-trial.html">🎬 動画（試作）重機が動く 全編（約3.5分）</a>
 </div></details>
-<details class="site"><summary>本牧工場 700ton地下受水槽解体工事</summary><div>
+<details class="site" data-site="本牧工場 700ton地下受水槽解体工事"><summary>本牧工場 700ton地下受水槽解体工事<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="honmoku-doc1.html">📄 解体手順の説明（4枚）</a>
 <a class="btn" href="honmoku-doc2.html">📄 0工程表（実働17日）</a>
 <a class="btn" href="honmoku-doc3.html">📄 作業フロー図</a>
@@ -131,7 +163,7 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="honmoku-3d.html">🔄 3Dモデル 地下受水槽の解体手順（指で回せます）</a>
 <a class="btn" href="honmoku-video.html">🎬 動画 地下受水槽の解体手順（ナレーション付き）</a>
 </div></details>
-<details class="site"><summary>渋谷区東3-15-8（小澤ビル）</summary><div>
+<details class="site" data-site="渋谷区東3-15-8（小澤ビル）"><summary>渋谷区東3-15-8（小澤ビル）<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="shibuya-higashi-doc1.html">📄 解体の流れ（説明資料）（5枚）</a>
 <a class="btn" href="shibuya-higashi-doc2.html">📄 作業フロー図</a>
 <a class="btn" href="shibuya-higashi-doc3.html">📄 0工程表</a>
@@ -142,7 +174,7 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="shibuya-higashi-3d.html">🔄 3Dモデル 解体手順（指で回せます）</a>
 <a class="btn" href="shibuya-higashi-video.html">🎬 動画 解体手順（ナレーション付き）</a>
 </div></details>
-<details class="site"><summary>染井第2コミュニティ広場拡張工事</summary><div>
+<details class="site" data-site="染井第2コミュニティ広場拡張工事"><summary>染井第2コミュニティ広場拡張工事<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="somei2-doc1.html">📄 解体の流れ（ステップ図）（2枚）</a>
 <a class="btn" href="somei2-doc2.html">📄 総合仮設計画図（簡易平面図）</a>
 <a class="btn" href="somei2-doc3.html">📄 作業フロー図</a>
@@ -150,7 +182,7 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="somei2-3d.html">🔄 3Dモデル RC倉庫・パーゴラ解体の手順（指で回せます）</a>
 <a class="btn" href="somei2-video.html">🎬 動画 RC倉庫・パーゴラ解体の手順（ナレーション付き）</a>
 </div></details>
-<details class="site"><summary>反町2丁目16-5 コーポサトック解体工事</summary><div>
+<details class="site" data-site="反町2丁目16-5 コーポサトック解体工事"><summary>反町2丁目16-5 コーポサトック解体工事<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="sorimachi-doc1.html">📄 解体の流れ（説明資料）（3枚）</a>
 <a class="btn" href="sorimachi-doc2.html">📄 作業フロー図</a>
 <a class="btn" href="sorimachi-doc3.html">📄 0工程表</a>
@@ -164,7 +196,7 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="sorimachi-3d.html">🔄 3Dモデル 解体の手順（指で回せます）</a>
 <a class="btn" href="sorimachi-video.html">🎬 動画 解体の手順（ナレーション付き）</a>
 </div></details>
-<details class="site"><summary>船橋市夏見台4丁目</summary><div>
+<details class="site" data-site="船橋市夏見台4丁目"><summary>船橋市夏見台4丁目<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="natsumidai-doc1.html">📄 解体の流れ（ステップ図）（2枚）</a>
 <a class="btn" href="natsumidai-doc2.html">📄 作業フロー図</a>
 <a class="btn" href="natsumidai-doc3.html">📄 0工程表</a>
@@ -172,7 +204,80 @@ div.ret{margin:10px 16px;padding:12px 14px;background:#fff4d6;border:2px solid #
 <a class="btn" href="natsumidai-3d.html">🔄 3Dモデル 解体の手順（指で回せます）</a>
 <a class="btn" href="natsumidai-video.html">🎬 動画 解体の手順（ナレーション付き）</a>
 </div></details>
-<details class="site"><summary>大田区上池台5丁目</summary><div>
+<details class="site" data-site="大田区上池台5丁目"><summary>大田区上池台5丁目<span class="day"></span></summary><div><div class="ops"></div>
 <a class="btn" href="kamiikedai5-3d.html">🔄 3Dモデル 解体の手順（指で回せます）</a>
 </div></details>
+</div>
+<script>const STATUS0={"江東区福住4階建建物解体工事": {"status": "shinkou", "updated": "2026-10-31"}, "九段南計画解体工事": {"status": "shinkou", "updated": "2026-10-31"}, "都営保木間第５アパート除却工事": {"status": "shinkou", "updated": "2026-10-31"}, "（仮称）世田谷区砧6-25 自走式立体駐車場解体工事": {"status": "shinkou", "updated": "2026-10-31"}, "船橋市夏見台4丁目": {"status": "sakusei", "updated": "2026-10-31"}, "大田区上池台5丁目": {"status": "sakusei", "updated": "2026-10-31"}, "川口市上青木西 日本通運川口中央倉庫解体工事": {"status": "teishutsu", "updated": "2026-10-31"}, "白子川（その139）既設護岸撤去（東大泉）": {"status": "teishutsu", "updated": "2026-10-31"}, "福住4階建建物解体工事": {"status": "teishutsu", "updated": "2026-10-31"}, "第一矢来ビル解体工事": {"status": "teishutsu", "updated": "2026-10-31"}, "日本橋馬喰町1-10-2 解体工事": {"status": "teishutsu", "updated": "2026-10-31"}, "本牧工場 700ton地下受水槽解体工事": {"status": "teishutsu", "updated": "2026-10-31"}, "渋谷区東3-15-8（小澤ビル）": {"status": "teishutsu", "updated": "2026-10-31"}, "染井第2コミュニティ広場拡張工事": {"status": "teishutsu", "updated": "2026-10-31"}, "反町2丁目16-5 コーポサトック解体工事": {"status": "teishutsu", "updated": "2026-10-31"}};</script>
+<script>
+const API='https://api.github.com/repos/kikukenkogyo/kikuken-genba-shiryo/contents/status.json';
+const LABEL={sakusei:'作成中',shinkou:'進行中',teishutsu:'提出済み',kako:'過去'};
+let ST=STATUS0;
+const tok=()=>localStorage.getItem('ghtok')||'';
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',3000);}
+function md(d){if(!d)return'';const p=d.split('-');return (+p[1])+'/'+(+p[2]);}
+function render(){
+  const els=[...document.querySelectorAll('details.site[data-site]')];
+  const st=s=>(ST[s]&&ST[s].status)||'sakusei';
+  els.sort((a,b)=>{const x=ST[a.dataset.site]||{},y=ST[b.dataset.site]||{};
+    return ((y.date||y.updated||'')).localeCompare(x.date||x.updated||'');});
+  for(const k in LABEL){document.querySelector('details.grp.'+k+' .box').innerHTML='';}
+  for(const el of els){
+    const s=el.dataset.site,k=st(s),info=ST[s]||{};
+    el.querySelector('span.day').textContent=(k==='teishutsu'&&info.date)?md(info.date)+' 提出':'';
+    const ops=el.querySelector('div.ops');ops.innerHTML='';
+    for(const kk in LABEL){const b=document.createElement('button');b.textContent=LABEL[kk];if(kk===k)b.className='on';
+      b.onclick=()=>{if(kk!==k)save(s,kk);};ops.appendChild(b);}
+    const a=document.createElement('button');a.className='ask';a.textContent='📋 Claudeに頼む（現場名をコピー）';
+    a.onclick=()=>copy('【'+s+'】の続き：');ops.appendChild(a);
+    document.querySelector('details.grp.'+k+' .box').appendChild(el);
+  }
+  for(const k in LABEL){const g=document.querySelector('details.grp.'+k),n=g.querySelectorAll('details.site').length;
+    g.querySelector('span.n').textContent='（'+n+'）';
+    if(!n)g.querySelector('.box').innerHTML='<p class="empty">ありません</p>';}
+  filter();
+}
+function filter(){
+  const q=document.getElementById('q').value.trim();
+  for(const el of document.querySelectorAll('details.site[data-site]'))el.style.display=(!q||el.dataset.site.includes(q))?'':'none';
+  if(q)for(const g of document.querySelectorAll('details.grp'))g.open=true;
+}
+function copy(t){
+  const done=()=>toast('コピーしました。Claudeのアプリに貼り付けて、続きを話してください');
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(done,()=>fb());else fb();
+  function fb(){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();document.execCommand('copy');x.remove();done();}
+}
+const dec=b=>new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\n/g,'')),c=>c.charCodeAt(0)));
+function enc(s){const u=new TextEncoder().encode(s);let r='';for(const c of u)r+=String.fromCharCode(c);return btoa(r);}
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+async function save(site,k){
+  if(!tok()){alert('最初に、ページの一番下の「⚙ 札を替えるボタンの設定」で鍵を入れてください');return;}
+  toast('「'+LABEL[k]+'」に替えています…');
+  const H={Authorization:'Bearer '+tok(),Accept:'application/vnd.github+json'};
+  for(let i=0;i<3;i++){
+    const r=await fetch(API+'?t='+Date.now(),{headers:H,cache:'no-store'});
+    if(!r.ok){alert('GitHub に入れませんでした（'+r.status+'）。鍵が正しいか確かめてください');return;}
+    const j=await r.json(),obj=JSON.parse(dec(j.content));
+    const o=Object.assign({},obj[site]||{});o.status=k;o.updated=today();
+    if(k==='teishutsu'&&!o.date)o.date=today();
+    obj[site]=o;
+    const p=await fetch(API,{method:'PUT',headers:H,body:JSON.stringify({message:'札を替える：'+site+' → '+LABEL[k]+'（iPad）',content:enc(JSON.stringify(obj,null,1)),sha:j.sha})});
+    if(p.ok){ST=obj;render();toast('「'+site+'」を「'+LABEL[k]+'」に移しました');return;}
+    if(p.status!==409&&p.status!==422){alert('書き換えできませんでした（'+p.status+'）');return;}
+  }
+  alert('ほかの書き換えとぶつかりました。少し待ってもう一度押してください');
+}
+async function load(){
+  try{
+    if(tok()){const r=await fetch(API+'?t='+Date.now(),{headers:{Authorization:'Bearer '+tok()},cache:'no-store'});
+      if(r.ok){ST=JSON.parse(dec((await r.json()).content));render();return;}}
+    const r=await fetch('status.json?t='+Date.now(),{cache:'no-store'});if(r.ok){ST=await r.json();render();}
+  }catch(e){}
+}
+function tokState(){document.getElementById('tokState').textContent=tok()?'✅ 鍵が入っています（ボタンが使えます）':'まだ鍵が入っていません';}
+document.getElementById('tokSave').onclick=()=>{const v=document.getElementById('tok').value.trim();if(v){localStorage.setItem('ghtok',v);document.getElementById('tok').value='';tokState();toast('鍵を保存しました');load();}};
+document.getElementById('tokDel').onclick=()=>{localStorage.removeItem('ghtok');tokState();toast('鍵を消しました');};
+document.getElementById('q').oninput=filter;
+tokState();render();load();
+</script>
 </body></html>
