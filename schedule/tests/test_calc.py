@@ -71,3 +71,53 @@ class CalcTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ReviewFixTest(unittest.TestCase):
+    """2026-11-13 点検で見つかった所。"""
+
+    def test_site_name_space_difference_still_matches(self):
+        d = copy.deepcopy(SAMPLE)
+        d["periods"][1]["site"] = KINUTA.replace(" ", "　")      # 半角スペース → 全角スペース
+        self.assertEqual(warnings(d), warnings(SAMPLE))
+        p, msgs = valid_periods(d)
+        self.assertEqual((len(p), msgs), (3, []))
+
+    def test_unknown_site_is_skipped_and_warned(self):
+        d = copy.deepcopy(SAMPLE)
+        d["periods"].append({"site": "終わった現場", "kind": "上屋解体", "start": "2026-11-01", "end": "2026-11-30", "ope_auto": 4, "ope_manual": None})
+        p, msgs = valid_periods(d)
+        self.assertEqual(len(p), 3)
+        self.assertEqual(msgs, ["作業期間の現場名「終わった現場」が現場一覧にありません"])
+        self.assertEqual(required_ope(p, jun_list(date(2026, 11, 13))[1]), 8)   # 人数にも入れない
+
+    def test_bad_numbers_do_not_crash(self):
+        self.assertEqual(ope_of({"ope_auto": 3, "ope_manual": "2人"}), 3)      # 手直しが数字でない → 自動
+        self.assertEqual(ope_of({"ope_auto": 3, "ope_manual": " "}), 3)
+        self.assertEqual(ope_of({"ope_auto": "3台", "ope_manual": None}), 0)
+        self.assertEqual(ope_of({"ope_auto": 3, "ope_manual": "0"}), 0)
+        self.assertEqual(ope_of({"ope_auto": 3, "ope_manual": -1}), 3)       # マイナスは読めない値として、自動に戻す
+        d = copy.deepcopy(SAMPLE)
+        d["periods"][0]["ope_manual"] = "2人"
+        d["sites"][1]["machines_now"] = "2台"
+        w = warnings(d)
+        self.assertIn(f"「{KUDAN}」のオペ人数が数字ではありません", w)
+
+    def test_null_fields_do_not_crash(self):
+        for key in ("operators", "holidays", "sites", "periods"):
+            d = copy.deepcopy(SAMPLE)
+            d[key] = None
+            warnings(d); valid_periods(d); available_ope(d)
+        d = copy.deepcopy(SAMPLE)
+        d["operators"] = {"total": None, "joyo": None}
+        self.assertEqual(available_ope(d), 0)
+        d["sites"][0]["name"] = None
+        d["periods"][1]["kind"] = None
+        warnings(d)
+
+    def test_broken_only_site_is_not_called_no_schedule(self):
+        d = copy.deepcopy(SAMPLE)
+        d["periods"][0]["start"] = ""
+        w = warnings(d)
+        self.assertIn(f"「{KUDAN}」の作業期間に日付の抜け・逆転があります", w)
+        self.assertNotIn(f"「{KUDAN}」は工程表がまだありません", w)

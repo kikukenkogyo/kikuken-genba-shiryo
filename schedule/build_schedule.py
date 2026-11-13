@@ -6,7 +6,8 @@ import html, json, pathlib, sys
 from datetime import date, timedelta
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from calc import jun_list, to_date, ope_of, valid_periods, required_ope, available_ope, level, warnings  # noqa: E402
+from calc import (jun_list, to_date, to_int, norm, sites_of, site_name, ope_of, valid_periods,  # noqa: E402
+                  required_ope, available_ope, level, warnings)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 COLORS = {"内装解体": "#4CAF50", "上屋解体": "#2196F3", "基礎解体": "#FF9800", "地下解体": "#9C27B0",
@@ -30,9 +31,10 @@ def wrap_name(name: str, width: int = 14) -> list:
 
 def bars_for_site(site: dict, periods: list) -> list:
     """その現場の棒。作業期間が無い現場は、着工〜完了の1本（休止中 or 着工予定）。"""
-    mine = [p for p in periods if p.get("site") == site["name"]]
+    key = norm(site_name(site))
+    mine = [p for p in periods if norm(p.get("site")) == key]
     if mine:
-        return [{"kind": p.get("kind", ""), "start": p["start"], "end": p["end"], "ope": ope_of(p),
+        return [{"kind": p.get("kind") or "", "start": p["start"], "end": p["end"], "ope": ope_of(p),
                  "memo": p.get("memo") or ""} for p in sorted(mine, key=lambda p: p["start"])]
     if to_date(site.get("start")) is None or to_date(site.get("end")) is None:
         return []
@@ -67,20 +69,37 @@ class Axis:
         return self.x(s), self.x(e + timedelta(days=1))
 
 
+def bar_label(b: dict) -> str:
+    """棒に書く字（作業の種類・オペ人数・メモ）。"""
+    ope = b.get("ope")
+    return (b.get("kind") or "") + (f" オペ{ope}" if ope is not None else "") + (f" {b['memo']}" if b.get("memo") else "")
+
+
+def label_place(x0, x1, label, axis):
+    """字をどこに書くか。(置き方, 棒と字が使う左端, 右端)。置き方は in＝棒の中／right＝棒の右／left＝棒の左。"""
+    need = len(label) * 12 + 10
+    if x1 - x0 >= need:
+        return "in", x0, x1
+    if x1 + need <= axis.x1:
+        return "right", x0, x1 + need
+    return "left", x0 - need, x1
+
+
 def lanes(bars, axis):
-    """重なる棒を段に分ける。[(段, 左, 右, 棒)]"""
+    """重なる棒を段に分ける。棒の外に出る字の幅も含めて、重なりを見る。[(段, 左, 右, 棒)]"""
     ends, out = [], []
     for b in bars:
         sp = axis.span(b["start"], b["end"])
         if sp is None:
             continue
+        _, lo, hi = label_place(sp[0], sp[1], bar_label(b), axis)
         for n, e in enumerate(ends):
-            if sp[0] >= e - 0.01:
-                ends[n] = sp[1]
+            if lo >= e - 0.01:
+                ends[n] = hi
                 break
         else:
             n = len(ends)
-            ends.append(sp[1])
+            ends.append(hi)
         out.append((n, sp[0], sp[1], b))
     return out, max(1, len(ends))
 
@@ -92,10 +111,10 @@ def text(x, y, s, size=12, fill="#222", anchor="start", bold=False, extra=""):
 
 def bar_svg(x0, x1, y, h, color, label, axis):
     out = [f'<rect x="{x0:.1f}" y="{y:.1f}" width="{max(x1 - x0, 3):.1f}" height="{h}" rx="4" fill="{color}"/>']
-    need = len(label) * 12 + 10
-    if x1 - x0 >= need:
+    mode, _, _ = label_place(x0, x1, label, axis)
+    if mode == "in":
         out.append(text(x0 + 6, y + h / 2 + 4.5, label, 12, "#fff", bold=True))
-    elif x1 + need <= axis.x1:
+    elif mode == "right":
         out.append(text(x1 + 5, y + h / 2 + 4.5, label, 12, "#222", bold=True))
     else:
         out.append(text(x0 - 5, y + h / 2 + 4.5, label, 12, "#222", "end", True))
@@ -107,7 +126,7 @@ def render(data: dict) -> str:
     juns = jun_list(asof)
     axis = Axis(juns)
     periods, _ = valid_periods(data)
-    sites = data.get("sites", [])
+    sites = sites_of(data)
     avail = available_ope(data)
     W = axis.x1 + 10
     g = []          # SVGの部品
@@ -145,7 +164,7 @@ def render(data: dict) -> str:
     rows = []
     for s in sites:
         placed, n = lanes(bars_for_site(s, periods), axis)
-        names = wrap_name(s["name"])
+        names = wrap_name(site_name(s))
         h = max(n * LANE_H + ROW_PAD * 2, len(names) * 18 + 30)
         rows.append((s, placed, names, y, h))
         y += h
@@ -158,7 +177,9 @@ def render(data: dict) -> str:
         x = LEFT + CELL * i
         c = "#999" if i % 3 == 0 else "#e3e3e3"
         g.append(f'<line x1="{x}" y1="{body_top}" x2="{x}" y2="{body_bottom}" stroke="{c}"/>')
-    for hol in data.get("holidays", []):
+    for hol in data.get("holidays") or []:
+        if not isinstance(hol, dict):
+            continue
         sp = axis.span(hol.get("start"), hol.get("end"))
         if sp:
             g.append(f'<rect x="{sp[0]:.1f}" y="{body_top}" width="{sp[1] - sp[0]:.1f}" height="{body_bottom - body_top}" fill="#000" opacity="0.10"/>')
@@ -170,10 +191,10 @@ def render(data: dict) -> str:
         for line in names:
             g.append(text(8, ty, line, 14, bold=True))
             ty += 18
-        info = f"リーダー {s.get('leader') or '−'}／メイン {s.get('main_machine') or '−'}／今ある重機 {int(s.get('machines_now') or 0)}台"
+        info = f"リーダー {s.get('leader') or '−'}／メイン {s.get('main_machine') or '−'}／今ある重機 {to_int(s.get('machines_now')) or 0}台"
         g.append(text(8, ty, info, 11, "#555"))
         for n, x0, x1, b in placed:
-            label = b["kind"] + (f" オペ{b['ope']}" if b["ope"] is not None else "") + (f" {b['memo']}" if b["memo"] else "")
+            label = bar_label(b)
             by = ry + ROW_PAD + n * LANE_H + (h - ROW_PAD * 2 - (max(p[0] for p in placed) + 1) * LANE_H) / 2
             parts = bar_svg(x0, x1, by + 3, LANE_H - 6, COLORS.get(b["kind"], "#607D8B"), label, axis)
             g.append(parts[0])
@@ -204,14 +225,14 @@ def render(data: dict) -> str:
         g.append(f'<rect x="0" y="{y}" width="{W - 10}" height="22" fill="#FCE4EC" stroke="#999"/>')
         g.append(text(8, y + 16, "大型・特殊重機の使用状況", 13, bold=True))
         y += 22
-        short = {s["name"]: (s.get("location_name") or s["name"][:8]) for s in sites}
+        short = {norm(site_name(s)): (s.get("location_name") or site_name(s)[:8]) for s in sites}
         for name, ps in special.items():
             g.append(f'<rect x="0" y="{y}" width="{W - 10}" height="{LANE_H}" fill="#fff" stroke="#999"/>')
             g.append(text(8, y + 21, name, 13, bold=True))
             for p in ps:
                 sp = axis.span(p["start"], p["end"])
                 if sp:
-                    g += bar_svg(sp[0], sp[1], y + 4, LANE_H - 8, "#607D8B", short.get(p.get("site"), p.get("site", "")), axis)
+                    g += bar_svg(sp[0], sp[1], y + 4, LANE_H - 8, "#607D8B", short.get(norm(p.get("site")), str(p.get("site") or "")), axis)
             y += LANE_H
         y += 8
 

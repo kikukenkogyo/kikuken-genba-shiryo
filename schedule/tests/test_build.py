@@ -49,3 +49,36 @@ class BuildTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ReviewFixBuildTest(unittest.TestCase):
+    """2026-11-13 点検で見つかった所。"""
+
+    def test_short_bar_label_does_not_overlap_next_bar(self):
+        from datetime import date
+        from build_schedule import Axis, lanes
+        from calc import jun_list
+        axis = Axis(jun_list(date(2026, 11, 13)))
+        bars = [{"kind": "内装解体", "start": "2026-11-09", "end": "2026-11-18", "ope": 1, "memo": ""},
+                {"kind": "上屋解体", "start": "2026-11-19", "end": "2026-12-25", "ope": 2, "memo": ""}]
+        placed, n = lanes(bars, axis)
+        self.assertEqual(n, 2)                       # 字が外に出る短い棒の隣は、段を分ける
+        self.assertNotEqual(placed[0][0], placed[1][0])
+
+    def test_site_name_space_difference_still_draws_bar(self):
+        d = copy.deepcopy(SAMPLE)
+        d["periods"][1]["site"] = d["periods"][1]["site"].replace(" ", "　")
+        h = render(d)
+        self.assertIn("上屋解体 オペ2", h)
+        self.assertNotIn("着工予定 ", h.split("</svg>")[0].split("現　場")[1])   # 灰色の棒に化けない
+
+    def test_render_survives_nulls_and_bad_numbers(self):
+        d = copy.deepcopy(SAMPLE)
+        d["holidays"] = None
+        d["operators"] = None
+        d["periods"][0]["ope_manual"] = "2人"
+        d["periods"][1]["kind"] = None
+        d["sites"][2]["machines_now"] = "3台"
+        d["sites"][3]["leader"] = None
+        self.assertIn("現場スケジュール表", render(d))
+        self.assertIn("現場スケジュール表", render({"asof": "2026-11-13", "sites": None, "periods": None}))
