@@ -117,3 +117,8 @@ class LayoutTest(unittest.TestCase):
         d = copy.deepcopy(SAMPLE)
         d["sites"][3]["leader"] = None            # リーダーが決まっていない現場（2026-11-13 保木間）
         self.assertIn("リーダー 未定／", render(d))
+
+    def test_title_says_all_sites(self):
+        h = render(SAMPLE)                         # 題名は「全現場スケジュール表」（2026-11-13 酒井さん）
+        self.assertIn("<h1>全現場スケジュール表</h1>", h)
+        self.assertIn("<title>全現場スケジュール表</title>", h)

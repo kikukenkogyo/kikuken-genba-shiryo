@@ -267,7 +267,7 @@ def render(data: dict) -> str:
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>現場スケジュール表</title>
+<title>全現場スケジュール表</title>
 <link rel="icon" href="favicon.png">
 <style>
 :root {{ --u: min(calc((100vw - 12px) / {view}), {MAX_SCALE}px); }}
@@ -290,7 +290,7 @@ svg text {{ font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sa
 </style>
 </head>
 <body>
-<h1>現場スケジュール表</h1>
+<h1>全現場スケジュール表</h1>
 <p class="sub">{asof.isoformat()} 時点　／　横に動かすと1年先まで見られます（指で広げて拡大もできます）</p>
 <div class="legend">{legend}<span><i class="lv" style="background:#E53935"></i>オペが足りない</span><span><i class="lv" style="background:#FFEB3B"></i>オペがちょうど</span></div>
 <div class="chart">
