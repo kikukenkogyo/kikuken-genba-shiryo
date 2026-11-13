@@ -130,3 +130,16 @@ class LayoutTest(unittest.TestCase):
         h = render(SAMPLE)                         # 題名は「全現場スケジュール表」（2026-11-13 酒井さん）
         self.assertIn("<h1>全現場スケジュール表</h1>", h)
         self.assertIn("<title>全現場スケジュール表</title>", h)
+
+
+class SnapshotTest(unittest.TestCase):
+    """Notionに貼る画像：下の余白を切る（2026-11-13）。"""
+
+    def test_trim_cuts_bottom_whitespace_only(self):
+        from PIL import Image
+        from snapshot import trim
+        img = Image.new("RGB", (200, 1000), (255, 255, 255))
+        img.paste((0, 0, 0), (10, 10, 190, 300))
+        out = trim(img, margin=16)
+        self.assertEqual(out.size, (200, 316))
+        self.assertEqual(trim(Image.new("RGB", (50, 50), (255, 255, 255))).size, (50, 50))

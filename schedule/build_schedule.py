@@ -291,6 +291,9 @@ svg text {{ font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sa
 .cell.short {{ fill: #E53935; }}
 .cell.full {{ fill: #FFEB3B; }}
 .tap {{ display: none; }}
+/* Notionに貼る画像を撮るとき（snapshot.py が #shot を付けて開く）：3か月ぶんを入れ、横に動かす案内は出さない */
+html.shot {{ --u: calc((100vw - 12px) / {view}); }}
+.shot .hint {{ display: none; }}
 /* Notionのページの中（埋め込み）で見ているとき：題名を出さず、表をタッチすると画面いっぱいに開く */
 .embedded h1 {{ display: none; }}
 .embedded .sub {{ margin-top: 0; }}
@@ -300,7 +303,7 @@ svg text {{ font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sa
 </head>
 <body>
 <h1>全現場スケジュール表</h1>
-<p class="sub">{asof.isoformat()} 時点　／　横に動かすと1年先まで見られます（指で広げて拡大もできます）</p>
+<p class="sub">{asof.isoformat()} 時点<span class="hint">　／　横に動かすと1年先まで見られます（指で広げて拡大もできます）</span></p>
 <div class="legend">{legend}<span><i class="lv" style="background:#E53935"></i>オペが足りない</span><span><i class="lv" style="background:#FFEB3B"></i>オペがちょうど</span></div>
 <a class="tap" href="genba-schedule.html" target="_blank" rel="noopener">表をタッチすると、画面いっぱいに大きく開きます</a>
 <div class="chart" id="chart">
@@ -316,6 +319,7 @@ svg text {{ font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sa
 <script>
 // Notionのページの中（埋め込み）のときだけ、表をタッチすると新しい画面でこのページをいっぱいに開く
 (function () {{
+  if (location.hash === "#shot") document.documentElement.className += " shot";
   var inFrame = false;
   try {{ inFrame = window.self !== window.top; }} catch (e) {{ inFrame = true; }}
   if (!inFrame) return;
