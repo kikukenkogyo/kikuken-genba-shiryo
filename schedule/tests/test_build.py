@@ -112,3 +112,8 @@ class LayoutTest(unittest.TestCase):
         d["periods"][0]["special"] = "SK350 超ロング、CAT325"
         rows = special_rows(d, valid_periods(d)[0])
         self.assertEqual([(r[0], len(r[2])) for r in rows], [("SK350超ロング", 1), ("CAT325", 1)])
+
+    def test_empty_leader_shows_mitei(self):
+        d = copy.deepcopy(SAMPLE)
+        d["sites"][3]["leader"] = None            # リーダーが決まっていない現場（2026-11-13 保木間）
+        self.assertIn("リーダー 未定／", render(d))

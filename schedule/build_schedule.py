@@ -205,7 +205,7 @@ def render(data: dict) -> str:
         for line in names:
             g.append(text(8, ty, line, 14, bold=True))
             ty += 18
-        g.append(text(8, ty, f"リーダー {s.get('leader') or '−'}／メイン {s.get('main_machine') or '−'}", 11, "#555"))
+        g.append(text(8, ty, f"リーダー {s.get('leader') or '未定'}／メイン {s.get('main_machine') or '−'}", 11, "#555"))
         g.append(text(8, ty + 15, f"今ある重機 {to_int(s.get('machines_now')) or 0}台", 11, "#555"))
         top = max([p[0] for p in placed], default=0) + 1
         for n, x0, x1, b in placed:
