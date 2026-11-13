@@ -1,0 +1,24 @@
+{
+ "asof": "2026-11-13",
+ "sites": [
+  {"name": "九段南計画解体工事", "leader": "阿部", "main_machine": "0.45", "status": "地下解体進行中",
+   "start": "2026-06-16", "end": "2027-03-31", "machines_now": 3, "location_name": "九段南"},
+  {"name": "（仮称）世田谷区砧6-25 自走式立体駐車場解体工事", "leader": "原", "main_machine": "0.45", "status": "上屋解体進行中",
+   "start": "2026-10-28", "end": "2026-12-03", "machines_now": 2, "location_name": "砧"},
+  {"name": "東京大学（本郷）工学部13号館改修工事", "leader": "風間", "main_machine": "0.25", "status": "近日着工予定",
+   "start": "2026-11-09", "end": "2026-11-18", "machines_now": 3, "location_name": ""},
+  {"name": "都営保木間第５アパート除却工事", "leader": "風間", "main_machine": "1.2", "status": "現場休止中",
+   "start": "2026-05-26", "end": "2027-03-31", "machines_now": 0, "location_name": "保木間"}
+ ],
+ "periods": [
+  {"site": "九段南計画解体工事", "kind": "地下解体", "start": "2026-06-16", "end": "2027-03-31",
+   "ope_auto": 3, "ope_manual": null, "memo": "", "special": "CAT325"},
+  {"site": "（仮称）世田谷区砧6-25 自走式立体駐車場解体工事", "kind": "上屋解体", "start": "2026-10-28", "end": "2026-12-03",
+   "ope_auto": 2, "ope_manual": null, "memo": "", "special": ""},
+  {"site": "東京大学（本郷）工学部13号館改修工事", "kind": "内装解体", "start": "2026-11-09", "end": "2026-11-18",
+   "ope_auto": 3, "ope_manual": null, "memo": "", "special": ""}
+ ],
+ "operators": {"total": 9, "joyo": 1},
+ "machines_other": 0,
+ "holidays": [{"name": "冬季休暇", "start": "2026-12-27", "end": "2027-01-04"}]
+}
