@@ -3,7 +3,7 @@
 入力は data.json の形（sample_data.json が見本）。絵づくりは build_schedule.py。
 Notionの空欄は null で来るので、どの項目も「無い・null・形が違う」で止まらないようにしてある。"""
 import calendar
-from datetime import date
+from datetime import date, timedelta
 from typing import NamedTuple
 
 JUN_LABELS = ("上旬", "中旬", "下旬")
@@ -105,8 +105,13 @@ def overlaps(period: dict, start: date, end: date) -> bool:
 
 
 def required_ope(periods: list, jun: Jun) -> int:
-    """その旬に1日でも重なる作業の、オペ人数の合計。"""
-    return sum(ope_of(p) for p in periods if overlaps(p, jun.start, jun.end))
+    """その旬の中で、いちばん人数が多い日のオペ人数（同じ日に重なる作業は足す）。
+    同じ旬の中で作業が入れ替わるとき（例: 上屋解体が12日まで・外構解体が15日から）は足し算にしない（2026-11-13 酒井さん・保木間）。"""
+    best, d = 0, jun.start
+    while d <= jun.end:
+        best = max(best, sum(ope_of(p) for p in periods if overlaps(p, d, d)))
+        d += timedelta(days=1)
+    return best
 
 
 def available_ope(data: dict) -> int:

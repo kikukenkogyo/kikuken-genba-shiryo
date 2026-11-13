@@ -48,6 +48,15 @@ class BuildTest(unittest.TestCase):
         self.assertNotIn("A<B&C", h)
 
 
+class KyushiLabelTest(unittest.TestCase):
+    """2026-11-13 酒井さん: 休止中の棒には「オペ0」と書かない。「休止中」だけ。"""
+
+    def test_kyushi_bar_has_no_ope(self):
+        from build_schedule import bar_label
+        self.assertEqual(bar_label({"kind": "休止中", "ope": 0, "memo": ""}), "休止中")
+        self.assertEqual(bar_label({"kind": "上屋解体", "ope": 5, "memo": ""}), "上屋解体 オペ5")
+
+
 if __name__ == "__main__":
     unittest.main()
 

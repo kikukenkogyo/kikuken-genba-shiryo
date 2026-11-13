@@ -72,6 +72,46 @@
    "ope_manual": 2,
    "memo": "1期",
    "special": ""
+  },
+  {
+   "site": "都営保木間第５アパート（１２、１３、１８、１９号棟）除却工事",
+   "kind": "休止中",
+   "start": "2026-05-26",
+   "end": "2026-11-25",
+   "ope_auto": null,
+   "ope_manual": null,
+   "memo": "",
+   "special": ""
+  },
+  {
+   "site": "都営保木間第５アパート（１２、１３、１８、１９号棟）除却工事",
+   "kind": "上屋解体",
+   "start": "2026-11-26",
+   "end": "2027-01-15",
+   "ope_auto": 5,
+   "ope_manual": null,
+   "memo": "",
+   "special": "SK350超ロング、SK350セパレート"
+  },
+  {
+   "site": "都営保木間第５アパート（１２、１３、１８、１９号棟）除却工事",
+   "kind": "上屋解体",
+   "start": "2027-01-16",
+   "end": "2027-02-12",
+   "ope_auto": 4,
+   "ope_manual": null,
+   "memo": "",
+   "special": "SK350セパレート"
+  },
+  {
+   "site": "都営保木間第５アパート（１２、１３、１８、１９号棟）除却工事",
+   "kind": "外構解体",
+   "start": "2027-02-15",
+   "end": "2027-03-05",
+   "ope_auto": 3,
+   "ope_manual": null,
+   "memo": "整地まで",
+   "special": ""
   }
  ],
  "operators": {

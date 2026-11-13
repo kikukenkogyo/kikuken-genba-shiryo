@@ -69,6 +69,22 @@ class CalcTest(unittest.TestCase):
         self.assertEqual(warnings(d), [])
 
 
+class MaxPerDayTest(unittest.TestCase):
+    """2026-11-13 酒井さん（保木間）: 同じ旬の中で作業が入れ替わるときは足し算にしない。その旬でいちばん多い日の人数。"""
+
+    def test_sequential_periods_in_same_jun_are_not_summed(self):
+        p = [{"site": "A", "start": "2026-11-26", "end": "2027-02-12", "ope_auto": 5},
+             {"site": "A", "start": "2027-02-15", "end": "2027-03-05", "ope_auto": 3}]
+        feb_mid = [j for j in jun_list(date(2026, 11, 13)) if (j.start.year, j.start.month, j.start.day) == (2027, 2, 11)][0]
+        self.assertEqual(required_ope(p, feb_mid), 5)
+
+    def test_same_day_periods_are_still_summed(self):
+        p = [{"site": "A", "start": "2026-11-01", "end": "2026-11-30", "ope_auto": 2},
+             {"site": "B", "start": "2026-11-20", "end": "2026-11-25", "ope_auto": 5}]
+        nov_mid = jun_list(date(2026, 11, 13))[1]
+        self.assertEqual(required_ope(p, nov_mid), 7)
+
+
 if __name__ == "__main__":
     unittest.main()
 

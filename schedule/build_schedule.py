@@ -74,7 +74,7 @@ class Axis:
 
 def bar_label(b: dict) -> str:
     """棒に書く字（作業の種類・オペ人数・メモ）。"""
-    ope = b.get("ope")
+    ope = None if b.get("kind") == "休止中" else b.get("ope")     # 休止中は「休止中」だけ（2026-11-13 酒井さん）
     return (b.get("kind") or "") + (f" オペ{ope}" if ope is not None else "") + (f" {b['memo']}" if b.get("memo") else "")
 
 
