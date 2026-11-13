@@ -69,7 +69,7 @@
    "start": "2026-11-09",
    "end": "2026-11-18",
    "ope_auto": 3,
-   "ope_manual": null,
+   "ope_manual": 2,
    "memo": "1期",
    "special": ""
   }
