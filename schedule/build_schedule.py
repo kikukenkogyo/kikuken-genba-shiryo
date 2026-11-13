@@ -13,14 +13,16 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 COLORS = {"内装解体": "#4CAF50", "上屋解体": "#2196F3", "基礎解体": "#FF9800", "地下解体": "#9C27B0",
           "外構解体": "#00897B", "着工予定": "#9E9E9E", "休止中": "#9E9E9E"}
 LEGEND = ["内装解体", "上屋解体", "基礎解体", "地下解体", "外構解体", "着工予定"]
-LEFT, CELL = 300, 34            # 左の欄の幅、旬1つの幅
-TITLE_H, MONTH_H, JUN_H = 64, 26, 20
+LEFT, CELL = 220, 34            # 左の欄の幅、旬1つの幅
+TOP_H, MONTH_H, JUN_H = 18, 26, 20
+FIRST_VIEW = 9                  # 最初の画面に見せる旬の数（3か月）。残りは横にスクロール
+MAX_SCALE = 1.3                 # パソコンで大きくなりすぎないための上限
 LANE_H, ROW_PAD = 32, 10        # 棒1本の段の高さ、行の上下の余白
 SUM_H = 28                      # 下の段の1行の高さ
 esc = html.escape
 
 
-def wrap_name(name: str, width: int = 14) -> list:
+def wrap_name(name: str, width: int = 13) -> list:
     """長い現場名を、だいたい同じ長さの行に分ける（最後の行に1文字だけ残さない）。"""
     if not name:
         return [""]
@@ -121,27 +123,39 @@ def bar_svg(x0, x1, y, h, color, label, axis):
     return out
 
 
+def special_rows(data: dict, periods: list) -> list:
+    """大型・特殊重機の段の行。[(重機の名前, 今ある場所, [その重機を使う作業期間])]
+    data["special_machines"] の重機はいつも出す。作業期間にだけ名前がある重機も足す。"""
+    use = {}
+    for p in periods:
+        for name in str(p.get("special") or "").replace(",", "、").split("、"):
+            if name.strip():
+                use.setdefault(norm(name), (name.strip(), []))[1].append(p)
+    rows, seen = [], set()
+    for m in data.get("special_machines") or []:
+        if isinstance(m, dict) and str(m.get("name") or "").strip():
+            key = norm(m["name"])
+            seen.add(key)
+            rows.append((str(m["name"]).strip(), str(m.get("where") or ""), use.get(key, ("", []))[1]))
+    for key, (name, ps) in use.items():
+        if key not in seen:
+            rows.append((name, "", ps))
+    return rows
+
+
 def render(data: dict) -> str:
+    """ページ全体。左の欄（現場名）は動かさず、右の表だけ横にスクロールする。
+    お知らせ（warnings）はページに載せない（酒井さんにだけ伝える。main が画面に出す）。"""
     asof = to_date(data.get("asof")) or date.today()
     juns = jun_list(asof)
     axis = Axis(juns)
     periods, _ = valid_periods(data)
     sites = sites_of(data)
     avail = available_ope(data)
-    W = axis.x1 + 10
+    W = axis.x1 + 2
     g = []          # SVGの部品
     late = []       # 今日の線より上に描く、棒の中の字
-    y = 0
-
-    # 題と凡例
-    g.append(text(12, 34, "現場スケジュール表", 24, "#C2185B", bold=True))
-    g.append(text(12, 54, f"{asof.isoformat()} 時点　／　指で広げて拡大できます", 12, "#555"))
-    lx = W - 10 - len(LEGEND) * 96
-    for k in LEGEND:
-        g.append(f'<rect x="{lx}" y="22" width="16" height="16" rx="3" fill="{COLORS[k]}"/>')
-        g.append(text(lx + 21, 35, k, 12))
-        lx += 96
-    y = TITLE_H
+    y = TOP_H
 
     # 月と旬の見出し
     head_y = y
@@ -165,14 +179,14 @@ def render(data: dict) -> str:
     for s in sites:
         placed, n = lanes(bars_for_site(s, periods), axis)
         names = wrap_name(site_name(s))
-        h = max(n * LANE_H + ROW_PAD * 2, len(names) * 18 + 30)
+        h = max(n * LANE_H + ROW_PAD * 2, len(names) * 18 + 44)
         rows.append((s, placed, names, y, h))
         y += h
     body_bottom = y
 
     # 升目・休暇の帯（棒より下に描く）
     for s, placed, names, ry, h in rows:
-        g.append(f'<rect x="0" y="{ry}" width="{W - 10}" height="{h}" fill="#fff" stroke="#999"/>')
+        g.append(f'<rect x="0" y="{ry}" width="{W}" height="{h}" fill="#fff" stroke="#999"/>')
     for i in range(len(juns) + 1):
         x = LEFT + CELL * i
         c = "#999" if i % 3 == 0 else "#e3e3e3"
@@ -181,9 +195,9 @@ def render(data: dict) -> str:
         if not isinstance(hol, dict):
             continue
         sp = axis.span(hol.get("start"), hol.get("end"))
-        if sp:
+        if sp and sp[1] > sp[0]:
             g.append(f'<rect x="{sp[0]:.1f}" y="{body_top}" width="{sp[1] - sp[0]:.1f}" height="{body_bottom - body_top}" fill="#000" opacity="0.10"/>')
-            g.append(text((sp[0] + sp[1]) / 2, body_top + 11, hol.get("name", ""), 10, "#333", "middle"))
+            g.append(text((sp[0] + sp[1]) / 2, body_top + 11, hol.get("name") or "", 10, "#333", "middle"))
 
     # 現場名と棒
     for s, placed, names, ry, h in rows:
@@ -191,12 +205,12 @@ def render(data: dict) -> str:
         for line in names:
             g.append(text(8, ty, line, 14, bold=True))
             ty += 18
-        info = f"リーダー {s.get('leader') or '−'}／メイン {s.get('main_machine') or '−'}／今ある重機 {to_int(s.get('machines_now')) or 0}台"
-        g.append(text(8, ty, info, 11, "#555"))
+        g.append(text(8, ty, f"リーダー {s.get('leader') or '−'}／メイン {s.get('main_machine') or '−'}", 11, "#555"))
+        g.append(text(8, ty + 15, f"今ある重機 {to_int(s.get('machines_now')) or 0}台", 11, "#555"))
+        top = max([p[0] for p in placed], default=0) + 1
         for n, x0, x1, b in placed:
-            label = bar_label(b)
-            by = ry + ROW_PAD + n * LANE_H + (h - ROW_PAD * 2 - (max(p[0] for p in placed) + 1) * LANE_H) / 2
-            parts = bar_svg(x0, x1, by + 3, LANE_H - 6, COLORS.get(b["kind"], "#607D8B"), label, axis)
+            by = ry + ROW_PAD + n * LANE_H + (h - ROW_PAD * 2 - top * LANE_H) / 2
+            parts = bar_svg(x0, x1, by + 3, LANE_H - 6, COLORS.get(b["kind"], "#607D8B"), bar_label(b), axis)
             g.append(parts[0])
             late += parts[1:]
 
@@ -212,41 +226,41 @@ def render(data: dict) -> str:
             g.append(f'<rect class="cell {cls}" x="{LEFT + CELL * i}" y="{y}" width="{CELL}" height="{SUM_H}"/>')
             g.append(text(LEFT + CELL * (i + .5), y + 19, v, 13, fg, "middle", cls != "ok"))
         y += SUM_H
-    g.append(text(8, y + 15, "赤＝オペが足りない　黄＝ちょうど（余裕なし）", 11, "#555"))
-    y += 26
+    y += 8
 
-    # 下の段②：大型・特殊重機
-    special = {}
-    for p in periods:
-        for name in str(p.get("special") or "").replace(",", "、").split("、"):
-            if name.strip():
-                special.setdefault(name.strip(), []).append(p)
+    # 下の段②：大型・特殊重機（いつも出す）
+    special = special_rows(data, periods)
     if special:
-        g.append(f'<rect x="0" y="{y}" width="{W - 10}" height="22" fill="#FCE4EC" stroke="#999"/>')
+        short = {norm(site_name(s)): (s.get("location_name") or site_name(s)[:8]) for s in sites}
+        g.append(f'<rect x="0" y="{y}" width="{W}" height="22" fill="#FCE4EC" stroke="#999"/>')
         g.append(text(8, y + 16, "大型・特殊重機の使用状況", 13, bold=True))
         y += 22
-        short = {norm(site_name(s)): (s.get("location_name") or site_name(s)[:8]) for s in sites}
-        for name, ps in special.items():
-            g.append(f'<rect x="0" y="{y}" width="{W - 10}" height="{LANE_H}" fill="#fff" stroke="#999"/>')
-            g.append(text(8, y + 21, name, 13, bold=True))
+        sp_top = y
+        for name, where, ps in special:
+            g.append(f'<rect x="0" y="{y}" width="{W}" height="{LANE_H}" fill="#fff" stroke="#999"/>')
+            g.append(text(8, y + 14, name, 12, bold=True))
+            if where:
+                g.append(text(8, y + 27, f"今：{where}", 10, "#555"))
             for p in ps:
                 sp = axis.span(p["start"], p["end"])
                 if sp:
-                    g += bar_svg(sp[0], sp[1], y + 4, LANE_H - 8, "#607D8B", short.get(norm(p.get("site")), str(p.get("site") or "")), axis)
+                    late += bar_svg(sp[0], sp[1], y + 4, LANE_H - 8, "#607D8B",
+                                    short.get(norm(p.get("site")), str(p.get("site") or "")), axis)
             y += LANE_H
+        for i in range(0, len(juns) + 1, 3):
+            g.append(f'<line x1="{LEFT + CELL * i}" y1="{sp_top}" x2="{LEFT + CELL * i}" y2="{y}" stroke="#999"/>')
         y += 8
 
-    # 今日の線（いちばん上に描く）
+    # 今日の線（升目より上、棒の字より下）
     tx = axis.x(asof)
     g.append(f'<line x1="{tx:.1f}" y1="{head_y}" x2="{tx:.1f}" y2="{body_bottom}" stroke="#E53935" stroke-width="2"/>')
     g.append(text(tx, head_y - 4, "今日", 11, "#E53935", "middle", True))
     g += late
 
-    H = y + 6
-    notes = warnings(data)
-    note_html = ""
-    if notes:
-        note_html = '<div class="notes"><b>お知らせ（確認してください）</b><ul>' + "".join(f"<li>{esc(n)}</li>" for n in notes) + "</ul></div>"
+    H = y
+    body = "\n".join(g)
+    legend = "".join(f'<span><i style="background:{COLORS[k]}"></i>{esc(k)}</span>' for k in LEGEND)
+    view = LEFT + CELL * FIRST_VIEW          # 最初の画面に入れる幅（左の欄＋3か月）
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -256,21 +270,39 @@ def render(data: dict) -> str:
 <title>現場スケジュール表</title>
 <link rel="icon" href="favicon.png">
 <style>
-body {{ margin: 6px; background: #fff; font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; }}
-svg {{ width: 100%; height: auto; display: block; }}
+:root {{ --u: min(calc((100vw - 12px) / {view}), {MAX_SCALE}px); }}
+body {{ margin: 6px; background: #fff; font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; color: #222; }}
+h1 {{ margin: 2px 4px 0; font-size: 22px; color: #C2185B; }}
+.sub {{ margin: 2px 4px 6px; font-size: 13px; color: #555; }}
+.legend {{ display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0 4px 6px; font-size: 13px; }}
+.legend span {{ display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }}
+.legend i {{ width: 14px; height: 14px; border-radius: 3px; display: inline-block; }}
+.legend .lv {{ border: 1px solid #bbb; }}
+.chart {{ display: flex; align-items: flex-start; }}
+.scroll {{ overflow-x: auto; flex: 1; min-width: 0; -webkit-overflow-scrolling: touch; }}
+svg {{ display: block; flex: none; height: auto; max-width: none; }}
+svg.left {{ width: calc(var(--u) * {LEFT}); }}
+svg.right {{ width: calc(var(--u) * {W - LEFT}); }}
 svg text {{ font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; }}
 .cell {{ fill: #fff; stroke: #bbb; }}
 .cell.short {{ fill: #E53935; }}
 .cell.full {{ fill: #FFEB3B; }}
-.notes {{ margin: 10px 4px; padding: 8px 12px; border: 1px solid #E53935; border-radius: 6px; font-size: 14px; }}
-.notes ul {{ margin: 4px 0 0; padding-left: 20px; }}
 </style>
 </head>
 <body>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H:.0f}">
-{chr(10).join(g)}
+<h1>現場スケジュール表</h1>
+<p class="sub">{asof.isoformat()} 時点　／　横に動かすと1年先まで見られます（指で広げて拡大もできます）</p>
+<div class="legend">{legend}<span><i class="lv" style="background:#E53935"></i>オペが足りない</span><span><i class="lv" style="background:#FFEB3B"></i>オペがちょうど</span></div>
+<div class="chart">
+<svg class="left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {LEFT} {H:.0f}">
+{body}
 </svg>
-{note_html}
+<div class="scroll">
+<svg class="right" xmlns="http://www.w3.org/2000/svg" viewBox="{LEFT} 0 {W - LEFT} {H:.0f}">
+{body}
+</svg>
+</div>
+</div>
 </body>
 </html>
 """

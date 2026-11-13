@@ -28,9 +28,10 @@ class BuildTest(unittest.TestCase):
     def test_render_contents(self):
         h = render(SAMPLE)
         for s in ["2026-11-13 時点", "九段南計画解体工事", "地下解体", "休止中", "オペ必要人数", "使える人数",
-                  "冬季休暇", "CAT325", "width=device-width", "は工程表がまだありません"]:
+                  "冬季休暇", "CAT325", "width=device-width", "overflow-x", "大型・特殊重機の使用状況"]:
             self.assertIn(s, h)
-        for s in ["見習い", "user-scalable=no", "元請", 'class="cell short"']:
+        # お知らせはページに載せない（酒井さんにだけ伝える。2026-11-13 酒井さん）
+        for s in ["見習い", "user-scalable=no", "元請", 'class="cell short"', "お知らせ", "工程表がまだありません", "所在地名が空"]:
             self.assertNotIn(s, h)
         self.assertIn('class="cell full"', h)      # 8人に対して8台＝ちょうど
 
@@ -82,3 +83,32 @@ class ReviewFixBuildTest(unittest.TestCase):
         d["sites"][3]["leader"] = None
         self.assertIn("現場スケジュール表", render(d))
         self.assertIn("現場スケジュール表", render({"asof": "2026-11-13", "sites": None, "periods": None}))
+
+
+class LayoutTest(unittest.TestCase):
+    """2026-11-13 酒井さんの指摘：最初の画面は3か月、残りは横スクロール。特殊重機の欄はいつも出す。"""
+
+    def test_left_column_is_fixed_and_right_scrolls(self):
+        h = render(SAMPLE)
+        self.assertEqual(h.count("<svg "), 2)
+        self.assertIn('<svg class="left"', h)
+        self.assertIn('<div class="scroll">', h)
+        self.assertIn("(100vw - 12px) / 526", h)        # 左の欄220＋3か月(9旬×34)＝526 が画面の幅
+
+    def test_special_machines_always_listed(self):
+        d = copy.deepcopy(SAMPLE)
+        for p in d["periods"]:
+            p["special"] = ""
+        d["special_machines"] = [{"name": "SK350超ロング", "where": "アキコ"}, {"name": "PC450スタンダード", "where": "アキコ"}]
+        h = render(d)
+        for s in ["大型・特殊重機の使用状況", "SK350超ロング", "PC450スタンダード", "今：アキコ"]:
+            self.assertIn(s, h)
+
+    def test_special_machine_bar_shows_site(self):
+        from build_schedule import special_rows
+        from calc import valid_periods
+        d = copy.deepcopy(SAMPLE)
+        d["special_machines"] = [{"name": "SK350超ロング", "where": "九段南"}]
+        d["periods"][0]["special"] = "SK350 超ロング、CAT325"
+        rows = special_rows(d, valid_periods(d)[0])
+        self.assertEqual([(r[0], len(r[2])) for r in rows], [("SK350超ロング", 1), ("CAT325", 1)])
