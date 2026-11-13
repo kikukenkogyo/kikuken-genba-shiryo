@@ -10,8 +10,8 @@ from calc import jun_list, to_date, ope_of, valid_periods, required_ope, availab
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 COLORS = {"内装解体": "#4CAF50", "上屋解体": "#2196F3", "基礎解体": "#FF9800", "地下解体": "#9C27B0",
-          "着工予定": "#9E9E9E", "休止中": "#9E9E9E"}
-LEGEND = ["内装解体", "上屋解体", "基礎解体", "地下解体", "着工予定"]
+          "外構解体": "#00897B", "着工予定": "#9E9E9E", "休止中": "#9E9E9E"}
+LEGEND = ["内装解体", "上屋解体", "基礎解体", "地下解体", "外構解体", "着工予定"]
 LEFT, CELL = 300, 34            # 左の欄の幅、旬1つの幅
 TITLE_H, MONTH_H, JUN_H = 64, 26, 20
 LANE_H, ROW_PAD = 32, 10        # 棒1本の段の高さ、行の上下の余白
