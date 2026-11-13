@@ -13,16 +13,17 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 COLORS = {"内装解体": "#4CAF50", "上屋解体": "#2196F3", "基礎解体": "#FF9800", "地下解体": "#9C27B0",
           "外構解体": "#00897B", "着工予定": "#9E9E9E", "休止中": "#9E9E9E"}
 LEGEND = ["内装解体", "上屋解体", "基礎解体", "地下解体", "外構解体", "着工予定"]
-LEFT, CELL = 220, 34            # 左の欄の幅、旬1つの幅
+LEFT, CELL = 170, 34            # 左の欄の幅、旬1つの幅
 TOP_H, MONTH_H, JUN_H = 18, 26, 20
 FIRST_VIEW = 9                  # 最初の画面に見せる旬の数（3か月）。残りは横にスクロール
+FIRST_VIEW_PHONE = 7            # スマホ・Notionの埋め込みの幅（700px以下）では2か月と少し（字を大きく見せる）
 MAX_SCALE = 1.3                 # パソコンで大きくなりすぎないための上限
 LANE_H, ROW_PAD = 32, 10        # 棒1本の段の高さ、行の上下の余白
 SUM_H = 28                      # 下の段の1行の高さ
 esc = html.escape
 
 
-def wrap_name(name: str, width: int = 13) -> list:
+def wrap_name(name: str, width: int = 10) -> list:
     """長い現場名を、だいたい同じ長さの行に分ける（最後の行に1文字だけ残さない）。"""
     if not name:
         return [""]
@@ -238,7 +239,7 @@ def render(data: dict) -> str:
         sp_top = y
         for name, where, ps in special:
             g.append(f'<rect x="0" y="{y}" width="{W}" height="{LANE_H}" fill="#fff" stroke="#999"/>')
-            g.append(text(8, y + 14, name, 12, bold=True))
+            g.append(text(8, y + 14, name, 11, bold=True))
             if where:
                 g.append(text(8, y + 27, f"今：{where}", 10, "#555"))
             for p in ps:
@@ -261,6 +262,7 @@ def render(data: dict) -> str:
     body = "\n".join(g)
     legend = "".join(f'<span><i style="background:{COLORS[k]}"></i>{esc(k)}</span>' for k in LEGEND)
     view = LEFT + CELL * FIRST_VIEW          # 最初の画面に入れる幅（左の欄＋3か月）
+    view_phone = LEFT + CELL * FIRST_VIEW_PHONE
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -271,6 +273,7 @@ def render(data: dict) -> str:
 <link rel="icon" href="favicon.png">
 <style>
 :root {{ --u: min(calc((100vw - 12px) / {view}), {MAX_SCALE}px); }}
+@media (max-width: 700px) {{ :root {{ --u: calc((100vw - 12px) / {view_phone}); }} }}
 body {{ margin: 6px; background: #fff; font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; color: #222; }}
 h1 {{ margin: 2px 4px 0; font-size: 22px; color: #C2185B; }}
 .sub {{ margin: 2px 4px 6px; font-size: 13px; color: #555; }}
@@ -287,13 +290,20 @@ svg text {{ font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sa
 .cell {{ fill: #fff; stroke: #bbb; }}
 .cell.short {{ fill: #E53935; }}
 .cell.full {{ fill: #FFEB3B; }}
+.tap {{ display: none; }}
+/* Notionのページの中（埋め込み）で見ているとき：題名を出さず、表をタッチすると画面いっぱいに開く */
+.embedded h1 {{ display: none; }}
+.embedded .sub {{ margin-top: 0; }}
+.embedded .tap {{ display: block; margin: 0 4px 6px; padding: 6px 10px; border-radius: 6px; background: #C2185B; color: #fff; font-size: 14px; font-weight: bold; text-align: center; text-decoration: none; }}
+.embedded .chart {{ cursor: pointer; }}
 </style>
 </head>
 <body>
 <h1>全現場スケジュール表</h1>
 <p class="sub">{asof.isoformat()} 時点　／　横に動かすと1年先まで見られます（指で広げて拡大もできます）</p>
 <div class="legend">{legend}<span><i class="lv" style="background:#E53935"></i>オペが足りない</span><span><i class="lv" style="background:#FFEB3B"></i>オペがちょうど</span></div>
-<div class="chart">
+<a class="tap" href="genba-schedule.html" target="_blank" rel="noopener">表をタッチすると、画面いっぱいに大きく開きます</a>
+<div class="chart" id="chart">
 <svg class="left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {LEFT} {H:.0f}">
 {body}
 </svg>
@@ -303,6 +313,18 @@ svg text {{ font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sa
 </svg>
 </div>
 </div>
+<script>
+// Notionのページの中（埋め込み）のときだけ、表をタッチすると新しい画面でこのページをいっぱいに開く
+(function () {{
+  var inFrame = false;
+  try {{ inFrame = window.self !== window.top; }} catch (e) {{ inFrame = true; }}
+  if (!inFrame) return;
+  document.documentElement.className += " embedded";
+  document.getElementById("chart").addEventListener("click", function () {{
+    window.open(location.href.split("#")[0], "_blank", "noopener");
+  }});
+}})();
+</script>
 </body>
 </html>
 """

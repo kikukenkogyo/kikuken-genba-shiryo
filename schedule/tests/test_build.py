@@ -93,7 +93,15 @@ class LayoutTest(unittest.TestCase):
         self.assertEqual(h.count("<svg "), 2)
         self.assertIn('<svg class="left"', h)
         self.assertIn('<div class="scroll">', h)
-        self.assertIn("(100vw - 12px) / 526", h)        # 左の欄220＋3か月(9旬×34)＝526 が画面の幅
+        self.assertIn("(100vw - 12px) / 476", h)        # 左の欄170＋3か月(9旬×34)＝476 が画面の幅
+        self.assertIn("(100vw - 12px) / 408", h)        # スマホ・埋め込みは 170＋7旬＝408（字を大きく）
+
+    def test_tap_opens_full_screen_only_when_embedded(self):
+        h = render(SAMPLE)                               # 2026-11-13 酒井さん：表をタッチで画面いっぱいに
+        self.assertIn('id="chart"', h)
+        self.assertIn("window.self !== window.top", h)
+        self.assertIn('window.open(location.href', h)
+        self.assertIn(".tap { display: none; }", h)       # ふつうに開いたときは案内を出さない
 
     def test_special_machines_always_listed(self):
         d = copy.deepcopy(SAMPLE)

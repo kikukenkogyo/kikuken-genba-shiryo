@@ -7,7 +7,8 @@
 <title>全現場スケジュール表</title>
 <link rel="icon" href="favicon.png">
 <style>
-:root { --u: min(calc((100vw - 12px) / 526), 1.3px); }
+:root { --u: min(calc((100vw - 12px) / 476), 1.3px); }
+@media (max-width: 700px) { :root { --u: calc((100vw - 12px) / 408); } }
 body { margin: 6px; background: #fff; font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; color: #222; }
 h1 { margin: 2px 4px 0; font-size: 22px; color: #C2185B; }
 .sub { margin: 2px 4px 6px; font-size: 13px; color: #555; }
@@ -18,721 +19,742 @@ h1 { margin: 2px 4px 0; font-size: 22px; color: #C2185B; }
 .chart { display: flex; align-items: flex-start; }
 .scroll { overflow-x: auto; flex: 1; min-width: 0; -webkit-overflow-scrolling: touch; }
 svg { display: block; flex: none; height: auto; max-width: none; }
-svg.left { width: calc(var(--u) * 220); }
+svg.left { width: calc(var(--u) * 170); }
 svg.right { width: calc(var(--u) * 1226); }
 svg text { font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; }
 .cell { fill: #fff; stroke: #bbb; }
 .cell.short { fill: #E53935; }
 .cell.full { fill: #FFEB3B; }
+.tap { display: none; }
+/* Notionのページの中（埋め込み）で見ているとき：題名を出さず、表をタッチすると画面いっぱいに開く */
+.embedded h1 { display: none; }
+.embedded .sub { margin-top: 0; }
+.embedded .tap { display: block; margin: 0 4px 6px; padding: 6px 10px; border-radius: 6px; background: #C2185B; color: #fff; font-size: 14px; font-weight: bold; text-align: center; text-decoration: none; }
+.embedded .chart { cursor: pointer; }
 </style>
 </head>
 <body>
 <h1>全現場スケジュール表</h1>
 <p class="sub">2026-11-13 時点　／　横に動かすと1年先まで見られます（指で広げて拡大もできます）</p>
 <div class="legend"><span><i style="background:#4CAF50"></i>内装解体</span><span><i style="background:#2196F3"></i>上屋解体</span><span><i style="background:#FF9800"></i>基礎解体</span><span><i style="background:#9C27B0"></i>地下解体</span><span><i style="background:#00897B"></i>外構解体</span><span><i style="background:#9E9E9E"></i>着工予定</span><span><i class="lv" style="background:#E53935"></i>オペが足りない</span><span><i class="lv" style="background:#FFEB3B"></i>オペがちょうど</span></div>
-<div class="chart">
-<svg class="left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 678">
-<rect x="220" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="271.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">2026年11月</text>
-<rect x="322" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="373.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">12月</text>
-<rect x="424" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="475.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">2027年1月</text>
-<rect x="526" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="577.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">2月</text>
-<rect x="628" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="679.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">3月</text>
-<rect x="730" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="781.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">4月</text>
-<rect x="832" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="883.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">5月</text>
-<rect x="934" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="985.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">6月</text>
-<rect x="1036" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="1087.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">7月</text>
-<rect x="1138" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="1189.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">8月</text>
-<rect x="1240" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="1291.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">9月</text>
-<rect x="1342" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="1393.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">10月</text>
-<rect x="220" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="237.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="254" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="271.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="288" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="305.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="322" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="339.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="356" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="373.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="390" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="407.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="424" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="441.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="458" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="475.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="492" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="509.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="526" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="543.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="560" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="577.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="594" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="611.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="628" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="645.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="662" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="679.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="696" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="713.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="730" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="747.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="764" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="781.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="798" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="815.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="832" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="849.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="866" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="883.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="900" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="917.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="934" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="951.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="968" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="985.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="1002" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1019.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="1036" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1053.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="1070" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1087.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="1104" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1121.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="1138" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1155.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="1172" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1189.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="1206" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1223.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="1240" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1257.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="1274" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1291.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="1308" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1325.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="1342" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1359.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="1376" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1393.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="1410" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1427.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="0" y="18" width="220" height="46" fill="#FCE4EC" stroke="#999"/>
-<text x="110.0" y="47.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">現　場</text>
-<rect x="0" y="64" width="1446" height="62" fill="#fff" stroke="#999"/>
-<rect x="0" y="126" width="1446" height="80" fill="#fff" stroke="#999"/>
-<rect x="0" y="206" width="1446" height="80" fill="#fff" stroke="#999"/>
-<rect x="0" y="286" width="1446" height="98" fill="#fff" stroke="#999"/>
-<line x1="220" y1="64" x2="220" y2="384" stroke="#999"/>
-<line x1="254" y1="64" x2="254" y2="384" stroke="#e3e3e3"/>
-<line x1="288" y1="64" x2="288" y2="384" stroke="#e3e3e3"/>
-<line x1="322" y1="64" x2="322" y2="384" stroke="#999"/>
-<line x1="356" y1="64" x2="356" y2="384" stroke="#e3e3e3"/>
-<line x1="390" y1="64" x2="390" y2="384" stroke="#e3e3e3"/>
-<line x1="424" y1="64" x2="424" y2="384" stroke="#999"/>
-<line x1="458" y1="64" x2="458" y2="384" stroke="#e3e3e3"/>
-<line x1="492" y1="64" x2="492" y2="384" stroke="#e3e3e3"/>
-<line x1="526" y1="64" x2="526" y2="384" stroke="#999"/>
-<line x1="560" y1="64" x2="560" y2="384" stroke="#e3e3e3"/>
-<line x1="594" y1="64" x2="594" y2="384" stroke="#e3e3e3"/>
-<line x1="628" y1="64" x2="628" y2="384" stroke="#999"/>
-<line x1="662" y1="64" x2="662" y2="384" stroke="#e3e3e3"/>
-<line x1="696" y1="64" x2="696" y2="384" stroke="#e3e3e3"/>
-<line x1="730" y1="64" x2="730" y2="384" stroke="#999"/>
-<line x1="764" y1="64" x2="764" y2="384" stroke="#e3e3e3"/>
-<line x1="798" y1="64" x2="798" y2="384" stroke="#e3e3e3"/>
-<line x1="832" y1="64" x2="832" y2="384" stroke="#999"/>
-<line x1="866" y1="64" x2="866" y2="384" stroke="#e3e3e3"/>
-<line x1="900" y1="64" x2="900" y2="384" stroke="#e3e3e3"/>
-<line x1="934" y1="64" x2="934" y2="384" stroke="#999"/>
-<line x1="968" y1="64" x2="968" y2="384" stroke="#e3e3e3"/>
-<line x1="1002" y1="64" x2="1002" y2="384" stroke="#e3e3e3"/>
-<line x1="1036" y1="64" x2="1036" y2="384" stroke="#999"/>
-<line x1="1070" y1="64" x2="1070" y2="384" stroke="#e3e3e3"/>
-<line x1="1104" y1="64" x2="1104" y2="384" stroke="#e3e3e3"/>
-<line x1="1138" y1="64" x2="1138" y2="384" stroke="#999"/>
-<line x1="1172" y1="64" x2="1172" y2="384" stroke="#e3e3e3"/>
-<line x1="1206" y1="64" x2="1206" y2="384" stroke="#e3e3e3"/>
-<line x1="1240" y1="64" x2="1240" y2="384" stroke="#999"/>
-<line x1="1274" y1="64" x2="1274" y2="384" stroke="#e3e3e3"/>
-<line x1="1308" y1="64" x2="1308" y2="384" stroke="#e3e3e3"/>
-<line x1="1342" y1="64" x2="1342" y2="384" stroke="#999"/>
-<line x1="1376" y1="64" x2="1376" y2="384" stroke="#e3e3e3"/>
-<line x1="1410" y1="64" x2="1410" y2="384" stroke="#e3e3e3"/>
-<line x1="1444" y1="64" x2="1444" y2="384" stroke="#999"/>
-<rect x="408.5" y="64" width="29.1" height="320" fill="#000" opacity="0.10"/>
-<text x="423.1" y="75.0" font-size="10" fill="#333" text-anchor="middle">冬季休暇</text>
+<a class="tap" href="genba-schedule.html" target="_blank" rel="noopener">表をタッチすると、画面いっぱいに大きく開きます</a>
+<div class="chart" id="chart">
+<svg class="left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 696">
+<rect x="170" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="221.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">2026年11月</text>
+<rect x="272" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="323.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">12月</text>
+<rect x="374" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="425.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">2027年1月</text>
+<rect x="476" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="527.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">2月</text>
+<rect x="578" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="629.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">3月</text>
+<rect x="680" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="731.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">4月</text>
+<rect x="782" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="833.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">5月</text>
+<rect x="884" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="935.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">6月</text>
+<rect x="986" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="1037.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">7月</text>
+<rect x="1088" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="1139.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">8月</text>
+<rect x="1190" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="1241.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">9月</text>
+<rect x="1292" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="1343.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">10月</text>
+<rect x="170" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="187.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="204" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="221.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="238" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="255.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="272" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="289.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="306" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="323.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="340" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="357.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="374" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="391.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="408" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="425.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="442" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="459.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="476" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="493.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="510" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="527.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="544" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="561.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="578" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="595.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="612" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="629.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="646" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="663.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="680" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="697.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="714" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="731.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="748" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="765.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="782" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="799.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="816" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="833.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="850" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="867.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="884" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="901.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="918" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="935.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="952" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="969.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="986" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1003.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="1020" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1037.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="1054" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1071.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="1088" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1105.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="1122" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1139.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="1156" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1173.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="1190" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1207.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="1224" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1241.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="1258" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1275.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="1292" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1309.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="1326" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1343.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="1360" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1377.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="0" y="18" width="170" height="46" fill="#FCE4EC" stroke="#999"/>
+<text x="85.0" y="47.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">現　場</text>
+<rect x="0" y="64" width="1396" height="62" fill="#fff" stroke="#999"/>
+<rect x="0" y="126" width="1396" height="98" fill="#fff" stroke="#999"/>
+<rect x="0" y="224" width="1396" height="80" fill="#fff" stroke="#999"/>
+<rect x="0" y="304" width="1396" height="98" fill="#fff" stroke="#999"/>
+<line x1="170" y1="64" x2="170" y2="402" stroke="#999"/>
+<line x1="204" y1="64" x2="204" y2="402" stroke="#e3e3e3"/>
+<line x1="238" y1="64" x2="238" y2="402" stroke="#e3e3e3"/>
+<line x1="272" y1="64" x2="272" y2="402" stroke="#999"/>
+<line x1="306" y1="64" x2="306" y2="402" stroke="#e3e3e3"/>
+<line x1="340" y1="64" x2="340" y2="402" stroke="#e3e3e3"/>
+<line x1="374" y1="64" x2="374" y2="402" stroke="#999"/>
+<line x1="408" y1="64" x2="408" y2="402" stroke="#e3e3e3"/>
+<line x1="442" y1="64" x2="442" y2="402" stroke="#e3e3e3"/>
+<line x1="476" y1="64" x2="476" y2="402" stroke="#999"/>
+<line x1="510" y1="64" x2="510" y2="402" stroke="#e3e3e3"/>
+<line x1="544" y1="64" x2="544" y2="402" stroke="#e3e3e3"/>
+<line x1="578" y1="64" x2="578" y2="402" stroke="#999"/>
+<line x1="612" y1="64" x2="612" y2="402" stroke="#e3e3e3"/>
+<line x1="646" y1="64" x2="646" y2="402" stroke="#e3e3e3"/>
+<line x1="680" y1="64" x2="680" y2="402" stroke="#999"/>
+<line x1="714" y1="64" x2="714" y2="402" stroke="#e3e3e3"/>
+<line x1="748" y1="64" x2="748" y2="402" stroke="#e3e3e3"/>
+<line x1="782" y1="64" x2="782" y2="402" stroke="#999"/>
+<line x1="816" y1="64" x2="816" y2="402" stroke="#e3e3e3"/>
+<line x1="850" y1="64" x2="850" y2="402" stroke="#e3e3e3"/>
+<line x1="884" y1="64" x2="884" y2="402" stroke="#999"/>
+<line x1="918" y1="64" x2="918" y2="402" stroke="#e3e3e3"/>
+<line x1="952" y1="64" x2="952" y2="402" stroke="#e3e3e3"/>
+<line x1="986" y1="64" x2="986" y2="402" stroke="#999"/>
+<line x1="1020" y1="64" x2="1020" y2="402" stroke="#e3e3e3"/>
+<line x1="1054" y1="64" x2="1054" y2="402" stroke="#e3e3e3"/>
+<line x1="1088" y1="64" x2="1088" y2="402" stroke="#999"/>
+<line x1="1122" y1="64" x2="1122" y2="402" stroke="#e3e3e3"/>
+<line x1="1156" y1="64" x2="1156" y2="402" stroke="#e3e3e3"/>
+<line x1="1190" y1="64" x2="1190" y2="402" stroke="#999"/>
+<line x1="1224" y1="64" x2="1224" y2="402" stroke="#e3e3e3"/>
+<line x1="1258" y1="64" x2="1258" y2="402" stroke="#e3e3e3"/>
+<line x1="1292" y1="64" x2="1292" y2="402" stroke="#999"/>
+<line x1="1326" y1="64" x2="1326" y2="402" stroke="#e3e3e3"/>
+<line x1="1360" y1="64" x2="1360" y2="402" stroke="#e3e3e3"/>
+<line x1="1394" y1="64" x2="1394" y2="402" stroke="#999"/>
+<rect x="358.5" y="64" width="29.1" height="338" fill="#000" opacity="0.10"/>
+<text x="373.1" y="75.0" font-size="10" fill="#333" text-anchor="middle">冬季休暇</text>
 <text x="8.0" y="84.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">九段南計画解体工事</text>
 <text x="8.0" y="102.0" font-size="11" fill="#555" text-anchor="start">リーダー 阿部／メイン 0.45</text>
 <text x="8.0" y="117.0" font-size="11" fill="#555" text-anchor="start">今ある重機 3台</text>
-<rect x="220.0" y="82.0" width="319.6" height="26" rx="4" fill="#9C27B0"/>
-<text x="8.0" y="146.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">（仮称）世田谷区砧6-25</text>
-<text x="8.0" y="164.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">　自走式立体駐車場解体工事</text>
-<text x="8.0" y="182.0" font-size="11" fill="#555" text-anchor="start">リーダー 原／メイン 0.45</text>
-<text x="8.0" y="197.0" font-size="11" fill="#555" text-anchor="start">今ある重機 2台</text>
-<rect x="220.0" y="153.0" width="112.2" height="26" rx="4" fill="#00897B"/>
-<text x="8.0" y="226.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">東京大学（本郷）工学</text>
-<text x="8.0" y="244.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">部13号館改修工事</text>
-<text x="8.0" y="262.0" font-size="11" fill="#555" text-anchor="start">リーダー 風間／メイン 0.25</text>
-<text x="8.0" y="277.0" font-size="11" fill="#555" text-anchor="start">今ある重機 0台</text>
-<rect x="247.2" y="233.0" width="34.0" height="26" rx="4" fill="#00897B"/>
-<text x="8.0" y="306.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">都営保木間第５アパー</text>
-<text x="8.0" y="324.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">ト（１２、１３、１８</text>
-<text x="8.0" y="342.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">、１９号棟）除却工事</text>
-<text x="8.0" y="360.0" font-size="11" fill="#555" text-anchor="start">リーダー 未定／メイン 1.2</text>
-<text x="8.0" y="375.0" font-size="11" fill="#555" text-anchor="start">今ある重機 0台</text>
-<rect x="220.0" y="322.0" width="510.0" height="26" rx="4" fill="#9E9E9E"/>
-<rect x="0" y="392" width="220" height="28" fill="#F5F5F5" stroke="#999"/>
-<text x="8.0" y="411.0" font-size="13" fill="#222" text-anchor="start" font-weight="bold">オペ必要人数</text>
-<rect class="cell ok" x="220" y="392" width="34" height="28"/>
-<text x="237.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">6</text>
-<rect class="cell ok" x="254" y="392" width="34" height="28"/>
-<text x="271.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">6</text>
-<rect class="cell ok" x="288" y="392" width="34" height="28"/>
-<text x="305.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">4</text>
-<rect class="cell ok" x="322" y="392" width="34" height="28"/>
-<text x="339.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">4</text>
-<rect class="cell ok" x="356" y="392" width="34" height="28"/>
-<text x="373.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">2</text>
-<rect class="cell ok" x="390" y="392" width="34" height="28"/>
-<text x="407.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">2</text>
-<rect class="cell ok" x="424" y="392" width="34" height="28"/>
-<text x="441.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">2</text>
-<rect class="cell ok" x="458" y="392" width="34" height="28"/>
-<text x="475.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">2</text>
-<rect class="cell ok" x="492" y="392" width="34" height="28"/>
-<text x="509.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">2</text>
-<rect class="cell ok" x="526" y="392" width="34" height="28"/>
-<text x="543.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">2</text>
-<rect class="cell ok" x="560" y="392" width="34" height="28"/>
-<text x="577.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="594" y="392" width="34" height="28"/>
-<text x="611.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="628" y="392" width="34" height="28"/>
-<text x="645.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="662" y="392" width="34" height="28"/>
-<text x="679.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="696" y="392" width="34" height="28"/>
-<text x="713.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="730" y="392" width="34" height="28"/>
-<text x="747.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="764" y="392" width="34" height="28"/>
-<text x="781.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="798" y="392" width="34" height="28"/>
-<text x="815.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="832" y="392" width="34" height="28"/>
-<text x="849.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="866" y="392" width="34" height="28"/>
-<text x="883.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="900" y="392" width="34" height="28"/>
-<text x="917.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="934" y="392" width="34" height="28"/>
-<text x="951.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="968" y="392" width="34" height="28"/>
-<text x="985.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1002" y="392" width="34" height="28"/>
-<text x="1019.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1036" y="392" width="34" height="28"/>
-<text x="1053.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1070" y="392" width="34" height="28"/>
-<text x="1087.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1104" y="392" width="34" height="28"/>
-<text x="1121.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1138" y="392" width="34" height="28"/>
-<text x="1155.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1172" y="392" width="34" height="28"/>
-<text x="1189.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1206" y="392" width="34" height="28"/>
-<text x="1223.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1240" y="392" width="34" height="28"/>
-<text x="1257.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1274" y="392" width="34" height="28"/>
-<text x="1291.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1308" y="392" width="34" height="28"/>
-<text x="1325.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1342" y="392" width="34" height="28"/>
-<text x="1359.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1376" y="392" width="34" height="28"/>
-<text x="1393.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1410" y="392" width="34" height="28"/>
-<text x="1427.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect x="0" y="420" width="220" height="28" fill="#F5F5F5" stroke="#999"/>
-<text x="8.0" y="439.0" font-size="13" fill="#222" text-anchor="start" font-weight="bold">使える人数</text>
-<rect class="cell ok" x="220" y="420" width="34" height="28"/>
-<text x="237.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="254" y="420" width="34" height="28"/>
-<text x="271.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="288" y="420" width="34" height="28"/>
-<text x="305.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="322" y="420" width="34" height="28"/>
-<text x="339.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="356" y="420" width="34" height="28"/>
-<text x="373.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="390" y="420" width="34" height="28"/>
-<text x="407.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="424" y="420" width="34" height="28"/>
-<text x="441.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="458" y="420" width="34" height="28"/>
-<text x="475.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="492" y="420" width="34" height="28"/>
-<text x="509.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="526" y="420" width="34" height="28"/>
-<text x="543.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="560" y="420" width="34" height="28"/>
-<text x="577.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="594" y="420" width="34" height="28"/>
-<text x="611.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="628" y="420" width="34" height="28"/>
-<text x="645.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="662" y="420" width="34" height="28"/>
-<text x="679.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="696" y="420" width="34" height="28"/>
-<text x="713.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="730" y="420" width="34" height="28"/>
-<text x="747.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="764" y="420" width="34" height="28"/>
-<text x="781.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="798" y="420" width="34" height="28"/>
-<text x="815.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="832" y="420" width="34" height="28"/>
-<text x="849.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="866" y="420" width="34" height="28"/>
-<text x="883.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="900" y="420" width="34" height="28"/>
-<text x="917.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="934" y="420" width="34" height="28"/>
-<text x="951.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="968" y="420" width="34" height="28"/>
-<text x="985.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1002" y="420" width="34" height="28"/>
-<text x="1019.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1036" y="420" width="34" height="28"/>
-<text x="1053.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1070" y="420" width="34" height="28"/>
-<text x="1087.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1104" y="420" width="34" height="28"/>
-<text x="1121.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1138" y="420" width="34" height="28"/>
-<text x="1155.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1172" y="420" width="34" height="28"/>
-<text x="1189.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1206" y="420" width="34" height="28"/>
-<text x="1223.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1240" y="420" width="34" height="28"/>
-<text x="1257.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1274" y="420" width="34" height="28"/>
-<text x="1291.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1308" y="420" width="34" height="28"/>
-<text x="1325.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1342" y="420" width="34" height="28"/>
-<text x="1359.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1376" y="420" width="34" height="28"/>
-<text x="1393.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1410" y="420" width="34" height="28"/>
-<text x="1427.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect x="0" y="456" width="1446" height="22" fill="#FCE4EC" stroke="#999"/>
-<text x="8.0" y="472.0" font-size="13" fill="#222" text-anchor="start" font-weight="bold">大型・特殊重機の使用状況</text>
-<rect x="0" y="478" width="1446" height="32" fill="#fff" stroke="#999"/>
-<text x="8.0" y="492.0" font-size="12" fill="#222" text-anchor="start" font-weight="bold">SK350超ロング</text>
-<text x="8.0" y="505.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
-<rect x="0" y="510" width="1446" height="32" fill="#fff" stroke="#999"/>
-<text x="8.0" y="524.0" font-size="12" fill="#222" text-anchor="start" font-weight="bold">SK350セパレート</text>
-<text x="8.0" y="537.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
-<rect x="0" y="542" width="1446" height="32" fill="#fff" stroke="#999"/>
-<text x="8.0" y="556.0" font-size="12" fill="#222" text-anchor="start" font-weight="bold">PC450スタンダード</text>
-<text x="8.0" y="569.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
-<rect x="0" y="574" width="1446" height="32" fill="#fff" stroke="#999"/>
-<text x="8.0" y="588.0" font-size="12" fill="#222" text-anchor="start" font-weight="bold">ZX225セミロング</text>
-<text x="8.0" y="601.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
-<rect x="0" y="606" width="1446" height="32" fill="#fff" stroke="#999"/>
-<text x="8.0" y="620.0" font-size="12" fill="#222" text-anchor="start" font-weight="bold">ZX225 3段ショートリーチ</text>
-<text x="8.0" y="633.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
-<rect x="0" y="638" width="1446" height="32" fill="#fff" stroke="#999"/>
-<text x="8.0" y="652.0" font-size="12" fill="#222" text-anchor="start" font-weight="bold">ZX135セミロング</text>
-<text x="8.0" y="665.0" font-size="10" fill="#555" text-anchor="start">今：工場</text>
-<line x1="220" y1="478" x2="220" y2="670" stroke="#999"/>
-<line x1="322" y1="478" x2="322" y2="670" stroke="#999"/>
-<line x1="424" y1="478" x2="424" y2="670" stroke="#999"/>
-<line x1="526" y1="478" x2="526" y2="670" stroke="#999"/>
-<line x1="628" y1="478" x2="628" y2="670" stroke="#999"/>
-<line x1="730" y1="478" x2="730" y2="670" stroke="#999"/>
-<line x1="832" y1="478" x2="832" y2="670" stroke="#999"/>
-<line x1="934" y1="478" x2="934" y2="670" stroke="#999"/>
-<line x1="1036" y1="478" x2="1036" y2="670" stroke="#999"/>
-<line x1="1138" y1="478" x2="1138" y2="670" stroke="#999"/>
-<line x1="1240" y1="478" x2="1240" y2="670" stroke="#999"/>
-<line x1="1342" y1="478" x2="1342" y2="670" stroke="#999"/>
-<line x1="1444" y1="478" x2="1444" y2="670" stroke="#999"/>
-<line x1="260.8" y1="18" x2="260.8" y2="384" stroke="#E53935" stroke-width="2"/>
-<text x="260.8" y="14.0" font-size="11" fill="#E53935" text-anchor="middle" font-weight="bold">今日</text>
-<text x="226.0" y="99.5" font-size="12" fill="#fff" text-anchor="start" font-weight="bold">地下解体 オペ2</text>
-<text x="226.0" y="170.5" font-size="12" fill="#fff" text-anchor="start" font-weight="bold">外構解体 オペ2</text>
-<text x="286.2" y="250.5" font-size="12" fill="#222" text-anchor="start" font-weight="bold">外構解体 オペ2 1期</text>
-<text x="226.0" y="339.5" font-size="12" fill="#fff" text-anchor="start" font-weight="bold">休止中</text>
+<rect x="170.0" y="82.0" width="319.6" height="26" rx="4" fill="#9C27B0"/>
+<text x="8.0" y="146.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">（仮称）世田谷区砧</text>
+<text x="8.0" y="164.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">6-25　自走式立</text>
+<text x="8.0" y="182.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">体駐車場解体工事</text>
+<text x="8.0" y="200.0" font-size="11" fill="#555" text-anchor="start">リーダー 原／メイン 0.45</text>
+<text x="8.0" y="215.0" font-size="11" fill="#555" text-anchor="start">今ある重機 2台</text>
+<rect x="170.0" y="162.0" width="112.2" height="26" rx="4" fill="#00897B"/>
+<text x="8.0" y="244.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">東京大学（本郷）工学</text>
+<text x="8.0" y="262.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">部13号館改修工事</text>
+<text x="8.0" y="280.0" font-size="11" fill="#555" text-anchor="start">リーダー 風間／メイン 0.25</text>
+<text x="8.0" y="295.0" font-size="11" fill="#555" text-anchor="start">今ある重機 0台</text>
+<rect x="197.2" y="251.0" width="34.0" height="26" rx="4" fill="#00897B"/>
+<text x="8.0" y="324.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">都営保木間第５アパー</text>
+<text x="8.0" y="342.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">ト（１２、１３、１８</text>
+<text x="8.0" y="360.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">、１９号棟）除却工事</text>
+<text x="8.0" y="378.0" font-size="11" fill="#555" text-anchor="start">リーダー 未定／メイン 1.2</text>
+<text x="8.0" y="393.0" font-size="11" fill="#555" text-anchor="start">今ある重機 0台</text>
+<rect x="170.0" y="340.0" width="510.0" height="26" rx="4" fill="#9E9E9E"/>
+<rect x="0" y="410" width="170" height="28" fill="#F5F5F5" stroke="#999"/>
+<text x="8.0" y="429.0" font-size="13" fill="#222" text-anchor="start" font-weight="bold">オペ必要人数</text>
+<rect class="cell ok" x="170" y="410" width="34" height="28"/>
+<text x="187.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">6</text>
+<rect class="cell ok" x="204" y="410" width="34" height="28"/>
+<text x="221.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">6</text>
+<rect class="cell ok" x="238" y="410" width="34" height="28"/>
+<text x="255.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">4</text>
+<rect class="cell ok" x="272" y="410" width="34" height="28"/>
+<text x="289.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">4</text>
+<rect class="cell ok" x="306" y="410" width="34" height="28"/>
+<text x="323.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">2</text>
+<rect class="cell ok" x="340" y="410" width="34" height="28"/>
+<text x="357.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">2</text>
+<rect class="cell ok" x="374" y="410" width="34" height="28"/>
+<text x="391.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">2</text>
+<rect class="cell ok" x="408" y="410" width="34" height="28"/>
+<text x="425.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">2</text>
+<rect class="cell ok" x="442" y="410" width="34" height="28"/>
+<text x="459.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">2</text>
+<rect class="cell ok" x="476" y="410" width="34" height="28"/>
+<text x="493.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">2</text>
+<rect class="cell ok" x="510" y="410" width="34" height="28"/>
+<text x="527.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="544" y="410" width="34" height="28"/>
+<text x="561.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="578" y="410" width="34" height="28"/>
+<text x="595.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="612" y="410" width="34" height="28"/>
+<text x="629.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="646" y="410" width="34" height="28"/>
+<text x="663.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="680" y="410" width="34" height="28"/>
+<text x="697.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="714" y="410" width="34" height="28"/>
+<text x="731.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="748" y="410" width="34" height="28"/>
+<text x="765.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="782" y="410" width="34" height="28"/>
+<text x="799.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="816" y="410" width="34" height="28"/>
+<text x="833.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="850" y="410" width="34" height="28"/>
+<text x="867.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="884" y="410" width="34" height="28"/>
+<text x="901.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="918" y="410" width="34" height="28"/>
+<text x="935.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="952" y="410" width="34" height="28"/>
+<text x="969.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="986" y="410" width="34" height="28"/>
+<text x="1003.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1020" y="410" width="34" height="28"/>
+<text x="1037.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1054" y="410" width="34" height="28"/>
+<text x="1071.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1088" y="410" width="34" height="28"/>
+<text x="1105.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1122" y="410" width="34" height="28"/>
+<text x="1139.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1156" y="410" width="34" height="28"/>
+<text x="1173.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1190" y="410" width="34" height="28"/>
+<text x="1207.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1224" y="410" width="34" height="28"/>
+<text x="1241.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1258" y="410" width="34" height="28"/>
+<text x="1275.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1292" y="410" width="34" height="28"/>
+<text x="1309.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1326" y="410" width="34" height="28"/>
+<text x="1343.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1360" y="410" width="34" height="28"/>
+<text x="1377.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect x="0" y="438" width="170" height="28" fill="#F5F5F5" stroke="#999"/>
+<text x="8.0" y="457.0" font-size="13" fill="#222" text-anchor="start" font-weight="bold">使える人数</text>
+<rect class="cell ok" x="170" y="438" width="34" height="28"/>
+<text x="187.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="204" y="438" width="34" height="28"/>
+<text x="221.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="238" y="438" width="34" height="28"/>
+<text x="255.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="272" y="438" width="34" height="28"/>
+<text x="289.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="306" y="438" width="34" height="28"/>
+<text x="323.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="340" y="438" width="34" height="28"/>
+<text x="357.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="374" y="438" width="34" height="28"/>
+<text x="391.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="408" y="438" width="34" height="28"/>
+<text x="425.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="442" y="438" width="34" height="28"/>
+<text x="459.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="476" y="438" width="34" height="28"/>
+<text x="493.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="510" y="438" width="34" height="28"/>
+<text x="527.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="544" y="438" width="34" height="28"/>
+<text x="561.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="578" y="438" width="34" height="28"/>
+<text x="595.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="612" y="438" width="34" height="28"/>
+<text x="629.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="646" y="438" width="34" height="28"/>
+<text x="663.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="680" y="438" width="34" height="28"/>
+<text x="697.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="714" y="438" width="34" height="28"/>
+<text x="731.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="748" y="438" width="34" height="28"/>
+<text x="765.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="782" y="438" width="34" height="28"/>
+<text x="799.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="816" y="438" width="34" height="28"/>
+<text x="833.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="850" y="438" width="34" height="28"/>
+<text x="867.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="884" y="438" width="34" height="28"/>
+<text x="901.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="918" y="438" width="34" height="28"/>
+<text x="935.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="952" y="438" width="34" height="28"/>
+<text x="969.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="986" y="438" width="34" height="28"/>
+<text x="1003.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1020" y="438" width="34" height="28"/>
+<text x="1037.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1054" y="438" width="34" height="28"/>
+<text x="1071.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1088" y="438" width="34" height="28"/>
+<text x="1105.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1122" y="438" width="34" height="28"/>
+<text x="1139.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1156" y="438" width="34" height="28"/>
+<text x="1173.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1190" y="438" width="34" height="28"/>
+<text x="1207.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1224" y="438" width="34" height="28"/>
+<text x="1241.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1258" y="438" width="34" height="28"/>
+<text x="1275.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1292" y="438" width="34" height="28"/>
+<text x="1309.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1326" y="438" width="34" height="28"/>
+<text x="1343.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1360" y="438" width="34" height="28"/>
+<text x="1377.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect x="0" y="474" width="1396" height="22" fill="#FCE4EC" stroke="#999"/>
+<text x="8.0" y="490.0" font-size="13" fill="#222" text-anchor="start" font-weight="bold">大型・特殊重機の使用状況</text>
+<rect x="0" y="496" width="1396" height="32" fill="#fff" stroke="#999"/>
+<text x="8.0" y="510.0" font-size="11" fill="#222" text-anchor="start" font-weight="bold">SK350超ロング</text>
+<text x="8.0" y="523.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
+<rect x="0" y="528" width="1396" height="32" fill="#fff" stroke="#999"/>
+<text x="8.0" y="542.0" font-size="11" fill="#222" text-anchor="start" font-weight="bold">SK350セパレート</text>
+<text x="8.0" y="555.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
+<rect x="0" y="560" width="1396" height="32" fill="#fff" stroke="#999"/>
+<text x="8.0" y="574.0" font-size="11" fill="#222" text-anchor="start" font-weight="bold">PC450スタンダード</text>
+<text x="8.0" y="587.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
+<rect x="0" y="592" width="1396" height="32" fill="#fff" stroke="#999"/>
+<text x="8.0" y="606.0" font-size="11" fill="#222" text-anchor="start" font-weight="bold">ZX225セミロング</text>
+<text x="8.0" y="619.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
+<rect x="0" y="624" width="1396" height="32" fill="#fff" stroke="#999"/>
+<text x="8.0" y="638.0" font-size="11" fill="#222" text-anchor="start" font-weight="bold">ZX225 3段ショートリーチ</text>
+<text x="8.0" y="651.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
+<rect x="0" y="656" width="1396" height="32" fill="#fff" stroke="#999"/>
+<text x="8.0" y="670.0" font-size="11" fill="#222" text-anchor="start" font-weight="bold">ZX135セミロング</text>
+<text x="8.0" y="683.0" font-size="10" fill="#555" text-anchor="start">今：工場</text>
+<line x1="170" y1="496" x2="170" y2="688" stroke="#999"/>
+<line x1="272" y1="496" x2="272" y2="688" stroke="#999"/>
+<line x1="374" y1="496" x2="374" y2="688" stroke="#999"/>
+<line x1="476" y1="496" x2="476" y2="688" stroke="#999"/>
+<line x1="578" y1="496" x2="578" y2="688" stroke="#999"/>
+<line x1="680" y1="496" x2="680" y2="688" stroke="#999"/>
+<line x1="782" y1="496" x2="782" y2="688" stroke="#999"/>
+<line x1="884" y1="496" x2="884" y2="688" stroke="#999"/>
+<line x1="986" y1="496" x2="986" y2="688" stroke="#999"/>
+<line x1="1088" y1="496" x2="1088" y2="688" stroke="#999"/>
+<line x1="1190" y1="496" x2="1190" y2="688" stroke="#999"/>
+<line x1="1292" y1="496" x2="1292" y2="688" stroke="#999"/>
+<line x1="1394" y1="496" x2="1394" y2="688" stroke="#999"/>
+<line x1="210.8" y1="18" x2="210.8" y2="402" stroke="#E53935" stroke-width="2"/>
+<text x="210.8" y="14.0" font-size="11" fill="#E53935" text-anchor="middle" font-weight="bold">今日</text>
+<text x="176.0" y="99.5" font-size="12" fill="#fff" text-anchor="start" font-weight="bold">地下解体 オペ2</text>
+<text x="176.0" y="179.5" font-size="12" fill="#fff" text-anchor="start" font-weight="bold">外構解体 オペ2</text>
+<text x="236.2" y="268.5" font-size="12" fill="#222" text-anchor="start" font-weight="bold">外構解体 オペ2 1期</text>
+<text x="176.0" y="357.5" font-size="12" fill="#fff" text-anchor="start" font-weight="bold">休止中</text>
 </svg>
 <div class="scroll">
-<svg class="right" xmlns="http://www.w3.org/2000/svg" viewBox="220 0 1226 678">
-<rect x="220" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="271.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">2026年11月</text>
-<rect x="322" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="373.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">12月</text>
-<rect x="424" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="475.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">2027年1月</text>
-<rect x="526" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="577.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">2月</text>
-<rect x="628" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="679.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">3月</text>
-<rect x="730" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="781.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">4月</text>
-<rect x="832" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="883.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">5月</text>
-<rect x="934" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="985.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">6月</text>
-<rect x="1036" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="1087.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">7月</text>
-<rect x="1138" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="1189.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">8月</text>
-<rect x="1240" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="1291.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">9月</text>
-<rect x="1342" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
-<text x="1393.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">10月</text>
-<rect x="220" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="237.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="254" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="271.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="288" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="305.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="322" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="339.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="356" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="373.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="390" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="407.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="424" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="441.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="458" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="475.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="492" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="509.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="526" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="543.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="560" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="577.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="594" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="611.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="628" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="645.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="662" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="679.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="696" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="713.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="730" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="747.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="764" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="781.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="798" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="815.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="832" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="849.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="866" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="883.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="900" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="917.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="934" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="951.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="968" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="985.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="1002" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1019.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="1036" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1053.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="1070" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1087.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="1104" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1121.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="1138" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1155.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="1172" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1189.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="1206" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1223.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="1240" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1257.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="1274" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1291.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="1308" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1325.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="1342" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1359.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
-<rect x="1376" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1393.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
-<rect x="1410" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
-<text x="1427.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
-<rect x="0" y="18" width="220" height="46" fill="#FCE4EC" stroke="#999"/>
-<text x="110.0" y="47.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">現　場</text>
-<rect x="0" y="64" width="1446" height="62" fill="#fff" stroke="#999"/>
-<rect x="0" y="126" width="1446" height="80" fill="#fff" stroke="#999"/>
-<rect x="0" y="206" width="1446" height="80" fill="#fff" stroke="#999"/>
-<rect x="0" y="286" width="1446" height="98" fill="#fff" stroke="#999"/>
-<line x1="220" y1="64" x2="220" y2="384" stroke="#999"/>
-<line x1="254" y1="64" x2="254" y2="384" stroke="#e3e3e3"/>
-<line x1="288" y1="64" x2="288" y2="384" stroke="#e3e3e3"/>
-<line x1="322" y1="64" x2="322" y2="384" stroke="#999"/>
-<line x1="356" y1="64" x2="356" y2="384" stroke="#e3e3e3"/>
-<line x1="390" y1="64" x2="390" y2="384" stroke="#e3e3e3"/>
-<line x1="424" y1="64" x2="424" y2="384" stroke="#999"/>
-<line x1="458" y1="64" x2="458" y2="384" stroke="#e3e3e3"/>
-<line x1="492" y1="64" x2="492" y2="384" stroke="#e3e3e3"/>
-<line x1="526" y1="64" x2="526" y2="384" stroke="#999"/>
-<line x1="560" y1="64" x2="560" y2="384" stroke="#e3e3e3"/>
-<line x1="594" y1="64" x2="594" y2="384" stroke="#e3e3e3"/>
-<line x1="628" y1="64" x2="628" y2="384" stroke="#999"/>
-<line x1="662" y1="64" x2="662" y2="384" stroke="#e3e3e3"/>
-<line x1="696" y1="64" x2="696" y2="384" stroke="#e3e3e3"/>
-<line x1="730" y1="64" x2="730" y2="384" stroke="#999"/>
-<line x1="764" y1="64" x2="764" y2="384" stroke="#e3e3e3"/>
-<line x1="798" y1="64" x2="798" y2="384" stroke="#e3e3e3"/>
-<line x1="832" y1="64" x2="832" y2="384" stroke="#999"/>
-<line x1="866" y1="64" x2="866" y2="384" stroke="#e3e3e3"/>
-<line x1="900" y1="64" x2="900" y2="384" stroke="#e3e3e3"/>
-<line x1="934" y1="64" x2="934" y2="384" stroke="#999"/>
-<line x1="968" y1="64" x2="968" y2="384" stroke="#e3e3e3"/>
-<line x1="1002" y1="64" x2="1002" y2="384" stroke="#e3e3e3"/>
-<line x1="1036" y1="64" x2="1036" y2="384" stroke="#999"/>
-<line x1="1070" y1="64" x2="1070" y2="384" stroke="#e3e3e3"/>
-<line x1="1104" y1="64" x2="1104" y2="384" stroke="#e3e3e3"/>
-<line x1="1138" y1="64" x2="1138" y2="384" stroke="#999"/>
-<line x1="1172" y1="64" x2="1172" y2="384" stroke="#e3e3e3"/>
-<line x1="1206" y1="64" x2="1206" y2="384" stroke="#e3e3e3"/>
-<line x1="1240" y1="64" x2="1240" y2="384" stroke="#999"/>
-<line x1="1274" y1="64" x2="1274" y2="384" stroke="#e3e3e3"/>
-<line x1="1308" y1="64" x2="1308" y2="384" stroke="#e3e3e3"/>
-<line x1="1342" y1="64" x2="1342" y2="384" stroke="#999"/>
-<line x1="1376" y1="64" x2="1376" y2="384" stroke="#e3e3e3"/>
-<line x1="1410" y1="64" x2="1410" y2="384" stroke="#e3e3e3"/>
-<line x1="1444" y1="64" x2="1444" y2="384" stroke="#999"/>
-<rect x="408.5" y="64" width="29.1" height="320" fill="#000" opacity="0.10"/>
-<text x="423.1" y="75.0" font-size="10" fill="#333" text-anchor="middle">冬季休暇</text>
+<svg class="right" xmlns="http://www.w3.org/2000/svg" viewBox="170 0 1226 696">
+<rect x="170" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="221.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">2026年11月</text>
+<rect x="272" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="323.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">12月</text>
+<rect x="374" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="425.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">2027年1月</text>
+<rect x="476" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="527.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">2月</text>
+<rect x="578" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="629.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">3月</text>
+<rect x="680" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="731.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">4月</text>
+<rect x="782" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="833.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">5月</text>
+<rect x="884" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="935.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">6月</text>
+<rect x="986" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="1037.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">7月</text>
+<rect x="1088" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="1139.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">8月</text>
+<rect x="1190" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="1241.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">9月</text>
+<rect x="1292" y="18" width="102" height="26" fill="#FCE4EC" stroke="#999"/>
+<text x="1343.0" y="36.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">10月</text>
+<rect x="170" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="187.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="204" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="221.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="238" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="255.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="272" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="289.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="306" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="323.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="340" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="357.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="374" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="391.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="408" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="425.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="442" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="459.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="476" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="493.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="510" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="527.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="544" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="561.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="578" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="595.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="612" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="629.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="646" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="663.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="680" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="697.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="714" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="731.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="748" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="765.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="782" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="799.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="816" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="833.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="850" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="867.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="884" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="901.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="918" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="935.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="952" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="969.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="986" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1003.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="1020" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1037.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="1054" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1071.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="1088" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1105.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="1122" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1139.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="1156" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1173.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="1190" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1207.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="1224" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1241.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="1258" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1275.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="1292" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1309.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">上</text>
+<rect x="1326" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1343.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">中</text>
+<rect x="1360" y="44" width="34" height="20" fill="#fff" stroke="#bbb"/>
+<text x="1377.0" y="58.0" font-size="11" fill="#555" text-anchor="middle">下</text>
+<rect x="0" y="18" width="170" height="46" fill="#FCE4EC" stroke="#999"/>
+<text x="85.0" y="47.0" font-size="13" fill="#222" text-anchor="middle" font-weight="bold">現　場</text>
+<rect x="0" y="64" width="1396" height="62" fill="#fff" stroke="#999"/>
+<rect x="0" y="126" width="1396" height="98" fill="#fff" stroke="#999"/>
+<rect x="0" y="224" width="1396" height="80" fill="#fff" stroke="#999"/>
+<rect x="0" y="304" width="1396" height="98" fill="#fff" stroke="#999"/>
+<line x1="170" y1="64" x2="170" y2="402" stroke="#999"/>
+<line x1="204" y1="64" x2="204" y2="402" stroke="#e3e3e3"/>
+<line x1="238" y1="64" x2="238" y2="402" stroke="#e3e3e3"/>
+<line x1="272" y1="64" x2="272" y2="402" stroke="#999"/>
+<line x1="306" y1="64" x2="306" y2="402" stroke="#e3e3e3"/>
+<line x1="340" y1="64" x2="340" y2="402" stroke="#e3e3e3"/>
+<line x1="374" y1="64" x2="374" y2="402" stroke="#999"/>
+<line x1="408" y1="64" x2="408" y2="402" stroke="#e3e3e3"/>
+<line x1="442" y1="64" x2="442" y2="402" stroke="#e3e3e3"/>
+<line x1="476" y1="64" x2="476" y2="402" stroke="#999"/>
+<line x1="510" y1="64" x2="510" y2="402" stroke="#e3e3e3"/>
+<line x1="544" y1="64" x2="544" y2="402" stroke="#e3e3e3"/>
+<line x1="578" y1="64" x2="578" y2="402" stroke="#999"/>
+<line x1="612" y1="64" x2="612" y2="402" stroke="#e3e3e3"/>
+<line x1="646" y1="64" x2="646" y2="402" stroke="#e3e3e3"/>
+<line x1="680" y1="64" x2="680" y2="402" stroke="#999"/>
+<line x1="714" y1="64" x2="714" y2="402" stroke="#e3e3e3"/>
+<line x1="748" y1="64" x2="748" y2="402" stroke="#e3e3e3"/>
+<line x1="782" y1="64" x2="782" y2="402" stroke="#999"/>
+<line x1="816" y1="64" x2="816" y2="402" stroke="#e3e3e3"/>
+<line x1="850" y1="64" x2="850" y2="402" stroke="#e3e3e3"/>
+<line x1="884" y1="64" x2="884" y2="402" stroke="#999"/>
+<line x1="918" y1="64" x2="918" y2="402" stroke="#e3e3e3"/>
+<line x1="952" y1="64" x2="952" y2="402" stroke="#e3e3e3"/>
+<line x1="986" y1="64" x2="986" y2="402" stroke="#999"/>
+<line x1="1020" y1="64" x2="1020" y2="402" stroke="#e3e3e3"/>
+<line x1="1054" y1="64" x2="1054" y2="402" stroke="#e3e3e3"/>
+<line x1="1088" y1="64" x2="1088" y2="402" stroke="#999"/>
+<line x1="1122" y1="64" x2="1122" y2="402" stroke="#e3e3e3"/>
+<line x1="1156" y1="64" x2="1156" y2="402" stroke="#e3e3e3"/>
+<line x1="1190" y1="64" x2="1190" y2="402" stroke="#999"/>
+<line x1="1224" y1="64" x2="1224" y2="402" stroke="#e3e3e3"/>
+<line x1="1258" y1="64" x2="1258" y2="402" stroke="#e3e3e3"/>
+<line x1="1292" y1="64" x2="1292" y2="402" stroke="#999"/>
+<line x1="1326" y1="64" x2="1326" y2="402" stroke="#e3e3e3"/>
+<line x1="1360" y1="64" x2="1360" y2="402" stroke="#e3e3e3"/>
+<line x1="1394" y1="64" x2="1394" y2="402" stroke="#999"/>
+<rect x="358.5" y="64" width="29.1" height="338" fill="#000" opacity="0.10"/>
+<text x="373.1" y="75.0" font-size="10" fill="#333" text-anchor="middle">冬季休暇</text>
 <text x="8.0" y="84.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">九段南計画解体工事</text>
 <text x="8.0" y="102.0" font-size="11" fill="#555" text-anchor="start">リーダー 阿部／メイン 0.45</text>
 <text x="8.0" y="117.0" font-size="11" fill="#555" text-anchor="start">今ある重機 3台</text>
-<rect x="220.0" y="82.0" width="319.6" height="26" rx="4" fill="#9C27B0"/>
-<text x="8.0" y="146.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">（仮称）世田谷区砧6-25</text>
-<text x="8.0" y="164.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">　自走式立体駐車場解体工事</text>
-<text x="8.0" y="182.0" font-size="11" fill="#555" text-anchor="start">リーダー 原／メイン 0.45</text>
-<text x="8.0" y="197.0" font-size="11" fill="#555" text-anchor="start">今ある重機 2台</text>
-<rect x="220.0" y="153.0" width="112.2" height="26" rx="4" fill="#00897B"/>
-<text x="8.0" y="226.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">東京大学（本郷）工学</text>
-<text x="8.0" y="244.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">部13号館改修工事</text>
-<text x="8.0" y="262.0" font-size="11" fill="#555" text-anchor="start">リーダー 風間／メイン 0.25</text>
-<text x="8.0" y="277.0" font-size="11" fill="#555" text-anchor="start">今ある重機 0台</text>
-<rect x="247.2" y="233.0" width="34.0" height="26" rx="4" fill="#00897B"/>
-<text x="8.0" y="306.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">都営保木間第５アパー</text>
-<text x="8.0" y="324.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">ト（１２、１３、１８</text>
-<text x="8.0" y="342.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">、１９号棟）除却工事</text>
-<text x="8.0" y="360.0" font-size="11" fill="#555" text-anchor="start">リーダー 未定／メイン 1.2</text>
-<text x="8.0" y="375.0" font-size="11" fill="#555" text-anchor="start">今ある重機 0台</text>
-<rect x="220.0" y="322.0" width="510.0" height="26" rx="4" fill="#9E9E9E"/>
-<rect x="0" y="392" width="220" height="28" fill="#F5F5F5" stroke="#999"/>
-<text x="8.0" y="411.0" font-size="13" fill="#222" text-anchor="start" font-weight="bold">オペ必要人数</text>
-<rect class="cell ok" x="220" y="392" width="34" height="28"/>
-<text x="237.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">6</text>
-<rect class="cell ok" x="254" y="392" width="34" height="28"/>
-<text x="271.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">6</text>
-<rect class="cell ok" x="288" y="392" width="34" height="28"/>
-<text x="305.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">4</text>
-<rect class="cell ok" x="322" y="392" width="34" height="28"/>
-<text x="339.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">4</text>
-<rect class="cell ok" x="356" y="392" width="34" height="28"/>
-<text x="373.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">2</text>
-<rect class="cell ok" x="390" y="392" width="34" height="28"/>
-<text x="407.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">2</text>
-<rect class="cell ok" x="424" y="392" width="34" height="28"/>
-<text x="441.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">2</text>
-<rect class="cell ok" x="458" y="392" width="34" height="28"/>
-<text x="475.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">2</text>
-<rect class="cell ok" x="492" y="392" width="34" height="28"/>
-<text x="509.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">2</text>
-<rect class="cell ok" x="526" y="392" width="34" height="28"/>
-<text x="543.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">2</text>
-<rect class="cell ok" x="560" y="392" width="34" height="28"/>
-<text x="577.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="594" y="392" width="34" height="28"/>
-<text x="611.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="628" y="392" width="34" height="28"/>
-<text x="645.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="662" y="392" width="34" height="28"/>
-<text x="679.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="696" y="392" width="34" height="28"/>
-<text x="713.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="730" y="392" width="34" height="28"/>
-<text x="747.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="764" y="392" width="34" height="28"/>
-<text x="781.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="798" y="392" width="34" height="28"/>
-<text x="815.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="832" y="392" width="34" height="28"/>
-<text x="849.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="866" y="392" width="34" height="28"/>
-<text x="883.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="900" y="392" width="34" height="28"/>
-<text x="917.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="934" y="392" width="34" height="28"/>
-<text x="951.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="968" y="392" width="34" height="28"/>
-<text x="985.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1002" y="392" width="34" height="28"/>
-<text x="1019.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1036" y="392" width="34" height="28"/>
-<text x="1053.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1070" y="392" width="34" height="28"/>
-<text x="1087.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1104" y="392" width="34" height="28"/>
-<text x="1121.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1138" y="392" width="34" height="28"/>
-<text x="1155.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1172" y="392" width="34" height="28"/>
-<text x="1189.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1206" y="392" width="34" height="28"/>
-<text x="1223.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1240" y="392" width="34" height="28"/>
-<text x="1257.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1274" y="392" width="34" height="28"/>
-<text x="1291.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1308" y="392" width="34" height="28"/>
-<text x="1325.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1342" y="392" width="34" height="28"/>
-<text x="1359.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1376" y="392" width="34" height="28"/>
-<text x="1393.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect class="cell ok" x="1410" y="392" width="34" height="28"/>
-<text x="1427.0" y="411.0" font-size="13" fill="#222" text-anchor="middle">0</text>
-<rect x="0" y="420" width="220" height="28" fill="#F5F5F5" stroke="#999"/>
-<text x="8.0" y="439.0" font-size="13" fill="#222" text-anchor="start" font-weight="bold">使える人数</text>
-<rect class="cell ok" x="220" y="420" width="34" height="28"/>
-<text x="237.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="254" y="420" width="34" height="28"/>
-<text x="271.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="288" y="420" width="34" height="28"/>
-<text x="305.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="322" y="420" width="34" height="28"/>
-<text x="339.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="356" y="420" width="34" height="28"/>
-<text x="373.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="390" y="420" width="34" height="28"/>
-<text x="407.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="424" y="420" width="34" height="28"/>
-<text x="441.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="458" y="420" width="34" height="28"/>
-<text x="475.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="492" y="420" width="34" height="28"/>
-<text x="509.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="526" y="420" width="34" height="28"/>
-<text x="543.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="560" y="420" width="34" height="28"/>
-<text x="577.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="594" y="420" width="34" height="28"/>
-<text x="611.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="628" y="420" width="34" height="28"/>
-<text x="645.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="662" y="420" width="34" height="28"/>
-<text x="679.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="696" y="420" width="34" height="28"/>
-<text x="713.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="730" y="420" width="34" height="28"/>
-<text x="747.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="764" y="420" width="34" height="28"/>
-<text x="781.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="798" y="420" width="34" height="28"/>
-<text x="815.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="832" y="420" width="34" height="28"/>
-<text x="849.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="866" y="420" width="34" height="28"/>
-<text x="883.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="900" y="420" width="34" height="28"/>
-<text x="917.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="934" y="420" width="34" height="28"/>
-<text x="951.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="968" y="420" width="34" height="28"/>
-<text x="985.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1002" y="420" width="34" height="28"/>
-<text x="1019.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1036" y="420" width="34" height="28"/>
-<text x="1053.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1070" y="420" width="34" height="28"/>
-<text x="1087.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1104" y="420" width="34" height="28"/>
-<text x="1121.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1138" y="420" width="34" height="28"/>
-<text x="1155.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1172" y="420" width="34" height="28"/>
-<text x="1189.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1206" y="420" width="34" height="28"/>
-<text x="1223.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1240" y="420" width="34" height="28"/>
-<text x="1257.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1274" y="420" width="34" height="28"/>
-<text x="1291.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1308" y="420" width="34" height="28"/>
-<text x="1325.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1342" y="420" width="34" height="28"/>
-<text x="1359.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1376" y="420" width="34" height="28"/>
-<text x="1393.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect class="cell ok" x="1410" y="420" width="34" height="28"/>
-<text x="1427.0" y="439.0" font-size="13" fill="#222" text-anchor="middle">8</text>
-<rect x="0" y="456" width="1446" height="22" fill="#FCE4EC" stroke="#999"/>
-<text x="8.0" y="472.0" font-size="13" fill="#222" text-anchor="start" font-weight="bold">大型・特殊重機の使用状況</text>
-<rect x="0" y="478" width="1446" height="32" fill="#fff" stroke="#999"/>
-<text x="8.0" y="492.0" font-size="12" fill="#222" text-anchor="start" font-weight="bold">SK350超ロング</text>
-<text x="8.0" y="505.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
-<rect x="0" y="510" width="1446" height="32" fill="#fff" stroke="#999"/>
-<text x="8.0" y="524.0" font-size="12" fill="#222" text-anchor="start" font-weight="bold">SK350セパレート</text>
-<text x="8.0" y="537.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
-<rect x="0" y="542" width="1446" height="32" fill="#fff" stroke="#999"/>
-<text x="8.0" y="556.0" font-size="12" fill="#222" text-anchor="start" font-weight="bold">PC450スタンダード</text>
-<text x="8.0" y="569.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
-<rect x="0" y="574" width="1446" height="32" fill="#fff" stroke="#999"/>
-<text x="8.0" y="588.0" font-size="12" fill="#222" text-anchor="start" font-weight="bold">ZX225セミロング</text>
-<text x="8.0" y="601.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
-<rect x="0" y="606" width="1446" height="32" fill="#fff" stroke="#999"/>
-<text x="8.0" y="620.0" font-size="12" fill="#222" text-anchor="start" font-weight="bold">ZX225 3段ショートリーチ</text>
-<text x="8.0" y="633.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
-<rect x="0" y="638" width="1446" height="32" fill="#fff" stroke="#999"/>
-<text x="8.0" y="652.0" font-size="12" fill="#222" text-anchor="start" font-weight="bold">ZX135セミロング</text>
-<text x="8.0" y="665.0" font-size="10" fill="#555" text-anchor="start">今：工場</text>
-<line x1="220" y1="478" x2="220" y2="670" stroke="#999"/>
-<line x1="322" y1="478" x2="322" y2="670" stroke="#999"/>
-<line x1="424" y1="478" x2="424" y2="670" stroke="#999"/>
-<line x1="526" y1="478" x2="526" y2="670" stroke="#999"/>
-<line x1="628" y1="478" x2="628" y2="670" stroke="#999"/>
-<line x1="730" y1="478" x2="730" y2="670" stroke="#999"/>
-<line x1="832" y1="478" x2="832" y2="670" stroke="#999"/>
-<line x1="934" y1="478" x2="934" y2="670" stroke="#999"/>
-<line x1="1036" y1="478" x2="1036" y2="670" stroke="#999"/>
-<line x1="1138" y1="478" x2="1138" y2="670" stroke="#999"/>
-<line x1="1240" y1="478" x2="1240" y2="670" stroke="#999"/>
-<line x1="1342" y1="478" x2="1342" y2="670" stroke="#999"/>
-<line x1="1444" y1="478" x2="1444" y2="670" stroke="#999"/>
-<line x1="260.8" y1="18" x2="260.8" y2="384" stroke="#E53935" stroke-width="2"/>
-<text x="260.8" y="14.0" font-size="11" fill="#E53935" text-anchor="middle" font-weight="bold">今日</text>
-<text x="226.0" y="99.5" font-size="12" fill="#fff" text-anchor="start" font-weight="bold">地下解体 オペ2</text>
-<text x="226.0" y="170.5" font-size="12" fill="#fff" text-anchor="start" font-weight="bold">外構解体 オペ2</text>
-<text x="286.2" y="250.5" font-size="12" fill="#222" text-anchor="start" font-weight="bold">外構解体 オペ2 1期</text>
-<text x="226.0" y="339.5" font-size="12" fill="#fff" text-anchor="start" font-weight="bold">休止中</text>
+<rect x="170.0" y="82.0" width="319.6" height="26" rx="4" fill="#9C27B0"/>
+<text x="8.0" y="146.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">（仮称）世田谷区砧</text>
+<text x="8.0" y="164.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">6-25　自走式立</text>
+<text x="8.0" y="182.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">体駐車場解体工事</text>
+<text x="8.0" y="200.0" font-size="11" fill="#555" text-anchor="start">リーダー 原／メイン 0.45</text>
+<text x="8.0" y="215.0" font-size="11" fill="#555" text-anchor="start">今ある重機 2台</text>
+<rect x="170.0" y="162.0" width="112.2" height="26" rx="4" fill="#00897B"/>
+<text x="8.0" y="244.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">東京大学（本郷）工学</text>
+<text x="8.0" y="262.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">部13号館改修工事</text>
+<text x="8.0" y="280.0" font-size="11" fill="#555" text-anchor="start">リーダー 風間／メイン 0.25</text>
+<text x="8.0" y="295.0" font-size="11" fill="#555" text-anchor="start">今ある重機 0台</text>
+<rect x="197.2" y="251.0" width="34.0" height="26" rx="4" fill="#00897B"/>
+<text x="8.0" y="324.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">都営保木間第５アパー</text>
+<text x="8.0" y="342.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">ト（１２、１３、１８</text>
+<text x="8.0" y="360.0" font-size="14" fill="#222" text-anchor="start" font-weight="bold">、１９号棟）除却工事</text>
+<text x="8.0" y="378.0" font-size="11" fill="#555" text-anchor="start">リーダー 未定／メイン 1.2</text>
+<text x="8.0" y="393.0" font-size="11" fill="#555" text-anchor="start">今ある重機 0台</text>
+<rect x="170.0" y="340.0" width="510.0" height="26" rx="4" fill="#9E9E9E"/>
+<rect x="0" y="410" width="170" height="28" fill="#F5F5F5" stroke="#999"/>
+<text x="8.0" y="429.0" font-size="13" fill="#222" text-anchor="start" font-weight="bold">オペ必要人数</text>
+<rect class="cell ok" x="170" y="410" width="34" height="28"/>
+<text x="187.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">6</text>
+<rect class="cell ok" x="204" y="410" width="34" height="28"/>
+<text x="221.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">6</text>
+<rect class="cell ok" x="238" y="410" width="34" height="28"/>
+<text x="255.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">4</text>
+<rect class="cell ok" x="272" y="410" width="34" height="28"/>
+<text x="289.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">4</text>
+<rect class="cell ok" x="306" y="410" width="34" height="28"/>
+<text x="323.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">2</text>
+<rect class="cell ok" x="340" y="410" width="34" height="28"/>
+<text x="357.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">2</text>
+<rect class="cell ok" x="374" y="410" width="34" height="28"/>
+<text x="391.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">2</text>
+<rect class="cell ok" x="408" y="410" width="34" height="28"/>
+<text x="425.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">2</text>
+<rect class="cell ok" x="442" y="410" width="34" height="28"/>
+<text x="459.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">2</text>
+<rect class="cell ok" x="476" y="410" width="34" height="28"/>
+<text x="493.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">2</text>
+<rect class="cell ok" x="510" y="410" width="34" height="28"/>
+<text x="527.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="544" y="410" width="34" height="28"/>
+<text x="561.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="578" y="410" width="34" height="28"/>
+<text x="595.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="612" y="410" width="34" height="28"/>
+<text x="629.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="646" y="410" width="34" height="28"/>
+<text x="663.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="680" y="410" width="34" height="28"/>
+<text x="697.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="714" y="410" width="34" height="28"/>
+<text x="731.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="748" y="410" width="34" height="28"/>
+<text x="765.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="782" y="410" width="34" height="28"/>
+<text x="799.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="816" y="410" width="34" height="28"/>
+<text x="833.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="850" y="410" width="34" height="28"/>
+<text x="867.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="884" y="410" width="34" height="28"/>
+<text x="901.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="918" y="410" width="34" height="28"/>
+<text x="935.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="952" y="410" width="34" height="28"/>
+<text x="969.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="986" y="410" width="34" height="28"/>
+<text x="1003.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1020" y="410" width="34" height="28"/>
+<text x="1037.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1054" y="410" width="34" height="28"/>
+<text x="1071.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1088" y="410" width="34" height="28"/>
+<text x="1105.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1122" y="410" width="34" height="28"/>
+<text x="1139.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1156" y="410" width="34" height="28"/>
+<text x="1173.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1190" y="410" width="34" height="28"/>
+<text x="1207.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1224" y="410" width="34" height="28"/>
+<text x="1241.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1258" y="410" width="34" height="28"/>
+<text x="1275.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1292" y="410" width="34" height="28"/>
+<text x="1309.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1326" y="410" width="34" height="28"/>
+<text x="1343.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect class="cell ok" x="1360" y="410" width="34" height="28"/>
+<text x="1377.0" y="429.0" font-size="13" fill="#222" text-anchor="middle">0</text>
+<rect x="0" y="438" width="170" height="28" fill="#F5F5F5" stroke="#999"/>
+<text x="8.0" y="457.0" font-size="13" fill="#222" text-anchor="start" font-weight="bold">使える人数</text>
+<rect class="cell ok" x="170" y="438" width="34" height="28"/>
+<text x="187.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="204" y="438" width="34" height="28"/>
+<text x="221.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="238" y="438" width="34" height="28"/>
+<text x="255.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="272" y="438" width="34" height="28"/>
+<text x="289.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="306" y="438" width="34" height="28"/>
+<text x="323.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="340" y="438" width="34" height="28"/>
+<text x="357.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="374" y="438" width="34" height="28"/>
+<text x="391.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="408" y="438" width="34" height="28"/>
+<text x="425.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="442" y="438" width="34" height="28"/>
+<text x="459.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="476" y="438" width="34" height="28"/>
+<text x="493.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="510" y="438" width="34" height="28"/>
+<text x="527.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="544" y="438" width="34" height="28"/>
+<text x="561.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="578" y="438" width="34" height="28"/>
+<text x="595.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="612" y="438" width="34" height="28"/>
+<text x="629.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="646" y="438" width="34" height="28"/>
+<text x="663.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="680" y="438" width="34" height="28"/>
+<text x="697.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="714" y="438" width="34" height="28"/>
+<text x="731.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="748" y="438" width="34" height="28"/>
+<text x="765.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="782" y="438" width="34" height="28"/>
+<text x="799.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="816" y="438" width="34" height="28"/>
+<text x="833.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="850" y="438" width="34" height="28"/>
+<text x="867.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="884" y="438" width="34" height="28"/>
+<text x="901.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="918" y="438" width="34" height="28"/>
+<text x="935.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="952" y="438" width="34" height="28"/>
+<text x="969.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="986" y="438" width="34" height="28"/>
+<text x="1003.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1020" y="438" width="34" height="28"/>
+<text x="1037.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1054" y="438" width="34" height="28"/>
+<text x="1071.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1088" y="438" width="34" height="28"/>
+<text x="1105.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1122" y="438" width="34" height="28"/>
+<text x="1139.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1156" y="438" width="34" height="28"/>
+<text x="1173.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1190" y="438" width="34" height="28"/>
+<text x="1207.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1224" y="438" width="34" height="28"/>
+<text x="1241.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1258" y="438" width="34" height="28"/>
+<text x="1275.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1292" y="438" width="34" height="28"/>
+<text x="1309.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1326" y="438" width="34" height="28"/>
+<text x="1343.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect class="cell ok" x="1360" y="438" width="34" height="28"/>
+<text x="1377.0" y="457.0" font-size="13" fill="#222" text-anchor="middle">8</text>
+<rect x="0" y="474" width="1396" height="22" fill="#FCE4EC" stroke="#999"/>
+<text x="8.0" y="490.0" font-size="13" fill="#222" text-anchor="start" font-weight="bold">大型・特殊重機の使用状況</text>
+<rect x="0" y="496" width="1396" height="32" fill="#fff" stroke="#999"/>
+<text x="8.0" y="510.0" font-size="11" fill="#222" text-anchor="start" font-weight="bold">SK350超ロング</text>
+<text x="8.0" y="523.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
+<rect x="0" y="528" width="1396" height="32" fill="#fff" stroke="#999"/>
+<text x="8.0" y="542.0" font-size="11" fill="#222" text-anchor="start" font-weight="bold">SK350セパレート</text>
+<text x="8.0" y="555.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
+<rect x="0" y="560" width="1396" height="32" fill="#fff" stroke="#999"/>
+<text x="8.0" y="574.0" font-size="11" fill="#222" text-anchor="start" font-weight="bold">PC450スタンダード</text>
+<text x="8.0" y="587.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
+<rect x="0" y="592" width="1396" height="32" fill="#fff" stroke="#999"/>
+<text x="8.0" y="606.0" font-size="11" fill="#222" text-anchor="start" font-weight="bold">ZX225セミロング</text>
+<text x="8.0" y="619.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
+<rect x="0" y="624" width="1396" height="32" fill="#fff" stroke="#999"/>
+<text x="8.0" y="638.0" font-size="11" fill="#222" text-anchor="start" font-weight="bold">ZX225 3段ショートリーチ</text>
+<text x="8.0" y="651.0" font-size="10" fill="#555" text-anchor="start">今：アキコ</text>
+<rect x="0" y="656" width="1396" height="32" fill="#fff" stroke="#999"/>
+<text x="8.0" y="670.0" font-size="11" fill="#222" text-anchor="start" font-weight="bold">ZX135セミロング</text>
+<text x="8.0" y="683.0" font-size="10" fill="#555" text-anchor="start">今：工場</text>
+<line x1="170" y1="496" x2="170" y2="688" stroke="#999"/>
+<line x1="272" y1="496" x2="272" y2="688" stroke="#999"/>
+<line x1="374" y1="496" x2="374" y2="688" stroke="#999"/>
+<line x1="476" y1="496" x2="476" y2="688" stroke="#999"/>
+<line x1="578" y1="496" x2="578" y2="688" stroke="#999"/>
+<line x1="680" y1="496" x2="680" y2="688" stroke="#999"/>
+<line x1="782" y1="496" x2="782" y2="688" stroke="#999"/>
+<line x1="884" y1="496" x2="884" y2="688" stroke="#999"/>
+<line x1="986" y1="496" x2="986" y2="688" stroke="#999"/>
+<line x1="1088" y1="496" x2="1088" y2="688" stroke="#999"/>
+<line x1="1190" y1="496" x2="1190" y2="688" stroke="#999"/>
+<line x1="1292" y1="496" x2="1292" y2="688" stroke="#999"/>
+<line x1="1394" y1="496" x2="1394" y2="688" stroke="#999"/>
+<line x1="210.8" y1="18" x2="210.8" y2="402" stroke="#E53935" stroke-width="2"/>
+<text x="210.8" y="14.0" font-size="11" fill="#E53935" text-anchor="middle" font-weight="bold">今日</text>
+<text x="176.0" y="99.5" font-size="12" fill="#fff" text-anchor="start" font-weight="bold">地下解体 オペ2</text>
+<text x="176.0" y="179.5" font-size="12" fill="#fff" text-anchor="start" font-weight="bold">外構解体 オペ2</text>
+<text x="236.2" y="268.5" font-size="12" fill="#222" text-anchor="start" font-weight="bold">外構解体 オペ2 1期</text>
+<text x="176.0" y="357.5" font-size="12" fill="#fff" text-anchor="start" font-weight="bold">休止中</text>
 </svg>
 </div>
 </div>
+<script>
+// Notionのページの中（埋め込み）のときだけ、表をタッチすると新しい画面でこのページをいっぱいに開く
+(function () {
+  var inFrame = false;
+  try { inFrame = window.self !== window.top; } catch (e) { inFrame = true; }
+  if (!inFrame) return;
+  document.documentElement.className += " embedded";
+  document.getElementById("chart").addEventListener("click", function () {
+    window.open(location.href.split("#")[0], "_blank", "noopener");
+  });
+})();
+</script>
 </body>
 </html>
