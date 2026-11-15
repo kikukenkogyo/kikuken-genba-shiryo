@@ -1,5 +1,5 @@
 {
- "asof": "2026-11-13",
+ "asof": "2026-11-16",
  "sites": [
   {
    "name": "九段南計画解体工事",
@@ -15,7 +15,7 @@
    "name": "（仮称）世田谷区砧6-25　自走式立体駐車場解体工事",
    "leader": "原",
    "main_machine": "0.45",
-   "status": "上屋解体進行中",
+   "status": "基礎解体進行中",
    "start": "2026-10-28",
    "end": "2026-12-03",
    "machines_now": 2,
@@ -25,11 +25,11 @@
    "name": "東京大学（本郷）工学部13号館改修工事",
    "leader": "風間",
    "main_machine": "0.25",
-   "status": "近日着工予定",
+   "status": "重機作業進行中",
    "start": "2026-11-09",
    "end": "2026-11-18",
-   "machines_now": 0,
-   "location_name": ""
+   "machines_now": 3,
+   "location_name": "東大"
   },
   {
    "name": "都営保木間第５アパート（１２、１３、１８、１９号棟）除却工事",
@@ -116,9 +116,9 @@
  ],
  "operators": {
   "total": 9,
-  "joyo": 1
+  "joyo": 0
  },
- "machines_other": 3,
+ "machines_other": 0,
  "holidays": [
   {
    "name": "冬季休暇",
