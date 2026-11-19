@@ -10,9 +10,7 @@ SITES = [
         ("fukuzumi-sekou", "施工計画図"),
     ]),
     ("九段南計画解体工事", [
-        ("kudan-koutei", "工程表（地下解体）"),
-        ("kudan-flow", "作業フロー図（地下解体）"),
-        ("kudan-step", "解体の流れ・ステップ図（地下解体）"),
+        # 2026-11-19 酒井さん：古い計画の3つ（kudan-koutei 工程表・kudan-flow 作業フロー図・kudan-step ステップ図）は一覧から外した。計画変更の版は docs.json の kudan-kakutei-doc1〜4。ページのファイルは残してある
     ]),
     ("都営保木間第５アパート除却工事", [
         ("hokima-annai", "現場案内図"),
