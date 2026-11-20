@@ -1402,11 +1402,14 @@ if (location.hash === '#auto') setTimeout(play, 800);          // ファイル�
   #mkBar .mksep { width:1px; height:28px; background:#ced4da; }
   #mkCv { position:fixed; inset:0; z-index:65; display:none; touch-action:none; cursor:crosshair; }
   #mkTip { position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:70; display:none; background:#111c; color:#fff; font-size:13px; padding:6px 12px; border-radius:8px; max-width:92vw; text-align:center; }
-  body.mkOn #panel, body.mkOn #player { display:none !important; }
+  #mkBadge { position:fixed; top:52px; right:10px; z-index:60; font-size:11px; padding:2px 8px; border-radius:6px; background:#e03131; color:#fff; pointer-events:none; }
+  body.mkOn #panel, body.mkOn #player, body.mkOn #mkBadge { display:none !important; }
   `;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
   const COLS = [['赤', '#e03131'], ['緑', '#2f9e44'], ['青', '#1971c2'], ['黒', '#111111']];
   const open = document.createElement('button'); open.id = 'mkOpen'; open.textContent = '✏️ 印を付ける'; document.body.appendChild(open);
+  const badge = document.createElement('div'); badge.id = 'mkBadge'; badge.textContent = '編集用（社外に出さない）'; document.body.appendChild(badge);
+  if (document.title.indexOf('編集用') < 0) document.title = '【編集用】' + document.title;
   const bar = document.createElement('div'); bar.id = 'mkBar';
   bar.innerHTML = COLS.map((c, i) => `<button class="mkc" data-c="${i}" title="${c[0]}" style="background:${c[1]}"></button>`).join('')
     + '<span class="mksep"></span><button data-t="pen">✏️ ペン</button><button data-t="pin">📍 ピン</button>'
