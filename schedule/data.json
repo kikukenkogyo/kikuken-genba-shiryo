@@ -1,5 +1,5 @@
 {
- "asof": "2026-11-16",
+ "asof": "2026-11-23",
  "sites": [
   {
    "name": "九段南計画解体工事",
@@ -28,7 +28,7 @@
    "status": "重機作業進行中",
    "start": "2026-11-09",
    "end": "2026-11-18",
-   "machines_now": 3,
+   "machines_now": 2,
    "location_name": "東大"
   },
   {
@@ -116,7 +116,7 @@
  ],
  "operators": {
   "total": 9,
-  "joyo": 0
+  "joyo": 1
  },
  "machines_other": 0,
  "holidays": [
