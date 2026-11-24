@@ -1534,5 +1534,252 @@ window.fitForCallout = function(fracW = 0.5, topPx = 30, botPx = null){
   document.getElementById('hide') && document.getElementById('hide').addEventListener('click', () => setTimeout(fit, 50));
 })();
 </script>
+
+<script>
+/* ---- 3Dへの書き込みの機能（お渡し用） ---- */
+(function(){
+  const MODE = 'cust', T = {"openT": "✏️ 書き込む", "openP": "✏️ 書き込む", "badge": "", "titlePre": "", "mini": "", "msg": "メモ（PDF・画像の下に入ります。書かなくてもよい）", "tell": "", "savedImg": "画像を保存しました（{name}）", "savedPdf": "PDFを保存しました（{name}）", "copied": "", "copyAsk": "", "file": "3Dの書き込み"}, EDIT = MODE === 'edit';
+  if (/[?&]nomark/.test(location.search) || (navigator.webdriver && !/[?&]mark/.test(location.search))) return;
+  if (typeof THREE === 'undefined' || typeof cam === 'undefined' || typeof ren === 'undefined') return;
+  const css = `
+  #mkOpen { position:fixed; top:10px; right:10px; z-index:60; font-size:14px; padding:8px 12px; border-radius:8px; background:#fff; color:#111; border:2px solid #e03131; box-shadow:0 1px 4px #0003; }
+  #mkBar { position:fixed; top:0; left:0; right:0; z-index:70; display:none; flex-wrap:wrap; gap:6px; align-items:center; padding:8px 10px; background:#ffffffee; border-bottom:2px solid #e03131; box-sizing:border-box; }
+  #mkBar button, #mkMini button, #mkTx button { font-size:14px; padding:8px 10px; min-height:38px; background:#fff; color:#111; border:1px solid #adb5bd; border-radius:8px; }
+  #mkBar button.on { background:#111; color:#fff; border-color:#111; }
+  #mkBar .mkc, #mkMini .mkc { width:38px; padding:0; border:3px solid #fff; outline:1px solid #adb5bd; }
+  #mkMini .mkc { width:26px; min-height:26px; height:26px; }
+  #mkBar .mkc.on, #mkMini .mkc.on { outline:3px solid #111; }
+  #mkBar input { flex:1 1 200px; min-width:150px; font-size:15px; padding:8px; border:1px solid #adb5bd; border-radius:8px; }
+  #mkBar .mksep { width:1px; height:28px; background:#ced4da; }
+  #mkBar .mkmain { border-color:#e03131; font-weight:bold; }
+  #mkCv { position:fixed; inset:0; z-index:65; touch-action:none; pointer-events:none; }
+  body.mkOn #mkCv { pointer-events:auto; cursor:crosshair; }
+  body.mkCtrl canvas { cursor:crosshair !important; }
+  #mkTip { position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:70; display:none; background:#111c; color:#fff; font-size:13px; padding:6px 12px; border-radius:8px; max-width:92vw; text-align:center; }
+  #mkBadge { position:fixed; top:52px; right:10px; z-index:60; font-size:11px; padding:2px 8px; border-radius:6px; background:#e03131; color:#fff; pointer-events:none; }
+  #mkMini { position:fixed; top:76px; right:10px; z-index:60; width:232px; box-sizing:border-box; padding:8px; border-radius:8px; background:#ffffffee; border:1px solid #adb5bd; font-size:12px; color:#111; line-height:1.5; }
+  #mkMini .r { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:6px; }
+  #mkMini button { font-size:12px; padding:4px 8px; min-height:28px; }
+  #mkMini b { color:#e03131; }
+  #mkTx { position:fixed; left:50%; top:30%; transform:translateX(-50%); z-index:80; display:none; width:min(520px, 92vw); box-sizing:border-box; padding:12px; border-radius:10px; background:#fff; border:2px solid #111; box-shadow:0 4px 18px #0005; }
+  #mkTx div { font-size:13px; color:#111; margin-bottom:6px; }
+  #mkTx input { width:100%; box-sizing:border-box; font-size:17px; padding:10px; border:1px solid #adb5bd; border-radius:8px; }
+  #mkTx .r { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+  body.mkOn #panel, body.mkOn #player, body.mkOn #mkBadge, body.mkOn #mkMini { display:none !important; }
+  `;
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+  const COLS = [['赤', '#e03131'], ['緑', '#2f9e44'], ['青', '#1971c2'], ['黒', '#111111']];
+  const TOUCH = matchMedia('(pointer:coarse)').matches && !matchMedia('(hover:hover)').matches;
+  const FONT = '"Yu Gothic UI","Meiryo","Hiragino Sans",sans-serif';
+  const open = document.createElement('button'); open.id = 'mkOpen'; open.textContent = TOUCH ? T.openT : T.openP; document.body.appendChild(open);
+  const cbtn = COLS.map((c, i) => `<button class="mkc" data-c="${i}" title="${c[0]}" style="background:${c[1]}"></button>`).join('');
+  let mini = null;
+  if (EDIT) {
+    const badge = document.createElement('div'); badge.id = 'mkBadge'; badge.textContent = T.badge; document.body.appendChild(badge);
+    if (T.titlePre && document.title.indexOf(T.titlePre) < 0) document.title = T.titlePre + document.title;
+    mini = document.createElement('div'); mini.id = 'mkMini';
+    mini.innerHTML = (TOUCH ? '' : T.mini) + '<div class="r">' + cbtn + '<span id="mkCnt">印 0</span></div>'
+      + '<div class="r"><button id="mkU2">↩ 戻す</button><button id="mkC2">🗑 全部消す</button><button id="mkCopy2">📋 コピー</button></div>';
+    document.body.appendChild(mini);
+  }
+  const bar = document.createElement('div'); bar.id = 'mkBar';
+  bar.innerHTML = cbtn
+    + '<span class="mksep"></span><button data-t="pen">✏️ 丸・線</button><button data-t="txt">🅣 文字</button>'
+    + '<span class="mksep"></span><button id="mkUndo">↩ 1つ戻す</button><button id="mkClr">🗑 全部消す</button>'
+    + `<input id="mkMsg" placeholder="${T.msg}">`
+    + '<button id="mkPdf" class="mkmain">📄 PDFにする</button><button id="mkSave">🖼 画像</button>' + (EDIT ? '<button id="mkCopy">📋 文をコピー</button>' : '') + '<button id="mkEnd">✕ 終わる</button>';
+  document.body.appendChild(bar);
+  const cv = document.createElement('canvas'); cv.id = 'mkCv'; document.body.appendChild(cv);
+  const tip = document.createElement('div'); tip.id = 'mkTip'; document.body.appendChild(tip);
+  const tx = document.createElement('div'); tx.id = 'mkTx';
+  tx.innerHTML = '<div>ここに入れる文字（例：ここを先に撤去／これは残す）</div><input id="mkTxI" maxlength="60"><div class="r"><button id="mkTxNo">やめる</button><button id="mkTxOk" style="border-color:#e03131;font-weight:bold">入れる</button></div>';
+  document.body.appendChild(tx);
+  let col = 0, tool = 'pen', marks = [], drawing = null, on = false, tipT = 0, clean = false, cid = null, pend = null;
+  const say = (t) => { tip.textContent = t; tip.style.display = 'block'; clearTimeout(tipT); tipT = setTimeout(() => tip.style.display = 'none', 4000); };
+  function size(){ const d = devicePixelRatio || 1; cv.width = Math.round(innerWidth * d); cv.height = Math.round(innerHeight * d); cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px'; clean = false; }
+  const nums = () => marks.filter(m => m.type !== 'txt').length;
+  function ui(){ document.querySelectorAll('#mkBar .mkc, #mkMini .mkc').forEach(b => b.classList.toggle('on', +b.dataset.c === col)); bar.querySelectorAll('[data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === tool));
+    const cn = document.getElementById('mkCnt'), n = nums(); if (cn) cn.textContent = '印 ' + n + (n ? '（1〜' + n + '番）' : ''); clean = false; }
+  function num(c, x, y, n, color){ c.beginPath(); c.arc(x, y, 14, 0, 7); c.fillStyle = '#fff'; c.fill(); c.lineWidth = 3; c.strokeStyle = color; c.stroke();
+    c.fillStyle = color; c.font = 'bold 16px sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(String(n), x, y + 1); }
+  // 3Dの中の点 → 画面の点（カメラの後ろは null）
+  function scr(v){ const q = v.clone().project(cam); return (q.z > 1 || q.z < -1) ? null : [(q.x + 1) / 2 * innerWidth, (1 - q.y) / 2 * innerHeight]; }
+  function line(c, pts, color, close){ if (pts.length < 2) return; const go = () => { c.beginPath(); pts.forEach((p, k) => k ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); if (close) c.closePath(); c.stroke(); };
+    c.lineJoin = c.lineCap = 'round'; c.lineWidth = 7; c.strokeStyle = '#ffffffcc'; go(); c.lineWidth = 4; c.strokeStyle = color; go(); }
+  function dot(c, p, color){ c.beginPath(); c.arc(p[0], p[1], 20, 0, 7); c.lineWidth = 7; c.strokeStyle = '#ffffffcc'; c.stroke(); c.lineWidth = 4; c.strokeStyle = color; c.stroke(); c.beginPath(); c.arc(p[0], p[1], 5, 0, 7); c.fillStyle = color; c.fill(); }
+  // 文字（注記）：指した所から少し離して、白い箱に色の字
+  function note(c, p, text, color){
+    c.font = 'bold 16px ' + FONT; const L = []; let s = ''; for (const ch of String(text)) { if (c.measureText(s + ch).width > 300) { L.push(s); s = ''; } s += ch; } L.push(s);
+    const w = Math.max(...L.map(t => c.measureText(t).width)) + 18, h = L.length * 22 + 10; let x = p[0] + 16, y = p[1] - h - 16;
+    if (x + w > innerWidth - 4) x = Math.max(4, p[0] - 16 - w); if (y < 4) y = p[1] + 16;
+    const ax = x < p[0] ? x + w : x, ay = y < p[1] ? y + h : y;
+    c.beginPath(); c.moveTo(p[0], p[1]); c.lineTo(ax, ay); c.lineWidth = 5; c.strokeStyle = '#ffffffcc'; c.stroke(); c.lineWidth = 2; c.strokeStyle = color; c.stroke();
+    c.beginPath(); c.arc(p[0], p[1], 5, 0, 7); c.fillStyle = color; c.fill(); c.lineWidth = 2; c.strokeStyle = '#fff'; c.stroke();
+    c.fillStyle = '#fffffff5'; c.fillRect(x, y, w, h); c.lineWidth = 2.5; c.strokeStyle = color; c.strokeRect(x, y, w, h);
+    c.fillStyle = color; c.textAlign = 'left'; c.textBaseline = 'middle'; L.forEach((t, i) => c.fillText(t, x + 9, y + 5 + 11 + i * 22));
+  }
+  // 印は3Dの中の場所に付いている。視点を回しても付いてくる。印を付けた手順の画面でだけ出す
+  function redraw(){
+    if (!marks.length && !drawing && clean) return;
+    const d = devicePixelRatio || 1, c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, innerWidth, innerHeight); clean = !marks.length && !drawing;
+    let n = 0;
+    marks.forEach((m) => { if (m.type !== 'txt') n++; if (steps.length && m.step !== cur) return; const color = COLS[m.col][1], ps = m.w.map(scr).filter(Boolean); if (!ps.length) return;
+      if (m.type === 'txt') note(c, ps[0], m.text, color);
+      else if (m.type === 'pin') { dot(c, ps[0], color); num(c, ps[0][0] + 24, ps[0][1] - 24, n, color); }
+      else if (m.type === 'ell') { line(c, ps, color, ps.length === m.w.length); let t = ps[0]; for (const q of ps) if (q[1] < t[1]) t = q; num(c, t[0], t[1] - 18, n, color); }
+      else { line(c, ps, color, false); num(c, ps[0][0], ps[0][1] - 20, n, color); } });
+    if (drawing) line(c, drawing.pts, COLS[drawing.col][1], false);
+  }
+  (function loop(){ requestAnimationFrame(loop); redraw(); })();
+  // 画面の点 → 3Dの中の場所（当たった部品の名前と、図面の座標 mm）。手前から2つまで
+  function hit(px, py){
+    const rc = new THREE.Raycaster(); rc.setFromCamera(new THREE.Vector2(px / innerWidth * 2 - 1, -(py / innerHeight * 2 - 1)), cam);
+    const objs = []; for (const n in groups) { const g = groups[n]; if (!g.visible) continue; g.traverse(o => { if (o.isMesh) { o.userData._g = n; objs.push(o); } }); }
+    const out = []; for (const h of rc.intersectObjects(objs, false)) { const g = h.object.userData._g; if (out.some(o => o.g === g)) continue;
+      out.push({g: g, x: Math.round(h.point.x / S), y: Math.round(-h.point.z / S), z: Math.round(h.point.y / S), p: h.point.clone()}); if (out.length >= 2) break; }
+    return out;
+  }
+  const gl = (z) => 'GL' + (z < 0 ? '−' : '+') + (Math.abs(z) / 1000).toFixed(2) + 'm';
+  const pos = (h) => `「${h.g}」 x=${h.x}, y=${h.y}, z=${h.z}（${gl(h.z)}）`;
+  const KIND = {pin: '丸', ell: '囲み', pen: '線', txt: '文字'};
+  function finish(m){
+    let ref = null;
+    if (m.type === 'pin' || m.type === 'txt') { m.hits = hit(m.pts[0][0], m.pts[0][1]); ref = m.hits[0] && m.hits[0].p; }
+    else { const xs = m.pts.map(p => p[0]), ys = m.pts.map(p => p[1]); m.hits = hit((Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2); ref = m.hits[0] && m.hits[0].p;
+      const seen = []; const stepN = Math.max(1, Math.floor(m.pts.length / 14));
+      for (let k = 0; k < m.pts.length; k += stepN) { const h = hit(m.pts[k][0], m.pts[k][1])[0]; if (h) { if (!ref) ref = h.p; if (!seen.includes(h.g)) seen.push(h.g); } }
+      m.along = seen; }
+    const zr = (ref || ctl.target).clone().project(cam).z;                       // 当たった所の奥行きの面に、書いた線を置く
+    m.w = m.pts.map(p => new THREE.Vector3(p[0] / innerWidth * 2 - 1, -(p[1] / innerHeight * 2 - 1), zr).unproject(cam));
+    m.step = cur; m.stepTitle = steps.length ? steps[cur].title : ''; delete m.pts;
+    marks.push(m); ui(); const n = nums(), h = m.hits[0];
+    if (m.type === 'txt') say('文字を入れました');
+    else if (EDIT) say(`${n}番：` + (h ? `「${h.g}」${gl(h.z)}` : '何もない所です') + T.tell.replace('{n}', n));
+    else say(`${n}番を書き込みました（${KIND[m.type]}）`);
+  }
+  function describe(){
+    const e = cam.position, t = ctl.target, f = (v) => `x=${Math.round(v.x / S)}, y=${Math.round(-v.z / S)}, z=${Math.round(v.y / S)}`;
+    const L = ['【3Dへの印】' + (D.title || document.title), '今の画面の手順：' + (steps.length ? `${steps[cur].title}（${cur + 1}/${steps.length}）` : '（手順なし）'),
+               `視点：目 ${f(e)} → 見ている所 ${f(t)}（mm）`];
+    let n = 0;
+    marks.forEach((m) => { const h = m.hits || []; if (m.type !== 'txt') n++;
+      let s = (m.type === 'txt' ? `文字「${m.text}」` : `${n}番`) + `（${COLS[m.col][0]}・${KIND[m.type]}・手順 ${m.stepTitle || '-'}）` + (h[0] ? ((m.type === 'pin' || m.type === 'txt') ? '' : '真ん中＝') + pos(h[0]) : '何もない所');
+      if (h[1]) s += ` ／その奥 ${pos(h[1])}`;
+      if (m.along && m.along.length > 1) s += ` ／線が通った部品：${m.along.slice(0, 6).join('、')}`;
+      L.push(s); });
+    const msg = document.getElementById('mkMsg').value.trim(); if (msg) L.push('伝えたいこと：' + msg);
+    return L;
+  }
+  // 画面から読むための数字（javascript で __mk.data() を呼ぶ）
+  function data(){ const H = (h) => ({部品: h.g, x: h.x, y: h.y, z: h.z, 高さ: gl(h.z)}); let n = 0;
+    return {題名: D.title || document.title, 今の手順: steps.length ? `${steps[cur].title}（${cur + 1}/${steps.length}）` : '', 印: marks.map((m) => ({番号: m.type === 'txt' ? null : ++n, 色: COLS[m.col][0], 種類: KIND[m.type], 文字: m.text || '', 手順: m.stepTitle, 手順の番号: m.step + 1,
+      当たった所: (m.hits || []).map(H), 線が通った部品: m.along || []}))}; }
+  // 今の画面を1枚の絵にする（上に題・手順・日時、まん中に3Dの絵＋書き込み、下にメモか、場所の一覧）
+  function compose(){
+    ren.render(scene, cam); clean = false; redraw();
+    const g = ren.domElement, W = g.width, H = g.height, k = W / innerWidth, fs = Math.round(15 * k), lh = Math.round(fs * 1.55), pad = Math.round(12 * k);
+    const tmp = document.createElement('canvas').getContext('2d'); tmp.font = `${fs}px ${FONT}`;
+    const wrap = (arr) => { const out = []; for (const t of arr) { let s = ''; for (const ch of t) { if (tmp.measureText(s + ch).width > W - pad * 2) { out.push(s); s = '　'; } s += ch; } out.push(s); } return out; };
+    const d = new Date(), z = (n) => String(n).padStart(2, '0'), stamp = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${z(d.getHours())}:${z(d.getMinutes())}`;
+    const msg = document.getElementById('mkMsg').value.trim();
+    const head = wrap([(D.title || document.title), (steps.length ? `${steps[cur].title}（${cur + 1}/${steps.length}）　` : '') + stamp]);
+    const foot = wrap(EDIT ? describe() : (msg ? ['メモ：' + msg] : []));
+    const hh = pad + lh * head.length + Math.round(pad / 2), fh = foot.length ? pad * 2 + lh * foot.length : 0;
+    const out = document.createElement('canvas'); out.width = W; out.height = hh + H + fh;
+    const c = out.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, out.width, out.height); c.drawImage(g, 0, hh);
+    try { if (typeof lc !== 'undefined' && lc instanceof HTMLCanvasElement && lc.width && lc.style.display !== 'none') c.drawImage(lc, 0, hh, W, H); } catch (e) {}   // 札の引き出し線
+    document.querySelectorAll('[data-shot]').forEach(el => { const im = el.querySelector('img'), r = el.getBoundingClientRect(); if (!im || !r.width || getComputedStyle(el).display === 'none') return;   // 画面に出ている挿絵（断面図など）
+      c.fillStyle = '#fff'; c.fillRect(r.left * k, hh + r.top * k, r.width * k, r.height * k); c.strokeStyle = '#0b3d91'; c.lineWidth = 2 * k; c.strokeRect(r.left * k, hh + r.top * k, r.width * k, r.height * k);
+      const q = im.getBoundingClientRect(); try { c.drawImage(im, q.left * k, hh + q.top * k, q.width * k, q.height * k); } catch (e) {} });
+    c.drawImage(cv, 0, hh, W, H);
+    c.strokeStyle = '#adb5bd'; c.lineWidth = Math.max(1, Math.round(k)); c.strokeRect(0, hh, W, H);
+    c.fillStyle = '#111'; c.textBaseline = 'top'; head.forEach((t, i) => { c.font = (i ? '' : 'bold ') + tmp.font; c.fillText(t, pad, pad + i * lh); });
+    c.font = tmp.font; foot.forEach((t, i) => c.fillText(t, pad, hh + H + pad + i * lh));
+    return out;
+  }
+  // 絵1枚を、A4の1ページのPDFにする（絵は JPEG のまま入れる。外の道具は使わない）
+  function pdf(cnv){
+    const bin = atob(cnv.toDataURL('image/jpeg', 0.92).split(',')[1]), jpg = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) jpg[i] = bin.charCodeAt(i);
+    const land = cnv.width >= cnv.height, PW = land ? 841.89 : 595.28, PH = land ? 595.28 : 841.89, mg = 20;
+    const sc = Math.min((PW - mg * 2) / cnv.width, (PH - mg * 2) / cnv.height), w = cnv.width * sc, h = cnv.height * sc, x = (PW - w) / 2, y = PH - mg - h;
+    const enc = (s) => { const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i) & 255; return u; };
+    const parts = [], offs = []; let p = 0; const add = (u) => { parts.push(u); p += u.length; };
+    const obj = (n, f) => { offs[n] = p; add(enc(n + ' 0 obj\n')); f(); add(enc('\nendobj\n')); };
+    add(enc('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'));
+    obj(1, () => add(enc('<< /Type /Catalog /Pages 2 0 R >>')));
+    obj(2, () => add(enc('<< /Type /Pages /Kids [3 0 R] /Count 1 >>')));
+    obj(3, () => add(enc(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`)));
+    obj(4, () => { add(enc(`<< /Type /XObject /Subtype /Image /Width ${cnv.width} /Height ${cnv.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`)); add(jpg); add(enc('\nendstream')); });
+    const cs = `q ${w.toFixed(2)} 0 0 ${h.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm /Im0 Do Q`;
+    obj(5, () => add(enc(`<< /Length ${cs.length} >>\nstream\n${cs}\nendstream`)));
+    const xr = p; let s = 'xref\n0 6\n0000000000 65535 f \n'; for (let n = 1; n <= 5; n++) s += String(offs[n]).padStart(10, '0') + ' 00000 n \n';
+    add(enc(s + `trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF\n`));
+    return new Blob(parts, {type: 'application/pdf'});
+  }
+  function fname(ext){ const d = new Date(), z = (n) => String(n).padStart(2, '0'); return `${T.file}_手順${cur + 1}_${z(d.getMonth() + 1)}${z(d.getDate())}_${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}.${ext}`; }
+  // 渡す：iPad・スマホは共有の画面（LINE・メールなど）、パソコンは保存
+  function give(blob, name, done){
+    const file = new File([blob], name, {type: blob.type});
+    const dl = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); say(done.replace('{name}', name)); };
+    if (matchMedia('(pointer:coarse)').matches && navigator.canShare && navigator.canShare({files: [file]})) navigator.share({files: [file]}).then(() => say('渡しました'), (e) => { if (e && e.name !== 'AbortError') dl(); });
+    else dl();
+  }
+  function savePdf(){ give(pdf(compose()), fname('pdf'), T.savedPdf); }
+  function saveImg(){ const bin = atob(compose().toDataURL('image/png').split(',')[1]), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    give(new Blob([u8], {type: 'image/png'}), fname('png'), T.savedImg); }
+  const hold = () => { try { if (typeof stop === 'function' && typeof steps !== 'undefined') stop(); tween = null; } catch (e) {} ctl.enabled = false; };
+  // ボタンを押している間：1回押す＝丸、囲む＝楕円、なぞる＝線、文字
+  function start(){ on = true; document.body.classList.add('mkOn'); bar.style.display = 'flex'; open.style.display = 'none'; hold(); ui();
+    say('視点は止めてあります。1回押す＝丸、囲む＝楕円、なぞる＝線。向きを変えたい時は「✕ 終わる」（書いた物は残ります）'); }
+  function end(){ on = false; document.body.classList.remove('mkOn'); bar.style.display = 'none'; open.style.display = ''; ctl.enabled = true; drawing = null; txHide(); ui(); }
+  open.onclick = start;
+  const undo = () => { marks.pop(); ui(); }, clear = () => { marks = []; ui(); };
+  const copy = () => { const t = describe().join('\n'); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => say(T.copied), () => window.prompt(T.copyAsk, t)); };
+  const TIPS = {pen: '1回押す＝丸、囲む＝楕円、なぞる＝線・矢印', txt: '文字：入れたい所を1回押す'};
+  const onBtn = (ev) => { const b = ev.target.closest('button'); if (!b) return;
+    if (b.dataset.c !== undefined) { col = +b.dataset.c; ui(); } else if (b.dataset.t) { tool = b.dataset.t; ui(); say(TIPS[tool]); }
+    else if (b.id === 'mkUndo' || b.id === 'mkU2') undo(); else if (b.id === 'mkClr' || b.id === 'mkC2') clear(); else if (b.id === 'mkEnd') end();
+    else if (b.id === 'mkCopy' || b.id === 'mkCopy2') copy(); else if (b.id === 'mkPdf') savePdf(); else if (b.id === 'mkSave') saveImg(); };
+  bar.addEventListener('click', onBtn); if (mini) mini.addEventListener('click', onBtn);
+  // 文字を入れる小さい窓
+  const txI = tx.querySelector('#mkTxI');
+  function txShow(p){ pend = p; txI.value = ''; tx.style.display = 'block'; setTimeout(() => txI.focus(), 30); }
+  function txHide(){ pend = null; tx.style.display = 'none'; }
+  function txOk(){ const t = txI.value.trim(), p = pend; txHide(); if (!t || !p) return; finish({type: 'txt', col: col, pts: [p], text: t}); }
+  tx.querySelector('#mkTxOk').onclick = txOk; tx.querySelector('#mkTxNo').onclick = txHide;
+  txI.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' && !ev.isComposing) { ev.preventDefault(); txOk(); } else if (ev.key === 'Escape') txHide(); });
+  const P = (ev) => [ev.clientX, ev.clientY];
+  const move = (ev) => { const p = P(ev), q = drawing.pts[drawing.pts.length - 1]; if (Math.hypot(p[0] - q[0], p[1] - q[1]) > 2) drawing.pts.push(p); };
+  // 書き終わり：ほとんど動いていなければ「丸（1回押した所）」、ぐるっと囲んでいれば「楕円（なぞった大きさ。横長・縦長もそのまま）」、そのほかは「線」
+  const done = () => { const m = drawing; drawing = null; if (!m) return; const xs = m.pts.map(p => p[0]), ys = m.pts.map(p => p[1]);
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), span = Math.max(x1 - x0, y1 - y0);
+    if (span < 8) { m.type = 'pin'; m.pts = [m.pts[0]]; }
+    else { let len = 0; for (let k = 1; k < m.pts.length; k++) len += Math.hypot(m.pts[k][0] - m.pts[k - 1][0], m.pts[k][1] - m.pts[k - 1][1]);
+      const a = m.pts[0], tail = m.pts.slice(Math.floor(m.pts.length * 0.6)), gap = Math.min(...tail.map(q => Math.hypot(q[0] - a[0], q[1] - a[1])));
+      if (span >= 24 && gap < 0.35 * span && len > 2.2 * span) { const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, rx = Math.max((x1 - x0) / 2, 12), ry = Math.max((y1 - y0) / 2, 12);
+        m.type = 'ell'; m.pts = []; for (let i = 0; i < 64; i++) { const t = i / 64 * 2 * Math.PI - Math.PI / 2; m.pts.push([cx + rx * Math.cos(t), cy + ry * Math.sin(t)]); } } }
+    finish(m); };
+  // ① ボタンを押した後（指・ペン・マウス）
+  cv.addEventListener('pointerdown', (ev) => { if (!on || pend) return; ev.preventDefault();
+    if (tool === 'txt') { txShow(P(ev)); return; }
+    try { cv.setPointerCapture(ev.pointerId); } catch (e) {} drawing = {type: 'pen', col: col, pts: [P(ev)]}; });
+  cv.addEventListener('pointermove', (ev) => { if (!on || !drawing) return; ev.preventDefault(); move(ev); });
+  const up = () => { if (on && drawing) done(); };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  // ② パソコン用：Ctrl を押しながら（ボタンは押さなくてよい）。3Dを回す操作より先に受け取る
+  const SKIP = '#panel,#player,#mkBar,#mkMini,#mkOpen,#mkTx,#guide,button,input,select,textarea,a';
+  addEventListener('pointerdown', (ev) => { if (on || !ev.ctrlKey || ev.button !== 0 || (ev.target.closest && ev.target.closest(SKIP))) return;
+    ev.preventDefault(); ev.stopImmediatePropagation(); hold(); cid = ev.pointerId; drawing = {type: 'pen', col: col, pts: [P(ev)]}; }, true);
+  addEventListener('pointermove', (ev) => { if (cid === null || ev.pointerId !== cid || !drawing) return; ev.preventDefault(); ev.stopImmediatePropagation(); move(ev); }, true);
+  const cup = (ev) => { if (cid === null || ev.pointerId !== cid) return; ev.preventDefault(); ev.stopImmediatePropagation(); cid = null; ctl.enabled = true; done(); };
+  addEventListener('pointerup', cup, true); addEventListener('pointercancel', cup, true);
+  addEventListener('keydown', (ev) => { if (ev.key === 'Control') document.body.classList.add('mkCtrl');
+    if (ev.ctrlKey && (ev.key === 'z' || ev.key === 'Z') && !(ev.target.closest && ev.target.closest('input,textarea'))) { ev.preventDefault(); undo(); } });
+  addEventListener('keyup', (ev) => { if (ev.key === 'Control') document.body.classList.remove('mkCtrl'); });
+  addEventListener('blur', () => document.body.classList.remove('mkCtrl'));
+  addEventListener('resize', size); size(); ui();
+  window.__mk = {start: start, end: end, marks: () => marks, describe: describe, data: data, compose: compose, pdf: pdf, undo: undo, clear: clear, mode: MODE};
+})();
+</script>
 </body>
 </html>
