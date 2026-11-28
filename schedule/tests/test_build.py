@@ -130,10 +130,14 @@ class LayoutTest(unittest.TestCase):
         rows = special_rows(d, valid_periods(d)[0])
         self.assertEqual([(r[0], len(r[2])) for r in rows], [("SK350超ロング", 1), ("CAT325", 1)])
 
-    def test_empty_leader_shows_mitei(self):
+    def test_site_cell_shows_only_name(self):
+        # 2026-11-28 酒井さん：現場の欄に、リーダー・メイン重機・今ある重機は載せない（現場名だけ）
         d = copy.deepcopy(SAMPLE)
-        d["sites"][3]["leader"] = None            # リーダーが決まっていない現場（2026-11-13 保木間）
-        self.assertIn("リーダー 未定／", render(d))
+        d["sites"][0]["leader"] = "リーダーの名前"
+        h = render(d)
+        for x in ["リーダー", "メイン ", "今ある重機"]:
+            self.assertNotIn(x, h)
+        self.assertIn(d["sites"][0]["name"][:6], h)
 
     def test_title_says_all_sites(self):
         h = render(SAMPLE)                         # 題名は「全現場スケジュール表」（2026-11-13 酒井さん）
@@ -188,14 +192,16 @@ class HoverTest(unittest.TestCase):
 
 
 class KoteiColorTest(unittest.TestCase):
-    """2026-11-28 酒井さん：見た目は、いつも作っている工程表（0工程表）の色合いにそろえる。"""
+    """2026-11-28 酒井さん：見た目は、九段南・地下解体の工程表（img/kudan-koutei-1.svg）の色合いにそろえる。"""
 
     def test_no_old_pink_or_bright_colors(self):
         h = render(SAMPLE)
         for old in ["#FCE4EC", "#C2185B", "#E53935", "#FFEB3B", "#2196F3", "#4CAF50", "#FF9800", "#9C27B0"]:
             self.assertNotIn(old, h)
-        for new in ["#EDF1F5", "#EAF0F6", "#8F99A3", "#C62828", "#F2C94C"]:   # 見出しの地・枠の線・足りない・ちょうど
+        for new in ["#C8D1DA", "#DCEBF7", "#C62828", "#F2C94C", "#FFF4D6", "#2B2B2B"]:   # 線・休みの帯・足りない・ちょうど・説明の窓・上屋解体
             self.assertIn(new, h)
+        for gone in ["#EDF1F5", "#EAF0F6"]:                                   # 見出しに地の色を付けない
+            self.assertNotIn(gone, h)
 
     def test_light_bar_has_dark_text(self):
         from datetime import date
