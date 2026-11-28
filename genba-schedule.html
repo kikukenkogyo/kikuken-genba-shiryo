@@ -773,6 +773,8 @@ svg text { font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", san
 (function () {
   var inFrame = false;
   try { inFrame = window.self !== window.top; } catch (e) { inFrame = true; }
+  // 業務管理ダッシュボードのパネルの中（アドレスのうしろに ?full=1）では、埋め込みの扱いにしない（2026-11-28）
+  if (/[?&]full=1(&|$)/.test(location.search)) inFrame = false;
   if (!inFrame) return;
   document.documentElement.className += " embedded";
   document.getElementById("chart").addEventListener("click", function () {
