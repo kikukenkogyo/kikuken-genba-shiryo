@@ -185,3 +185,23 @@ class HoverTest(unittest.TestCase):
         h = render(d)
         self.assertEqual(h.count("</script>"), 3)                          # 足した文字で script が切れない
         self.assertEqual(self._sched(d)["sites"][0], "A</script><b>&")
+
+
+class KoteiColorTest(unittest.TestCase):
+    """2026-11-28 酒井さん：見た目は、いつも作っている工程表（0工程表）の色合いにそろえる。"""
+
+    def test_no_old_pink_or_bright_colors(self):
+        h = render(SAMPLE)
+        for old in ["#FCE4EC", "#C2185B", "#E53935", "#FFEB3B", "#2196F3", "#4CAF50", "#FF9800", "#9C27B0"]:
+            self.assertNotIn(old, h)
+        for new in ["#EDF1F5", "#EAF0F6", "#8F99A3", "#C62828", "#F2C94C"]:   # 見出しの地・枠の線・足りない・ちょうど
+            self.assertIn(new, h)
+
+    def test_light_bar_has_dark_text(self):
+        from datetime import date
+        from build_schedule import Axis, bar_svg, COLORS, MACHINE
+        from calc import jun_list
+        axis = Axis(jun_list(date(2026, 11, 13)))
+        self.assertIn('fill="#2F3438"', bar_svg(200, 500, 0, 26, COLORS["休止中"], "休止中", axis)[1])   # 薄い棒は濃い字
+        self.assertIn('fill="#2F3438"', bar_svg(200, 500, 0, 26, MACHINE, "保木間", axis)[1])
+        self.assertIn('fill="#fff"', bar_svg(200, 500, 0, 26, COLORS["上屋解体"], "上屋解体 オペ5", axis)[1])

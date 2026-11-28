@@ -10,8 +10,17 @@ from calc import (jun_list, to_date, to_int, norm, sites_of, site_name, ope_of, 
                   required_ope, required_on, available_ope, level, warnings)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-COLORS = {"内装解体": "#4CAF50", "上屋解体": "#2196F3", "基礎解体": "#FF9800", "地下解体": "#9C27B0",
-          "外構解体": "#00897B", "着工予定": "#9E9E9E", "休止中": "#9E9E9E"}
+# 色は、いつも作っている工程表（0工程表）の色合いにそろえる（2026-11-28 酒井さん：前の色は見づらい）。
+# 白地・灰色がかった青の見出し・細い線・落ち着いた色の棒。元の色は mitsumori-teian の build_kotei_html.py。
+COLORS = {"内装解体": "#5E9E3A", "上屋解体": "#3C7DBF", "基礎解体": "#8D6E63", "地下解体": "#7B3FA0",
+          "外構解体": "#00796B", "着工予定": "#D5D8DC", "休止中": "#D5D8DC"}
+MACHINE = "#A9D6D0"             # 大型・特殊重機の棒（工程表の「使用重機」の色）
+LITE = {"#D5D8DC", MACHINE}     # 薄い色の棒。中の字は白ではなく濃い色で書く
+OTHER = "#6B6B6B"               # 種類が決まりに無い作業の棒
+HEAD, HEAD2 = "#EDF1F5", "#EAF0F6"                  # 見出しの地の色（左の欄／月）
+LINE, LINE_SOFT, LINE_MONTH = "#8F99A3", "#DBE0E5", "#8F99A3"   # 枠の線／旬の線／月の線
+INK, INK_SUB = "#111", "#4A4A4A"                    # 字の色（本文／小さい説明）
+RED, YEL, NAVY, TEAL = "#C62828", "#F2C94C", "#2E3F8F", "#00796B"
 LEGEND = ["内装解体", "上屋解体", "基礎解体", "地下解体", "外構解体", "着工予定"]
 LEFT, CELL = 170, 34            # 左の欄の幅、旬1つの幅
 TOP_H, MONTH_H, JUN_H = 18, 26, 20
@@ -113,14 +122,15 @@ def text(x, y, s, size=12, fill="#222", anchor="start", bold=False, extra=""):
 
 
 def bar_svg(x0, x1, y, h, color, label, axis):
-    out = [f'<rect x="{x0:.1f}" y="{y:.1f}" width="{max(x1 - x0, 3):.1f}" height="{h}" rx="4" fill="{color}"/>']
+    out = [f'<rect x="{x0:.1f}" y="{y:.1f}" width="{max(x1 - x0, 3):.1f}" height="{h}" rx="2" fill="{color}" '
+           f'stroke="#000" stroke-opacity="0.28" stroke-width="0.6"/>']
     mode, _, _ = label_place(x0, x1, label, axis)
     if mode == "in":
-        out.append(text(x0 + 6, y + h / 2 + 4.5, label, 12, "#fff", bold=True))
+        out.append(text(x0 + 6, y + h / 2 + 4.5, label, 12, "#2F3438" if color in LITE else "#fff", bold=True))
     elif mode == "right":
-        out.append(text(x1 + 5, y + h / 2 + 4.5, label, 12, "#222", bold=True))
+        out.append(text(x1 + 5, y + h / 2 + 4.5, label, 12, INK, bold=True))
     else:
-        out.append(text(x0 - 5, y + h / 2 + 4.5, label, 12, "#222", "end", True))
+        out.append(text(x0 - 5, y + h / 2 + 4.5, label, 12, INK, "end", True))
     return out
 
 
@@ -160,7 +170,7 @@ def hover_data(juns, periods, sites, avail) -> dict:
             if bs is None or be is None or be < first or bs > last:
                 continue
             bars.append({"site": i, "s": max(0, (bs - first).days), "e": min(total - 1, (be - first).days),
-                         "label": bar_label(b), "color": COLORS.get(b["kind"], "#607D8B"),
+                         "label": bar_label(b), "color": COLORS.get(b["kind"], OTHER),
                          "on": b["kind"] not in NOT_RUNNING})
     return {"y": first.year, "m": first.month, "d": first.day,
             "js": [(j.start - first).days for j in juns] + [total],        # 旬ごとの最初の日（最後に全部の日数）
@@ -170,26 +180,28 @@ def hover_data(juns, periods, sites, avail) -> dict:
 
 
 TIP_CSS = """
-.hint { margin: 0 4px 6px; font-size: 12px; color: #777; }
+.hint { margin: 0 4px 6px; font-size: 12px; color: #6B7480; }
 .embedded .hint { display: none; }
 #tip { position: fixed; z-index: 50; display: none; max-width: min(340px, calc(100vw - 16px)); box-sizing: border-box; padding: 9px 11px 10px;
-  border: 1px solid #94a3b8; border-radius: 8px; background: #fff; box-shadow: 0 6px 18px rgba(15,23,42,.28);
-  font-size: 13px; line-height: 1.45; color: #222; pointer-events: none; }
-#tip .tip-date { font-size: 14px; font-weight: bold; color: #C2185B; }
-#tip .tip-h { margin-top: 5px; padding-top: 5px; border-top: 1px solid #e2e8f0; font-size: 12px; font-weight: bold; color: #475569; }
+  border: 1px solid #8F99A3; border-radius: 6px; background: #fff; box-shadow: 0 6px 18px rgba(15,23,42,.28);
+  font-size: 13px; line-height: 1.45; color: #111; pointer-events: none; }
+#tip .tip-date { margin: -9px -11px 0; padding: 6px 11px; border-radius: 5px 5px 0 0; background: #EDF1F5; border-bottom: 1px solid #C9D2DB;
+  font-size: 14px; font-weight: bold; color: #2E3F8F; }
+#tip .tip-h { margin-top: 6px; font-size: 12px; font-weight: bold; color: #4A4A4A; }
 #tip .tip-site { margin-top: 5px; }
 #tip .tip-site b { display: block; }
 #tip .tip-site span { display: block; padding-left: 2px; color: #333; }
-#tip .tip-site i { display: inline-block; width: 11px; height: 11px; margin-right: 5px; border-radius: 2px; vertical-align: -1px; }
+#tip .tip-site i { display: inline-block; width: 11px; height: 11px; margin-right: 5px; border-radius: 2px; vertical-align: -1px;
+  border: 1px solid rgba(0,0,0,.28); box-sizing: border-box; }
 #tip .tip-site.off { color: #777; }
 #tip .tip-site.off b { font-weight: normal; }
 #tip .tip-site.off span { color: #777; }
 #tip .tip-none { margin-top: 5px; color: #777; }
-#tip .tip-sum { margin-top: 7px; padding-top: 6px; border-top: 1px solid #e2e8f0; }
+#tip .tip-sum { margin-top: 7px; padding-top: 6px; border-top: 1px solid #DBE0E5; }
 #tip .tip-sum b { font-size: 16px; }
 #tip .tip-lv { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 4px; font-weight: bold; }
-#tip .tip-lv.short { background: #E53935; color: #fff; }
-#tip .tip-lv.full { background: #FFEB3B; color: #222; }
+#tip .tip-lv.short { background: #C62828; color: #fff; }
+#tip .tip-lv.full { background: #F2C94C; color: #111; }
 #tip .tip-note { margin-top: 4px; font-size: 11.5px; color: #777; }
 """
 
@@ -288,15 +300,15 @@ def render(data: dict) -> str:
     for i in range(0, len(juns), 3):
         j = juns[i]
         x = LEFT + CELL * i
-        g.append(f'<rect x="{x}" y="{y}" width="{CELL * 3}" height="{MONTH_H}" fill="#FCE4EC" stroke="#999"/>')
+        g.append(f'<rect x="{x}" y="{y}" width="{CELL * 3}" height="{MONTH_H}" fill="{HEAD2}" stroke="{LINE}"/>')
         label = f"{j.year}年{j.month}月" if (i == 0 or j.month == 1) else f"{j.month}月"
-        g.append(text(x + CELL * 1.5, y + 18, label, 13, anchor="middle", bold=True))
+        g.append(text(x + CELL * 1.5, y + 18, label, 13, INK, "middle", True))
     for i, j in enumerate(juns):
         x = LEFT + CELL * i
-        g.append(f'<rect x="{x}" y="{y + MONTH_H}" width="{CELL}" height="{JUN_H}" fill="#fff" stroke="#bbb"/>')
-        g.append(text(x + CELL / 2, y + MONTH_H + 14, j.label[0], 11, "#555", "middle"))
-    g.append(f'<rect x="0" y="{y}" width="{LEFT}" height="{MONTH_H + JUN_H}" fill="#FCE4EC" stroke="#999"/>')
-    g.append(text(LEFT / 2, y + 29, "現　場", 13, anchor="middle", bold=True))
+        g.append(f'<rect x="{x}" y="{y + MONTH_H}" width="{CELL}" height="{JUN_H}" fill="#FAFBFC" stroke="#C9D2DB"/>')
+        g.append(text(x + CELL / 2, y + MONTH_H + 14, j.label[0], 11, "#666", "middle"))
+    g.append(f'<rect x="0" y="{y}" width="{LEFT}" height="{MONTH_H + JUN_H}" fill="{HEAD}" stroke="{LINE}"/>')
+    g.append(text(LEFT / 2, y + 29, "現　場", 13, INK, "middle", True))
     y += MONTH_H + JUN_H
     body_top = y
 
@@ -312,43 +324,44 @@ def render(data: dict) -> str:
 
     # 升目・休暇の帯（棒より下に描く）
     for s, placed, names, ry, h in rows:
-        g.append(f'<rect x="0" y="{ry}" width="{W}" height="{h}" fill="#fff" stroke="#999"/>')
+        g.append(f'<rect x="0" y="{ry}" width="{W}" height="{h}" fill="#fff" stroke="{LINE}"/>')
+        g.append(f'<rect x="0.5" y="{ry + 0.5}" width="{LEFT - 1}" height="{h - 1}" fill="#FAFBFC"/>')   # 左の欄は、ごく薄い地の色
     for i in range(len(juns) + 1):
         x = LEFT + CELL * i
-        c = "#999" if i % 3 == 0 else "#e3e3e3"
+        c = LINE_MONTH if i % 3 == 0 else LINE_SOFT
         g.append(f'<line x1="{x}" y1="{body_top}" x2="{x}" y2="{body_bottom}" stroke="{c}"/>')
     for hol in data.get("holidays") or []:
         if not isinstance(hol, dict):
             continue
         sp = axis.span(hol.get("start"), hol.get("end"))
         if sp and sp[1] > sp[0]:
-            g.append(f'<rect x="{sp[0]:.1f}" y="{body_top}" width="{sp[1] - sp[0]:.1f}" height="{body_bottom - body_top}" fill="#000" opacity="0.10"/>')
-            g.append(text((sp[0] + sp[1]) / 2, body_top + 11, hol.get("name") or "", 10, "#333", "middle"))
+            g.append(f'<rect x="{sp[0]:.1f}" y="{body_top}" width="{sp[1] - sp[0]:.1f}" height="{body_bottom - body_top}" fill="#5B6B7B" opacity="0.14"/>')
+            g.append(text((sp[0] + sp[1]) / 2, body_top + 11, hol.get("name") or "", 10, INK_SUB, "middle"))
 
     # 現場名と棒
     for s, placed, names, ry, h in rows:
         ty = ry + 20
         for line in names:
-            g.append(text(8, ty, line, 14, bold=True))
+            g.append(text(8, ty, line, 14, INK, bold=True))
             ty += 18
-        g.append(text(8, ty, f"リーダー {s.get('leader') or '未定'}／メイン {s.get('main_machine') or '−'}", 11, "#555"))
-        g.append(text(8, ty + 15, f"今ある重機 {to_int(s.get('machines_now')) or 0}台", 11, "#555"))
+        g.append(text(8, ty, f"リーダー {s.get('leader') or '未定'}／メイン {s.get('main_machine') or '−'}", 11, INK_SUB))
+        g.append(text(8, ty + 15, f"今ある重機 {to_int(s.get('machines_now')) or 0}台", 11, INK_SUB))
         top = max([p[0] for p in placed], default=0) + 1
         for n, x0, x1, b in placed:
             by = ry + ROW_PAD + n * LANE_H + (h - ROW_PAD * 2 - top * LANE_H) / 2
-            parts = bar_svg(x0, x1, by + 3, LANE_H - 6, COLORS.get(b["kind"], "#607D8B"), bar_label(b), axis)
+            parts = bar_svg(x0, x1, by + 3, LANE_H - 6, COLORS.get(b["kind"], OTHER), bar_label(b), axis)
             g.append(parts[0])
             late += parts[1:]
 
     # 下の段①：オペ必要人数・オペの人数（2026-11-28 酒井さん：「使える人数」は、使えない人もいるかのような誤解を生むので使わない）
     y += 8
     for title, fn in (("オペ必要人数", lambda j: required_ope(periods, j)), ("オペの人数", lambda j: avail)):
-        g.append(f'<rect x="0" y="{y}" width="{LEFT}" height="{SUM_H}" fill="#F5F5F5" stroke="#999"/>')
-        g.append(text(8, y + 19, title, 13, bold=True))
+        g.append(f'<rect x="0" y="{y}" width="{LEFT}" height="{SUM_H}" fill="{HEAD}" stroke="{LINE}"/>')
+        g.append(text(8, y + 19, title, 13, INK, bold=True))
         for i, j in enumerate(juns):
             v = fn(j)
             cls = level(required_ope(periods, j), avail) if title == "オペ必要人数" else "ok"
-            fg = "#fff" if cls == "short" else "#222"
+            fg = "#fff" if cls == "short" else INK
             g.append(f'<rect class="cell {cls}" x="{LEFT + CELL * i}" y="{y}" width="{CELL}" height="{SUM_H}"/>')
             g.append(text(LEFT + CELL * (i + .5), y + 19, v, 13, fg, "middle", cls != "ok"))
         y += SUM_H
@@ -358,29 +371,30 @@ def render(data: dict) -> str:
     special = special_rows(data, periods)
     if special:
         short = {norm(site_name(s)): (s.get("location_name") or site_name(s)[:8]) for s in sites}
-        g.append(f'<rect x="0" y="{y}" width="{W}" height="22" fill="#FCE4EC" stroke="#999"/>')
-        g.append(text(8, y + 16, "大型・特殊重機の使用状況", 13, bold=True))
+        g.append(f'<rect x="0" y="{y}" width="{W}" height="22" fill="{HEAD}" stroke="{LINE}"/>')
+        g.append(text(8, y + 16, "大型・特殊重機の使用状況", 13, TEAL, bold=True))
         y += 22
         sp_top = y
         for name, where, ps in special:
-            g.append(f'<rect x="0" y="{y}" width="{W}" height="{LANE_H}" fill="#fff" stroke="#999"/>')
-            g.append(text(8, y + 14, name, 11, bold=True))
+            g.append(f'<rect x="0" y="{y}" width="{W}" height="{LANE_H}" fill="#fff" stroke="{LINE}"/>')
+            g.append(f'<rect x="0.5" y="{y + 0.5}" width="{LEFT - 1}" height="{LANE_H - 1}" fill="#FAFBFC"/>')
+            g.append(text(8, y + 14, name, 11, INK, bold=True))
             if where:
-                g.append(text(8, y + 27, f"今：{where}", 10, "#555"))
+                g.append(text(8, y + 27, f"今：{where}", 10, INK_SUB))
             for p in ps:
                 sp = axis.span(p["start"], p["end"])
                 if sp:
-                    late += bar_svg(sp[0], sp[1], y + 4, LANE_H - 8, "#607D8B",
+                    late += bar_svg(sp[0], sp[1], y + 4, LANE_H - 8, MACHINE,
                                     short.get(norm(p.get("site")), str(p.get("site") or "")), axis)
             y += LANE_H
         for i in range(0, len(juns) + 1, 3):
-            g.append(f'<line x1="{LEFT + CELL * i}" y1="{sp_top}" x2="{LEFT + CELL * i}" y2="{y}" stroke="#999"/>')
+            g.append(f'<line x1="{LEFT + CELL * i}" y1="{sp_top}" x2="{LEFT + CELL * i}" y2="{y}" stroke="{LINE_MONTH}"/>')
         y += 8
 
     # 今日の線（升目より上、棒の字より下）
     tx = axis.x(asof)
-    g.append(f'<line x1="{tx:.1f}" y1="{head_y}" x2="{tx:.1f}" y2="{body_bottom}" stroke="#E53935" stroke-width="2"/>')
-    g.append(text(tx, head_y - 4, "今日", 11, "#E53935", "middle", True))
+    g.append(f'<line x1="{tx:.1f}" y1="{head_y}" x2="{tx:.1f}" y2="{body_bottom}" stroke="{RED}" stroke-width="2"/>')
+    g.append(text(tx, head_y - 4, "今日", 11, RED, "middle", True))
     g += late
 
     H = y
@@ -389,7 +403,7 @@ def render(data: dict) -> str:
                        ensure_ascii=False, separators=(",", ":"))
     for ch in "<>&":            # 現場名・メモに < > & があっても、ページの作りを壊さないようにする
         hover = hover.replace(ch, "\\u%04x" % ord(ch))
-    guide = (f'<line id="guide" x1="{LEFT}" y1="{head_y}" x2="{LEFT}" y2="{H - 8:.0f}" stroke="#C2185B" stroke-width="1.5" '
+    guide = (f'<line id="guide" x1="{LEFT}" y1="{head_y}" x2="{LEFT}" y2="{H - 8:.0f}" stroke="{NAVY}" stroke-width="1.5" '
              f'stroke-dasharray="4 3" visibility="hidden" pointer-events="none"/>')
     legend = "".join(f'<span><i style="background:{COLORS[k]}"></i>{esc(k)}</span>' for k in LEGEND)
     view = LEFT + CELL * FIRST_VIEW          # 最初の画面に入れる幅（左の欄＋3か月）
@@ -405,34 +419,33 @@ def render(data: dict) -> str:
 <style>
 :root {{ --u: min(calc((100vw - 12px) / {view}), {MAX_SCALE}px); }}
 @media (max-width: 700px) {{ :root {{ --u: calc((100vw - 12px) / {view_phone}); }} }}
-body {{ margin: 6px; background: #fff; font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; color: #222; }}
-h1 {{ margin: 2px 4px 0; font-size: 22px; color: #C2185B; }}
-.sub {{ margin: 2px 4px 6px; font-size: 13px; color: #555; }}
+body {{ margin: 6px; background: #fff; font-family: "游ゴシック", "Yu Gothic", Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; color: {INK}; }}
+h1 {{ margin: 2px 4px 4px; padding: 3px 0 3px 10px; border-left: 6px solid {NAVY}; font-size: 20px; letter-spacing: .08em; color: {INK}; }}
+.sub {{ margin: 2px 4px 6px; font-size: 13px; color: {INK_SUB}; }}
 .legend {{ display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0 4px 6px; font-size: 13px; }}
 .legend span {{ display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }}
-.legend i {{ width: 14px; height: 14px; border-radius: 3px; display: inline-block; }}
-.legend .lv {{ border: 1px solid #bbb; }}
+.legend i {{ width: 14px; height: 14px; border-radius: 2px; display: inline-block; border: 1px solid rgba(0,0,0,.28); box-sizing: border-box; }}
 .chart {{ display: flex; align-items: flex-start; }}
 .scroll {{ overflow-x: auto; flex: 1; min-width: 0; -webkit-overflow-scrolling: touch; }}
 svg {{ display: block; flex: none; height: auto; max-width: none; }}
 svg.left {{ width: calc(var(--u) * {LEFT}); }}
 svg.right {{ width: calc(var(--u) * {W - LEFT}); }}
-svg text {{ font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; }}
-.cell {{ fill: #fff; stroke: #bbb; }}
-.cell.short {{ fill: #E53935; }}
-.cell.full {{ fill: #FFEB3B; }}
+svg text {{ font-family: "游ゴシック", "Yu Gothic", Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; }}
+.cell {{ fill: #fff; stroke: #C9D2DB; }}
+.cell.short {{ fill: {RED}; }}
+.cell.full {{ fill: {YEL}; }}
 .tap {{ display: none; }}
 /* Notionのページの中（埋め込み）で見ているとき：題名を出さず、表をタッチすると画面いっぱいに開く */
 .embedded h1 {{ display: none; }}
 .embedded .sub {{ margin-top: 0; }}
-.embedded .tap {{ display: block; margin: 0 4px 6px; padding: 6px 10px; border-radius: 6px; background: #C2185B; color: #fff; font-size: 14px; font-weight: bold; text-align: center; text-decoration: none; }}
+.embedded .tap {{ display: block; margin: 0 4px 6px; padding: 6px 10px; border-radius: 6px; background: {NAVY}; color: #fff; font-size: 14px; font-weight: bold; text-align: center; text-decoration: none; }}
 .embedded .chart {{ cursor: pointer; }}
 {TIP_CSS}</style>
 </head>
 <body>
 <h1>全現場スケジュール表</h1>
 <p class="sub">{asof.isoformat()} 時点　／　横に動かすと1年先まで見られます（指で広げて拡大もできます）</p>
-<div class="legend">{legend}<span><i class="lv" style="background:#E53935"></i>オペが足りない</span><span><i class="lv" style="background:#FFEB3B"></i>オペがちょうど</span></div>
+<div class="legend">{legend}<span><i style="background:{RED}"></i>オペが足りない</span><span><i style="background:{YEL}"></i>オペがちょうど</span></div>
 <p class="hint">表の上にカーソルを合わせる（スマホ・タブレットはタッチする）と、その日に進行中の現場とオペ必要人数が出ます</p>
 <a class="tap" href="genba-schedule.html" target="_blank" rel="noopener">表をタッチすると、画面いっぱいに大きく開きます</a>
 <div class="chart" id="chart">
