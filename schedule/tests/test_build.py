@@ -27,7 +27,7 @@ class BuildTest(unittest.TestCase):
 
     def test_render_contents(self):
         h = render(SAMPLE)
-        for s in ["2026-11-13 時点", "九段南計画解体工事", "地下解体", "休止中", "オペ必要人数", "使える人数",
+        for s in ["2026-11-13 時点", "九段南計画解体工事", "地下解体", "休止中", "オペ必要人数", "オペの人数",
                   "冬季休暇", "CAT325", "width=device-width", "overflow-x", "大型・特殊重機の使用状況"]:
             self.assertIn(s, h)
         # お知らせはページに載せない（酒井さんにだけ伝える。2026-11-13 酒井さん）

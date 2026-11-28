@@ -115,7 +115,7 @@ def required_ope(periods: list, jun: Jun) -> int:
 
 
 def available_ope(data: dict) -> int:
-    """使える人数＝オペの人数 − 常用現場に出ている人数。"""
+    """表に「オペの人数」と出す数＝オペの人数 − 常用現場に出ている人数。（「使える人数」という言い方は表に出さない）"""
     o = data.get("operators") or {}
     return max(0, (to_int(o.get("total")) or 0) - (to_int(o.get("joyo")) or 0))
 

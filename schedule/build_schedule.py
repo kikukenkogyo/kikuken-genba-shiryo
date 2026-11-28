@@ -215,9 +215,9 @@ def render(data: dict) -> str:
             g.append(parts[0])
             late += parts[1:]
 
-    # 下の段①：オペ必要人数・使える人数
+    # 下の段①：オペ必要人数・オペの人数（2026-11-28 酒井さん：「使える人数」は、使えない人もいるかのような誤解を生むので使わない）
     y += 8
-    for title, fn in (("オペ必要人数", lambda j: required_ope(periods, j)), ("使える人数", lambda j: avail)):
+    for title, fn in (("オペ必要人数", lambda j: required_ope(periods, j)), ("オペの人数", lambda j: avail)):
         g.append(f'<rect x="0" y="{y}" width="{LEFT}" height="{SUM_H}" fill="#F5F5F5" stroke="#999"/>')
         g.append(text(8, y + 19, title, 13, bold=True))
         for i, j in enumerate(juns):
