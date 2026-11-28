@@ -139,3 +139,49 @@ class LayoutTest(unittest.TestCase):
         h = render(SAMPLE)                         # 題名は「全現場スケジュール表」（2026-11-13 酒井さん）
         self.assertIn("<h1>全現場スケジュール表</h1>", h)
         self.assertIn("<title>全現場スケジュール表</title>", h)
+
+
+class HoverTest(unittest.TestCase):
+    """2026-11-28 酒井さん：表の上にカーソルを合わせると、その日に進行中の現場とオペ必要人数を小さな窓に出す。"""
+
+    def _sched(self, d):
+        import re
+        m = re.search(r"window\.SCHED = (\{.*?\});</script>", render(d))
+        return json.loads(m.group(1))
+
+    def test_hover_data_matches_table(self):
+        from datetime import date
+        from calc import jun_list, valid_periods, required_ope, available_ope
+        s = self._sched(SAMPLE)
+        juns = jun_list(date(2026, 11, 13))
+        p, _ = valid_periods(SAMPLE)
+        self.assertEqual((s["y"], s["m"], s["d"]), (2026, 11, 1))
+        self.assertEqual(len(s["js"]), len(juns) + 1)
+        self.assertEqual(len(s["need"]), s["js"][-1])                    # 日ごとの人数は、表の日数ぶん
+        self.assertEqual(s["jun_need"], [required_ope(p, j) for j in juns])
+        for i in range(len(juns)):                                       # 旬の数字＝その旬でいちばん多い日
+            self.assertEqual(max(s["need"][s["js"][i]:s["js"][i + 1]]), s["jun_need"][i])
+        self.assertEqual(s["avail"], available_ope(SAMPLE))
+        self.assertEqual(s["sites"], [x["name"] for x in SAMPLE["sites"]])
+
+    def test_hover_bars_and_running_flag(self):
+        s = self._sched(SAMPLE)
+        day = 12                                                          # 2026-11-13
+        today = [b for b in s["bars"] if b["s"] <= day <= b["e"]]
+        self.assertEqual(sum(1 for b in today if b["on"]), 3)              # 九段南・砧・東大
+        off = [b for b in today if not b["on"]]
+        self.assertEqual([b["label"] for b in off], ["休止中"])            # 休止中は「進行中」に数えない
+        self.assertTrue(all(0 <= b["s"] <= b["e"] < s["js"][-1] for b in s["bars"]))
+
+    def test_hover_parts_are_in_page(self):
+        h = render(SAMPLE)
+        for x in ['id="tip"', 'id="guide"', "pointermove", "進行中の現場", 'class="hint"']:
+            self.assertIn(x, h)
+        self.assertEqual(h.count('id="guide"'), 1)                         # 目印の線は右の表にだけ
+
+    def test_hover_text_cannot_break_page(self):
+        d = copy.deepcopy(SAMPLE)
+        d["sites"][0]["name"] = d["periods"][0]["site"] = "A</script><b>&"
+        h = render(d)
+        self.assertEqual(h.count("</script>"), 3)                          # 足した文字で script が切れない
+        self.assertEqual(self._sched(d)["sites"][0], "A</script><b>&")

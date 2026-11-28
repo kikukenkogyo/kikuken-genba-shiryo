@@ -104,12 +104,17 @@ def overlaps(period: dict, start: date, end: date) -> bool:
     return to_date(period["start"]) <= end and to_date(period["end"]) >= start
 
 
+def required_on(periods: list, d: date) -> int:
+    """その日のオペ人数（同じ日に重なる作業は足す）。"""
+    return sum(ope_of(p) for p in periods if overlaps(p, d, d))
+
+
 def required_ope(periods: list, jun: Jun) -> int:
     """その旬の中で、いちばん人数が多い日のオペ人数（同じ日に重なる作業は足す）。
     同じ旬の中で作業が入れ替わるとき（例: 上屋解体が12日まで・外構解体が15日から）は足し算にしない（2026-11-13 酒井さん・保木間）。"""
     best, d = 0, jun.start
     while d <= jun.end:
-        best = max(best, sum(ope_of(p) for p in periods if overlaps(p, d, d)))
+        best = max(best, required_on(periods, d))
         d += timedelta(days=1)
     return best
 

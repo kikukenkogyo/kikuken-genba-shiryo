@@ -7,7 +7,7 @@ from datetime import date, timedelta
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from calc import (jun_list, to_date, to_int, norm, sites_of, site_name, ope_of, valid_periods,  # noqa: E402
-                  required_ope, available_ope, level, warnings)
+                  required_ope, required_on, available_ope, level, warnings)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 COLORS = {"内装解体": "#4CAF50", "上屋解体": "#2196F3", "基礎解体": "#FF9800", "地下解体": "#9C27B0",
@@ -144,6 +144,131 @@ def special_rows(data: dict, periods: list) -> list:
     return rows
 
 
+# ===== カーソルを合わせた日の説明の窓（2026-11-28 酒井さん） =====
+# 表の上にカーソルを合わせる（スマホ・タブレットはタッチする）と、その日に進行中の現場と、オペ必要人数を小さな窓に出す。
+NOT_RUNNING = ("休止中", "着工予定")     # 棒はあるが「進行中」には数えない種類
+
+
+def hover_data(juns, periods, sites, avail) -> dict:
+    """説明の窓が使うデータ。日は「表の最初の日から何日目か」で持つ。人数の数え方は calc.py と同じ。"""
+    first, last = juns[0].start, juns[-1].end
+    total = (last - first).days + 1
+    bars = []
+    for i, s in enumerate(sites):
+        for b in bars_for_site(s, periods):
+            bs, be = to_date(b["start"]), to_date(b["end"])
+            if bs is None or be is None or be < first or bs > last:
+                continue
+            bars.append({"site": i, "s": max(0, (bs - first).days), "e": min(total - 1, (be - first).days),
+                         "label": bar_label(b), "color": COLORS.get(b["kind"], "#607D8B"),
+                         "on": b["kind"] not in NOT_RUNNING})
+    return {"y": first.year, "m": first.month, "d": first.day,
+            "js": [(j.start - first).days for j in juns] + [total],        # 旬ごとの最初の日（最後に全部の日数）
+            "sites": [site_name(s) for s in sites], "bars": bars, "avail": avail,
+            "need": [required_on(periods, first + timedelta(days=k)) for k in range(total)],   # 日ごとのオペ必要人数
+            "jun_need": [required_ope(periods, j) for j in juns]}                              # 表に出ている旬ごとの数字
+
+
+TIP_CSS = """
+.hint { margin: 0 4px 6px; font-size: 12px; color: #777; }
+.embedded .hint { display: none; }
+#tip { position: fixed; z-index: 50; display: none; max-width: min(340px, calc(100vw - 16px)); box-sizing: border-box; padding: 9px 11px 10px;
+  border: 1px solid #94a3b8; border-radius: 8px; background: #fff; box-shadow: 0 6px 18px rgba(15,23,42,.28);
+  font-size: 13px; line-height: 1.45; color: #222; pointer-events: none; }
+#tip .tip-date { font-size: 14px; font-weight: bold; color: #C2185B; }
+#tip .tip-h { margin-top: 5px; padding-top: 5px; border-top: 1px solid #e2e8f0; font-size: 12px; font-weight: bold; color: #475569; }
+#tip .tip-site { margin-top: 5px; }
+#tip .tip-site b { display: block; }
+#tip .tip-site span { display: block; padding-left: 2px; color: #333; }
+#tip .tip-site i { display: inline-block; width: 11px; height: 11px; margin-right: 5px; border-radius: 2px; vertical-align: -1px; }
+#tip .tip-site.off { color: #777; }
+#tip .tip-site.off b { font-weight: normal; }
+#tip .tip-site.off span { color: #777; }
+#tip .tip-none { margin-top: 5px; color: #777; }
+#tip .tip-sum { margin-top: 7px; padding-top: 6px; border-top: 1px solid #e2e8f0; }
+#tip .tip-sum b { font-size: 16px; }
+#tip .tip-lv { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 4px; font-weight: bold; }
+#tip .tip-lv.short { background: #E53935; color: #fff; }
+#tip .tip-lv.full { background: #FFEB3B; color: #222; }
+#tip .tip-note { margin-top: 4px; font-size: 11.5px; color: #777; }
+"""
+
+TIP_JS = """
+// 表の上にカーソルを合わせた日（スマホ・タブレットはタッチした日）の、進行中の現場とオペ必要人数を小さな窓に出す
+(function () {
+  var D = window.SCHED;
+  var svg = document.querySelector("svg.right"), tip = document.getElementById("tip"), guide = document.getElementById("guide");
+  if (!D || !svg || !tip || !guide) return;
+  var scroller = svg.parentNode, WD = ["日", "月", "火", "水", "木", "金", "土"], lastType = "mouse";
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
+  }
+  // 画面の横の位置 → 何旬目の、何日目か
+  function dayAt(clientX) {
+    var r = svg.getBoundingClientRect(), n = D.js.length - 1;
+    if (!r.width) return null;
+    var u = (clientX - r.left) / r.width * n;
+    if (u < 0 || u >= n) return null;
+    var i = Math.floor(u), a = D.js[i], len = D.js[i + 1] - a, k = Math.min(len - 1, Math.floor((u - i) * len));
+    return { day: a + k, jun: i, x: D.left + D.cell * (i + (k + 0.5) / len) };
+  }
+  function html(p) {
+    var dt = new Date(D.y, D.m - 1, D.d + p.day), groups = [], at = {}, on = 0;
+    D.bars.forEach(function (b) {
+      if (b.s > p.day || b.e < p.day) return;
+      if (!(b.site in at)) { at[b.site] = groups.length; groups.push({ name: D.sites[b.site], items: [], on: false }); }
+      var g = groups[at[b.site]];
+      g.items.push(b);
+      if (b.on) g.on = true;
+    });
+    groups.forEach(function (g) { if (g.on) on++; });
+    var out = '<div class="tip-date">' + dt.getFullYear() + "年" + (dt.getMonth() + 1) + "月" + dt.getDate() + "日（" + WD[dt.getDay()] + "）</div>";
+    out += '<div class="tip-h">進行中の現場　' + on + "件</div>";
+    if (!on) out += '<div class="tip-none">この日に進行中の現場はありません</div>';
+    [true, false].forEach(function (want) {
+      groups.forEach(function (g) {
+        if (g.on !== want) return;
+        out += '<div class="tip-site' + (g.on ? "" : " off") + '"><b>' + esc(g.name) + "</b>";
+        g.items.forEach(function (b) { out += '<span><i style="background:' + esc(b.color) + '"></i>' + esc(b.label) + "</span>"; });
+        out += "</div>";
+      });
+    });
+    var need = D.need[p.day] || 0, table = D.jun_need[p.jun] || 0;
+    out += '<div class="tip-sum">オペ必要人数 <b>' + need + "</b>人　／　オペの人数 " + D.avail + "人</div>";
+    if (need > D.avail) out += '<div class="tip-lv short">オペが' + (need - D.avail) + "人足りない</div>";
+    else if (need === D.avail && need > 0) out += '<div class="tip-lv full">オペがちょうど</div>';
+    if (table !== need) out += '<div class="tip-note">下の表の数字は、この旬でいちばん多い日の人数（' + table + "人）です</div>";
+    return out;
+  }
+  function hide() { tip.style.display = "none"; guide.setAttribute("visibility", "hidden"); }
+  function show(cx, cy) {
+    var p = dayAt(cx);
+    if (!p) { hide(); return; }
+    guide.setAttribute("x1", p.x); guide.setAttribute("x2", p.x); guide.setAttribute("visibility", "visible");
+    tip.innerHTML = html(p);
+    tip.style.display = "block";
+    var w = tip.offsetWidth, h = tip.offsetHeight, x = cx + 16, y = cy + 16;
+    if (x + w > window.innerWidth - 4) x = cx - w - 16;
+    if (x < 4) x = 4;
+    if (y + h > window.innerHeight - 4) y = Math.max(4, window.innerHeight - h - 4);
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+  }
+  svg.addEventListener("pointermove", function (e) { if (e.pointerType === "mouse") show(e.clientX, e.clientY); });
+  svg.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") hide(); });
+  document.addEventListener("pointerdown", function (e) { lastType = e.pointerType || "mouse"; }, true);
+  // 指でタッチしたとき：タッチした日を出す。表の外をタッチすると消える。
+  // （ほかのページの中に埋め込まれているときは、タッチで画面いっぱいに開く動きを優先する）
+  document.addEventListener("click", function (e) {
+    if (lastType === "mouse") return;
+    if (/(^| )embedded( |$)/.test(document.documentElement.className)) return;
+    if (svg.contains(e.target)) show(e.clientX, e.clientY); else hide();
+  });
+  scroller.addEventListener("scroll", hide);
+  window.addEventListener("scroll", hide);
+})();
+"""
+
+
 def render(data: dict) -> str:
     """ページ全体。左の欄（現場名）は動かさず、右の表だけ横にスクロールする。
     お知らせ（warnings）はページに載せない（酒井さんにだけ伝える。main が画面に出す）。"""
@@ -260,6 +385,12 @@ def render(data: dict) -> str:
 
     H = y
     body = "\n".join(g)
+    hover = json.dumps(dict(hover_data(juns, periods, sites, avail), left=LEFT, cell=CELL),
+                       ensure_ascii=False, separators=(",", ":"))
+    for ch in "<>&":            # 現場名・メモに < > & があっても、ページの作りを壊さないようにする
+        hover = hover.replace(ch, "\\u%04x" % ord(ch))
+    guide = (f'<line id="guide" x1="{LEFT}" y1="{head_y}" x2="{LEFT}" y2="{H - 8:.0f}" stroke="#C2185B" stroke-width="1.5" '
+             f'stroke-dasharray="4 3" visibility="hidden" pointer-events="none"/>')
     legend = "".join(f'<span><i style="background:{COLORS[k]}"></i>{esc(k)}</span>' for k in LEGEND)
     view = LEFT + CELL * FIRST_VIEW          # 最初の画面に入れる幅（左の欄＋3か月）
     view_phone = LEFT + CELL * FIRST_VIEW_PHONE
@@ -296,12 +427,13 @@ svg text {{ font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sa
 .embedded .sub {{ margin-top: 0; }}
 .embedded .tap {{ display: block; margin: 0 4px 6px; padding: 6px 10px; border-radius: 6px; background: #C2185B; color: #fff; font-size: 14px; font-weight: bold; text-align: center; text-decoration: none; }}
 .embedded .chart {{ cursor: pointer; }}
-</style>
+{TIP_CSS}</style>
 </head>
 <body>
 <h1>全現場スケジュール表</h1>
 <p class="sub">{asof.isoformat()} 時点　／　横に動かすと1年先まで見られます（指で広げて拡大もできます）</p>
 <div class="legend">{legend}<span><i class="lv" style="background:#E53935"></i>オペが足りない</span><span><i class="lv" style="background:#FFEB3B"></i>オペがちょうど</span></div>
+<p class="hint">表の上にカーソルを合わせる（スマホ・タブレットはタッチする）と、その日に進行中の現場とオペ必要人数が出ます</p>
 <a class="tap" href="genba-schedule.html" target="_blank" rel="noopener">表をタッチすると、画面いっぱいに大きく開きます</a>
 <div class="chart" id="chart">
 <svg class="left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {LEFT} {H:.0f}">
@@ -310,9 +442,11 @@ svg text {{ font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sa
 <div class="scroll">
 <svg class="right" xmlns="http://www.w3.org/2000/svg" viewBox="{LEFT} 0 {W - LEFT} {H:.0f}">
 {body}
+{guide}
 </svg>
 </div>
 </div>
+<div id="tip"></div>
 <script>
 // Notionのページの中（埋め込み）のときだけ、表をタッチすると新しい画面でこのページをいっぱいに開く
 (function () {{
@@ -327,6 +461,8 @@ svg text {{ font-family: Meiryo, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sa
   }});
 }})();
 </script>
+<script>window.SCHED = {hover};</script>
+<script>{TIP_JS}</script>
 </body>
 </html>
 """

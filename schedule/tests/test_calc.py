@@ -137,3 +137,15 @@ class ReviewFixTest(unittest.TestCase):
         w = warnings(d)
         self.assertIn(f"「{KUDAN}」の作業期間に日付の抜け・逆転があります", w)
         self.assertNotIn(f"「{KUDAN}」は工程表がまだありません", w)
+
+
+class RequiredOnTest(unittest.TestCase):
+    """2026-11-28 酒井さん：カーソルを合わせた日の、オペ必要人数を出す。"""
+
+    def test_required_on_one_day(self):
+        from calc import required_on
+        p, _ = valid_periods(SAMPLE)
+        j = jun_list(date(2026, 11, 13))
+        days = [required_on(p, date(2026, 11, d)) for d in range(11, 21)]
+        self.assertEqual(max(days), required_ope(p, j[1]))      # 旬の数字＝その旬でいちばん多い日
+        self.assertEqual(required_on(p, date(2030, 1, 1)), 0)   # 作業が無い日は 0
